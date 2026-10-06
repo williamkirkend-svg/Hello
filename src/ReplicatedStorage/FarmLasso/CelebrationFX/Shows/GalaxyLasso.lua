@@ -273,7 +273,7 @@ function M.Set2(ctx, def)
 		end})
 	whirlPose(ctx, P, .9, 2.3)
 	ctx:At(1.4, function() rimStars(ctx, G, c1, c3) end)
-	K.Herd(ctx, {At = 2.8, Radius = 16, Color = c2, Flavour = "lookup", Max = 5})
+	K.Herd(ctx, {At = 4.1, Radius = 16, Color = c2, Flavour = "lookup", Max = 5})
 	K.Title(ctx, 3.0, "embers", 8)
 	return LEN
 end
@@ -346,7 +346,7 @@ function M.Set3(ctx, def)
 	end)
 	ctx:At(1.3, function() rimStars(ctx, G, c1, c3) end)
 	ctx:At(4.0, function() rimStars(ctx, G, c1, c3) end)
-	K.Herd(ctx, {At = 3.0, Radius = 18, Color = c2, Flavour = "lookup", Max = 6})
+	K.Herd(ctx, {At = 4.25, Radius = 18, Color = c2, Flavour = "lookup", Max = 6})
 	-- a shooting star crosses the sky behind the title
 	ctx:At(5.9, function()
 		local right = back:Cross(Vector3.yAxis)

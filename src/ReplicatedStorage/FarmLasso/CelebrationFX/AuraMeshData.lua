@@ -17,6 +17,11 @@ return {
 		Slash = V(0, 0, 0.676),
 		ShardA = V(0, 0.6, 0),
 		ShardB = V(0, 0.25, 0),
+		-- v2 pack, nominal values (replaced by the measured ones from blender/aura_pack_pivots.json)
+		WingUpper = V(2, 0, 0), WingFore = V(2, 0, 0), WingPrimaries = V(2.5, 0, 0), WingUpperL = V(-2, 0, 0), WingForeL = V(-2, 0, 0), WingPrimariesL = V(-2.5, 0, 0),
+		Feather = V(0, 0.6, 0), WingSilhouette = V(3.5, 0, 0), FlamePetal = V(0, 0, -2.25), RiftLip = V(0, 4.5, 0), ClockHand = V(0, 0, -2.5), ClockHandShort = V(0, 0, -1.7),
+		CrackA = V(0, 0, -3), CrackB = V(0, 0, -3), CrackC = V(0, 0, -3), GrassClump = V(0, 0.6, 0), HaloCrystal = V(0, -0.9, 0), CherryTrunk = V(0, 5, 0),
+		LotusPetal = V(0, 0, -1.2), IceSpike = V(0, 1.5, 0), IceSpikeCluster = V(0, 1.75, 0), GhostWisp = V(0, -0.8, 0),
 	},
 	Fallback = {
 		WingUpper = {4, .25, 1.4}, WingFore = {4, .25, 1.6}, WingPrimaries = {5, .25, 2.4}, WingUpperL = {4, .25, 1.4}, WingForeL = {4, .25, 1.6}, WingPrimariesL = {5, .25, 2.4},

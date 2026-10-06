@@ -72,10 +72,22 @@ LOADOUT > a celebration > TRY plays Set 3 with the preview camera. For a real th
 parts). Check with a second player nearby that seekers (Chrono ghosts, Starfall stars, Blossom orbs) fly to them and
 that their reduced view keeps the body, wings and sky pieces.
 
+## Review
+
+An independent adversarial review of the kit and all 12 shows (Roblox API misuse, nil indexing, timelines past LEN,
+per-frame allocations, emitter budgets) found no crash-class issue; its eleven visible-bug findings were fixed (debris
+drop timing, stamp fades, trails streaking from the mesh parking spot, the mirrored wing flash, the Phoenix spiral
+entry, the Set 2 float snap, the K.Skin emitter leak, seekers running through Chrono's rewind, the standing tear
+ring, double impact frames, title timing) and the lightning strike stacks were budgeted down. Spirit Stampede's calls
+into the live `Voxel` module are pcall-guarded with a silhouette fallback because that module is not in the export;
+check it once in Studio.
+
 ## Still open
 
 - Upload the 12 textures and paste the ids into `AuraTextures` (engine fallbacks until then).
 - Fountain interactions from the pitch (water recolour, feeding the black hole) are not built: there is no fountain
   query in the kit.
 - Playtest every show at all three sets and tune `LEN`, `Pre` and the per-show counts; the showcase camera already
-  allows 12 s.
+  allows 12 s. Nothing here was playtested (no Studio in the cloud session): the first run in Studio is the test.
+- Skill update: `CelebrationFX` now has the children `AuraKit`, `AuraMeshData`, `AuraTextures`, `Shows` (+12); the
+  old `Free` / `Premium` / `Spectacle` / `Tiers` / `AuraAccents` only run for ids without a show.

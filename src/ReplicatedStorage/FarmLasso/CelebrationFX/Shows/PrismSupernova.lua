@@ -27,13 +27,14 @@ local function prism(ctx, o)
 	local crystal = K.Mesh(ctx, "PrismCrystal", {Material = Enum.Material.Glass, Color = Color3.fromRGB(235, 240, 255), Transparency = 1})
 	local core = K.Mesh(ctx, "PrismCrystal", {Color = W, Transparency = 1})
 	local light = ctx:Light(ctx:Att(nil, core), W, 14, 0)
-	local Pm = {}
-	function Pm.Pos() return core.Position end
+	local Pm = {Last = headPos(ctx) + V3(0, 2.6, 0)}
+	function Pm.Pos() return Pm.Last end -- (cached: the rays keep reading it for a few frames after the prism goes)
 	ctx:Every(function(t)
 		if t > o.T1 + .5 then crystal:Destroy() core:Destroy() return true end
 		local k = K.Env(t, o.T0, o.T1, .35, .45)
 		local kc = math.clamp(k, 0, 1)
 		local cf = CFrame.new(headPos(ctx) + V3(0, 2.6 + math.sin(t * 1.3) * .1, 0)) * CFrame.Angles(0, t * .7, math.sin(t * .9) * .08)
+		Pm.Last = cf.Position
 		K.Place(crystal, cf, (o.Scale or 1) * math.max(.01, k))
 		K.Place(core, cf * CFrame.Angles(0, -t * .4, 0), (o.Scale or 1) * .6 * math.max(.01, k))
 		crystal.Transparency = 1 - .7 * kc

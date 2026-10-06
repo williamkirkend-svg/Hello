@@ -32,7 +32,7 @@ Maths and queries
 
 Meshes
 - `K.Mesh(ctx, name, props)` clones VFX2_<name> (or VFX_<name>, or a stand-in Part). Names: WingUpper/Fore/Primaries (+L), Feather, WingSilhouette, FlamePetalFan, FlamePetal, SunDisc, ScorchRing, ShardChunk, ShardSliver, RiftLip, RiftVoid, GhostWisp, ClockRing, ClockHand, ClockHandShort, TickSigil, Numeral, GlassShard, Hourglass, CrackA/B/C, Cobble, GrassClump, HayStraw, CloudLobe, LightningBull, TornadoRing, Coin, RibbonTwist, StarPoint, PlanetRinged, LassoLoop, Constellation, LightStep, HaloCrystal, PrismCrystal, Gem, CherryTrunk, Canopy, Lotus, FlowerCrown, LotusPetal, SpikeCrown, IceSpike, IceSpikeCluster, AccretionDisc, LensSphere, PortalFrame; v1: GalaxyArm, GalaxyCore, AccretionRing, ShockRing, HaloRing, RuneRing, Sigil, ShardA/B/C, OrbitCrystal, Slash, BoltA/B, StarShard, GodRay, BeamColumn, Swirl, Wing, SpikeHalo.
-- `K.Place(part, cf, scale)` sizes (number or Vector3) and puts the mesh's authored origin at cf. Axes after import: a thing authored "up" is +Y; a thing authored "along its length" (cracks, clock hands, petals, lotus petal) runs along -Z (the LookVector); wings extend +X (right) / -X (the L meshes); flat discs lie in the XZ plane with +Y as their normal.
+- `K.Release(part, dur)` ends a kit stamp early (fade, destroy). `K.Place(part, cf, scale)` sizes (number or Vector3) and puts the mesh's authored origin at cf. Axes after import: a thing authored "up" is +Y; a thing authored "along its length" (cracks, clock hands, petals, lotus petal) runs along -Z (the LookVector); wings extend +X (right) / -X (the L meshes); flat discs lie in the XZ plane with +Y as their normal.
 - `K.HasMesh(name)`, `K.Ring(ctx, kind, d, thick, color, tr)`, `K.SetRing(ring, d)`.
 
 Hits and bursts
@@ -47,7 +47,7 @@ The performer (the body)
 - `K.Echo(ctx, P, {Count, Delay, Color, Transparency, T0, T1})` past copies trailing the double.
 
 Things that come out and touch the world
-- `K.Seek(ctx, {Mesh | Build(ctx, i), Scale, Colors, Count, Interval, T0, From = pos | fn(i), Radius, Speed, Trail, Light, Circle, Height, Return, Wobble, OnTouch(tg, pos), OnSpawn(part, i), Targets = list})` seekers that fly to other players, then animals, circle, phase through (Highlight flicker), dissolve, optionally streak home.
+- `K.Seek(ctx, {Mesh | Build(ctx, i), Scale, Colors, Count, Interval, T0, From = pos | fn(i), Radius, Speed, Trail, Light, Circle, Height, Return, Wobble, OnTouch(tg, pos), OnSpawn(part, i), Targets = list}) -> Sk` (`Sk.Parts`, `Sk:Freeze()`) seekers that fly to other players, then animals, circle, phase through (Highlight flicker), dissolve, optionally streak home.
 - `K.Herd(ctx, {At, Radius, Color, Flavour = "flinch" | "bolt" | "freeze" | "bounce" | "lookup", Max, Stagger, Ring, Effect(tg)})` the herd reacts.
 - `K.Cracks(ctx, {At, Count, Len, Color, Life, Radius, Stagger})` ground cracks. `K.Debris(ctx, {At, Count, Radius, Lift, Centre = fn, Orbit, Until, Meshes, Color, Stretch})` loose props lift, orbit, drop. `K.Stamp(ctx, pos, {Mesh, Color, Scale, Life, Material, Transparency, Rise, OnAge(m, age)})` a ground stamp.
 - `K.TimeScale(ctx, {T0, T1, Radius, Scale})` slow the world (own show only). `K.LightPaint(ctx, {At, Radius, Color, Hold, Boost, Highlight})` every light swings to the colour, props flash (own show only). `K.Chain(ctx, {At, From, Radius, Count, Color, Stagger})` chain lightning to props.

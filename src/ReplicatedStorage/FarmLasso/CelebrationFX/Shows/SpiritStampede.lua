@@ -118,7 +118,13 @@ end
 -- pose a ghost at cf (the game's gait through Voxel, or a gallop bob for the silhouette) into the bulk-move lists
 local function pose(V, g, cf, t, walking, parts, cfs)
 	if g.Rig then
-		V.Pose(g.Rig, cf, t, {Walking = walking, Hop = g.Hop, Phase = g.Phase}, parts, cfs)
+		-- (the live Voxel module's signature is taken from Premium.SpiritStampede; a mismatch drops to the silhouette path)
+		local ok = pcall(V.Pose, g.Rig, cf, t, {Walking = walking, Hop = g.Hop, Phase = g.Phase}, parts, cfs)
+		if not ok then
+			g.Rig = nil
+			table.insert(parts, g.Root)
+			table.insert(cfs, cf)
+		end
 	else
 		local bob = walking and math.abs(math.sin(g.Hop * .5)) * .4 or 0
 		table.insert(parts, g.Root)
@@ -265,7 +271,7 @@ local function bison(ctx, V, Pt, c1, c2, c3, o)
 		end
 		g.Hop += dt * 10
 		pose(V, g, cf, t, walking, parts, cfs)
-		workspace:BulkMoveTo(parts, cfs, Enum.BulkMoveMode.FireCFrameChanged)
+		if #parts > 0 then workspace:BulkMoveTo(parts, cfs, Enum.BulkMoveMode.FireCFrameChanged) end
 		eye(g)
 		setTr(g, math.min(1, tr))
 		g.Trail.Enabled = tr < .7

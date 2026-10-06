@@ -203,7 +203,7 @@ local function wingFlash(ctx, color)
 			local k = FX.back(u / .3) * (1 - FX.ease((u - .6) / .4))
 			local root = ctx.Hrp.CFrame * CFrame.new(side * .4, .6, 1.3)
 			local yaw = CFrame.lookAt(root.Position, root.Position - back) * CFrame.Angles(0, side > 0 and 0 or math.pi, side * .3)
-			K.Place(w, yaw * CFrame.Angles(0, side * -.3, side * .4 * (1 - k)), V3(side > 0 and 1 or -1, 1, 1) * (1.1 * k + .05))
+			K.Place(w, yaw * CFrame.Angles(0, side * -.3, side * .4 * (1 - k)), (1.1 * k + .05))
 			w.Transparency = 1 - .6 * k
 		end)
 	end

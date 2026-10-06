@@ -16,16 +16,16 @@ local function sigil(ctx, c2, dark, scale, t0, t1)
 	local hand = K.Mesh(ctx, "ClockHandShort", {Color = W})
 	local tick, ticks = 0, 0
 	local S = {Sigil = sig, Hand = hand, Alive = true}
+	local g = K.GroundCF(ctx, ctx.Base.Position, .14)
 	ctx:Every(function(t)
 		if not S.Alive then hand:Destroy() return true end
 		if t < t0 then return end
 		if t - tick >= .1 then tick = t ticks += 1 end
 		local a = ticks * TAU / 60 * (S.Reverse and -1 or 1)
-		local g = K.GroundCF(ctx, ctx.Base.Position, .14)
 		K.Place(hand, g * CFrame.Angles(0, -a, 0), (scale or 1) * .9)
 		if t > t1 then S.Alive = false end
 	end)
-	function S.Stop() S.Alive = false FX.Tween(sig, .3, {Transparency = 1}) task.delay(.35, function() sig:Destroy() end) end
+	function S.Stop() S.Alive = false K.Release(sig, .3) end
 	return S
 end
 -- the standing tear: a hairline of light that rips open to `gap` studs between two torn lips with a gear void behind
@@ -120,7 +120,10 @@ local function glassFan(ctx, origin, c1, c2, count)
 		tr.Parent = m
 		local ang = (i / n - .5) * math.pi * 1.1
 		local vel = V3(math.sin(ang) * rng:NextNumber(10, 22), rng:NextNumber(8, 20), math.cos(ang) * rng:NextNumber(-6, 6))
-		list[i] = {M = m, V = vel, P = origin + V3(0, rng:NextNumber(-3, 3), 0), Spin = K.RandUnit() * 8, Done = false, Rot = CFrame.Angles(rng:NextNumber(0, TAU), 0, 0)}
+		local p0 = origin + V3(0, rng:NextNumber(-3, 3), 0)
+		list[i] = {M = m, V = vel, P = p0, Spin = K.RandUnit() * 8, Done = false, Rot = CFrame.Angles(rng:NextNumber(0, TAU), 0, 0),
+			GY = K.Ground(ctx, p0 + V3(vel.X, 0, vel.Z) * .6).Y}
+		K.Place(m, CFrame.new(p0), 1)
 	end
 	local dt = 1 / 60
 	ctx:Every(function()
@@ -130,7 +133,7 @@ local function glassFan(ctx, origin, c1, c2, count)
 			all = false
 			s.V = s.V + V3(0, -45, 0) * dt
 			s.P = s.P + s.V * dt
-			local gy = K.Ground(ctx, s.P).Y
+			local gy = s.GY
 			if s.P.Y <= gy + .3 and s.V.Y < 0 then
 				s.Done = true
 				s.P = V3(s.P.X, gy + .6, s.P.Z)
@@ -213,7 +216,7 @@ end
 ---------------------------------------------------------------- Set 2: the rift opens, three ghosts, a ghost rewind (5.0 s)
 function M.Set2(ctx, def)
 	local c1, c2, c3, dark = K.Palette(def)
-	local LEN = 5.0
+	local LEN = 5.4
 	local P = K.Performer(ctx)
 	if not P then return M.Set1(ctx, def) end
 	ctx:At(.02, function() P:Show() end)
@@ -235,8 +238,10 @@ function M.Set2(ctx, def)
 			local pull = FX.ease((t - .75) / .2)
 			local pos = ctx.Base.Position + K.Polar(a, 4.5 * (1 - pull), n.Y * lift + .2)
 			pos = pos:Lerp(R.Centre, pull)
-			K.Place(n.M, CFrame.lookAt(pos, pos + K.Polar(a, 1, 0)), lift * (1 - pull * .7))
-			n.M.Transparency = 1 - lift
+			if n.M.Parent then
+				K.Place(n.M, CFrame.lookAt(pos, pos + K.Polar(a, 1, 0)), lift * (1 - pull * .7))
+				n.M.Transparency = 1 - lift
+			end
 		end
 		if t >= .95 and not opened then
 			opened = true
@@ -244,7 +249,7 @@ function M.Set2(ctx, def)
 			S.Stop()
 		end
 		if opened then R.Gap = 3.5 * FX.back((t - .95) / .3) end
-		if t > 4.8 then R.Destroy(.3) return true end
+		if t > 5.2 then R.Destroy(.3) return true end
 	end)
 	ctx:At(.95, function() for _, n in nums do n.M:Destroy() end end)
 	K.Float(ctx, P, {T0 = 1.0, T1 = 4.25, Height = 2, Rise = .5, Fall = .25, Spin = -.6, Pose = "Wide"})
@@ -256,7 +261,7 @@ function M.Set2(ctx, def)
 		if t > 3.9 then return true end
 		for _, p in Sk.Parts do if not tracked[p] then tracked[p] = true Rw:Track(p) end end
 	end)
-	ctx:At(3.95, function() Rw:Play(7, function() end) R.Close(.3) end)
+	ctx:At(3.95, function() Sk:Freeze() Rw:Play(7, function() end) R.Close(.3) end)
 	ctx:At(4.3, function()
 		ctx:Grade({Saturation = 0, TintColor = W}, .05, .1, .1)
 		glassFan(ctx, R.Centre, c1, c2, 16)
@@ -276,7 +281,7 @@ end
 ---------------------------------------------------------------- Set 3: the full timeline (7.0 s + 1 s charge-up)
 function M.Set3(ctx, def)
 	local c1, c2, c3, dark = K.Palette(def)
-	local LEN = 7.0
+	local LEN = 7.4
 	local P = K.Performer(ctx)
 	if not P then return M.Set2(ctx, def) end
 	local pre = ctx.Pre or 1
@@ -313,20 +318,21 @@ function M.Set3(ctx, def)
 		local k = clock.Part.Transparency < .5 and 1 or 0
 		if not rewinding then clockT = clockT + (1 / 60) * (1 + math.max(0, t - 1) * .9) else clockT = math.max(0, clockT - .25) end
 		local cf = clock.Part.CFrame
-		K.Place(hands[1], cf * CFrame.Angles(0, -clockT * 1.1, 0) * CFrame.new(0, .12, 0), .95)
-		K.Place(hands[2], cf * CFrame.Angles(0, -clockT * .12, 0) * CFrame.new(0, .14, 0), .95)
-		for _, h in hands do h.Transparency = 1 - k end
+		if hands[1].Parent then
+			K.Place(hands[1], cf * CFrame.Angles(0, -clockT * 1.1, 0) * CFrame.new(0, .12, 0), .95)
+			K.Place(hands[2], cf * CFrame.Angles(0, -clockT * .12, 0) * CFrame.new(0, .14, 0), .95)
+			for _, h in hands do h.Transparency = 1 - k end
+		end
 		if t > 6.2 and hands[1].Parent then for _, h in hands do h:Destroy() end end
-		if t > 6.9 then R.Destroy(.3) return true end
+		if t > 7.3 then R.Destroy(.3) return true end
 	end)
 	-- tear: the numerals slam in, the sigil shatters, the hairline rips to five studs, the player is jerked back
 	ctx:At(.82, function()
 		for _, n in nums do n.M.Transparency = 1 end
 		S.Stop()
 		K.Starburst(ctx, ctx.Base.Position + V3(0, .5, 0), {Colors = {c1, c2}, Size = 9, Count = 24})
-		ctx:ImpactFrame()
 		K.Hit(ctx, R.Centre, {Colors = {c1, c2}, Impact = true, Shake = .4, FOV = 10, Ring = 26, Burst = 12, Lines = 28})
-		K.ShockRing(ctx, R.Face, 1, 18, c2, .5, .4)
+		K.ShockRing(ctx, R.Face * CFrame.Angles(-math.pi / 2, 0, 0), 1, 18, c2, .5, .4)
 		local t0 = os.clock()
 		ctx:Every(function()
 			local u = (os.clock() - t0) / .3
@@ -360,7 +366,7 @@ function M.Set3(ctx, def)
 			pcall(function() m:PivotTo(base * CFrame.new(0, math.sin(u * math.pi) * 1.1, 0) + away * 3 * FX.ease(u)) end)
 		end)
 	end
-	local Sk = K.Seek(ctx, {Mesh = "GhostWisp", Colors = {c1, c2, c3}, Count = 11, Interval = .3, T0 = 1.4, From = R.Centre, Speed = 15, Trail = 1.2, Circle = .6, Height = 2.8,
+	local Sk = K.Seek(ctx, {Mesh = "GhostWisp", Colors = {c1, c2, c3}, Count = 9, Interval = .3, T0 = 1.4, From = R.Centre, Speed = 15, Trail = 1.2, Circle = .6, Height = 2.8,
 		Return = true, Radius = 40, OnTouch = function(tg) tickRing(ctx, c2, tg) hop(tg) end})
 	-- frost prints under the ghosts; every ghost joins the rewind buffer as it is born
 	local tracked, lastPrint = {}, 0
@@ -369,8 +375,8 @@ function M.Set3(ctx, def)
 		for _, p in Sk.Parts do if not tracked[p] then tracked[p] = true Rw:Track(p) end end
 		if t - lastPrint > .4 then
 			lastPrint = t
-			for _, p in Sk.Parts do
-				if p.Parent and p.Transparency < .7 then
+			for i, p in Sk.Parts do
+				if i <= 4 and p.Parent and p.Transparency < .7 then
 					local g = K.Ground(ctx, p.Position)
 					if (p.Position - g).Magnitude < 6 then K.Stamp(ctx, g, {Mesh = "StarPoint", Color = c1, Scale = .35, Life = 1.6, Rise = .15, Transparency = .3}) end
 				end
@@ -381,6 +387,7 @@ function M.Set3(ctx, def)
 	-- rewind: everything retraces at 3x, the clock spins back, the lips slam shut, then dead stillness
 	ctx:At(5.25, function()
 		rewinding = true
+		Sk:Freeze()
 		ctx:Flash(c1, .3, .15)
 		Rw:Play(9, function()
 			-- stillness: every emitter at zero for .2 s
@@ -404,7 +411,7 @@ function M.Set3(ctx, def)
 		if t > 6.95 then return true end
 		P:Toward("Punch", FX.ease((t - 6.06) / .15) * (1 - FX.ease((t - 6.5) / .4)))
 	end)
-	K.Title(ctx, 6.2, "glitch", 8)
+	K.Title(ctx, 6.15, "glitch", 8)
 	return LEN
 end
 

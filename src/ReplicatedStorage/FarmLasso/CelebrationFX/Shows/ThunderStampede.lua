@@ -17,7 +17,7 @@ local STANCE = {RightShoulder = CFrame.Angles(.15, 0, .4), LeftShoulder = CFrame
 ---------------------------------------------------------------- lightning helpers (shared with Stormbreaker by copy)
 -- a sky bolt from p0 to p1: a white core bolt inside a coloured glow bolt, re-jagged three times over 0.2 s, standing
 -- for `hold` more seconds, then faded and destroyed; a light flash, a starburst at the foot and a ring on the ground
-local function strike(ctx, p0, p1, color, big, hold)
+local function strike(ctx, p0, p1, color, big, hold, quiet)
 	local n = big and 14 or 10
 	local setC, core = ctx:Bolt(n, big and .4 or .22, W)
 	local setG, glow = ctx:Bolt(n, big and 1.3 or .7, color)
@@ -35,7 +35,7 @@ local function strike(ctx, p0, p1, color, big, hold)
 	local l = ctx:Light(att, color, big and 40 or 22, big and 12 or 6)
 	FX.Tween(l, .35 + (hold or 0), {Brightness = 0})
 	task.delay(.45 + (hold or 0), function() att:Destroy() end)
-	K.Starburst(ctx, p1, {Colors = {W, color}, Size = big and 12 or 6, Count = big and 30 or 16})
+	if not quiet then K.Starburst(ctx, p1, {Colors = {W, color}, Size = big and 12 or 6, Count = big and 30 or 16}) end
 	K.ShockRing(ctx, K.GroundCF(ctx, p1, .15), 1, big and 16 or 7, color, .35, .35)
 end
 -- a pool of crawling arcs (the old Free builder's ground arcs, pooled): each is a white core bolt plus a coloured
@@ -103,7 +103,8 @@ end
 local function boltRing(A, ctx, ends, c2, dark, at, stagger, onLand)
 	for i, e in ends do
 		ctx:At(at + (i - 1) * stagger, function()
-			strike(ctx, e + V3(0, 25, 0), e, c2, false, (#ends - i) * stagger + .25)
+			-- (quiet: the ring shares one starburst at its centre instead of one per bolt)
+			strike(ctx, e + V3(0, 25, 0), e, c2, false, (#ends - i) * stagger + .25, i > 1)
 			crater(A, ctx, e, dark)
 			if onLand then onLand(i, e) end
 		end)

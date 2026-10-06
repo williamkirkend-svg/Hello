@@ -68,7 +68,7 @@ function M.Set1(ctx, def)
 				local k = FX.back(u / .3) * (1 - FX.ease((u - .6) / .4))
 				local root = ctx.Hrp.CFrame * CFrame.new(side * .4, .6, 1.2)
 				local yaw = CFrame.lookAt(root.Position, root.Position - back) * CFrame.Angles(0, side > 0 and 0 or math.pi, side * .35)
-				K.Place(w, yaw * CFrame.Angles(0, side * -.3, side * .5 * (1 - k)), V3(side > 0 and 1 or -1, 1, 1) * (1.2 * k + .05))
+				K.Place(w, yaw * CFrame.Angles(0, side * -.3, side * .5 * (1 - k)), 1.2 * k + .05)
 				w.Transparency = 1 - .85 * k
 			end)
 		end
@@ -76,7 +76,7 @@ function M.Set1(ctx, def)
 			SpreadAngle = Vector2.new(180, 180), Acceleration = V3(0, -6, 0), Drag = 3, RotSpeed = {-200, 200}, Brightness = 2})
 	end)
 	ctx:Repeat(.5, 1.8, .3, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 4), rng:NextNumber(1, 5)), rng:NextNumber(2, 3.5), c1, .3) end)
-	ctx:At(1.9, function() FX.Tween(ring, .6, {Transparency = 1}) end)
+	ctx:At(1.9, function() K.Release(ring, .6) end)
 	K.Title(ctx, .9, "embers", 7.5)
 	return LEN
 end
@@ -89,7 +89,7 @@ function M.Set2(ctx, def)
 	if not P then return M.Set1(ctx, def) end
 	local ring = char(ctx, c2, dark, 0, .5, 1.1)
 	ctx:At(.02, function() P:Show() end)
-	ctx:Every(function(t) if t < .45 then P:Toward("Crouch", FX.ease(t / .4) * .8) end end)
+	ctx:Every(function(t) if t < .45 then P:Toward("Crouch", FX.ease(t / .4) * .8) else return true end end)
 	local home = ctx.Hrp.CFrame
 	K.Shatter(ctx, P, {At = .45, Colors = {c1, c2, c3}, Chunks = 22, Reform = .7, ReformCF = home * CFrame.new(0, 3.5, 0), FanRadius = 7,
 		OnExplode = function() ring.Material = Enum.Material.Neon FX.Tween(ring, .25, {Color = c2}) end})
@@ -98,7 +98,7 @@ function M.Set2(ctx, def)
 		Wg = K.Wings(ctx, P, {Span = 12, Colors = {c1, c2, c3}, Unfold = 1.15, Fold = 4.2, Flap = .7, Flame = true})
 	end)
 	local lastFlap = 0
-	K.Float(ctx, P, {T0 = 1.1, T1 = 4.15, Height = 3.5, Rise = .4, Fall = .35, Spin = math.pi / 3.2, Pose = "Wide", Anchor = home * CFrame.new(0, 3.5, 0),
+	K.Float(ctx, P, {T0 = 1.15, T1 = 4.15, Height = 3.5, Rise = .05, Fall = .35, Spin = math.pi / 3.2, Pose = "Wide",
 		OnK = function(k, t)
 			if Wg and Wg.Flap < .2 and lastFlap >= .2 then downstroke(ctx, P, c1, c2) end
 			if Wg then lastFlap = Wg.Flap end
@@ -120,7 +120,7 @@ function M.Set2(ctx, def)
 		local k = FX.ease((t - 4.1) / .2) * (1 - FX.ease((t - 4.6) / .5))
 		P:Toward("Kneel", k)
 	end)
-	ctx:At(4.5, function() FX.Tween(ring, .7, {Transparency = 1}) end)
+	ctx:At(4.5, function() K.Release(ring, .7) end)
 	K.Title(ctx, 4.2, "embers", 7.5)
 	return LEN
 end
@@ -169,7 +169,10 @@ function M.Set3(ctx, def)
 		local a = a0 + u * TAU * 2
 		local r = 8 - 4 * u
 		local y = 2.5 + 6.5 * u * u + math.sin(u * TAU * 2) * .6
-		return centre + V3(math.cos(a) * r, y, math.sin(a) * r)
+		local p = centre + V3(math.cos(a) * r, y, math.sin(a) * r)
+		-- the first stretch blends out from where the body was reborn so there is no jump into the spiral
+		if u < .12 then return reborn.Position:Lerp(p, FX.ease(u / .12)) end
+		return p
 	end
 	local lastFlap, stamped = 0, false
 	-- the fire helix the flight leaves behind: a long ribbon trail from the lower torso
@@ -212,7 +215,7 @@ function M.Set3(ctx, def)
 		K.LightPaint(ctx, {At = 0, Radius = 45, Color = W, Hold = .6, Boost = 2.5})
 		ctx:Flash(c1, .35, .25)
 	end)
-	ctx:At(4.7, function() P:Silhouette() if Wg then for _, S in Wg.Sides do for _, seg in S.Segs do seg.Color = SOOT end end end end)
+	ctx:At(4.7, function() P:Silhouette() if Wg then Wg.Tint = SOOT end end)
 	-- golden embers: the body shatters again at the apex, the wings dissolve into rising embers
 	ctx:At(4.95, function() if Wg then Wg:Dissolve(.5) end end)
 	local landing = CFrame.new(home.Position) * (home - home.Position)
@@ -237,7 +240,7 @@ function M.Set3(ctx, def)
 		local k = FX.ease((t - 5.55) / .18) * (1 - FX.ease((t - 6.2) / .6))
 		P:Toward("Kneel", k)
 	end)
-	ctx:At(6.6, function() FX.Tween(ring, .8, {Transparency = 1}) end)
+	ctx:At(6.6, function() K.Release(ring, .8) end)
 	K.Title(ctx, 5.75, "embers", 8)
 	return LEN
 end

@@ -258,6 +258,7 @@ function K.Mesh(ctx, name, props)
 	p.Transparency = 0
 	p.TopSurface, p.BottomSurface = Enum.SurfaceType.Smooth, Enum.SurfaceType.Smooth
 	p:SetAttribute("BaseSize", p.Size)
+	p:SetAttribute("Parked", true)
 	p.CFrame = ctx.Base * CFrame.new(0, -50, 0)
 	if props then for k, v in props do p[k] = v end end
 	p.Parent = ctx.Folder
@@ -274,6 +275,23 @@ function K.Place(p, cf, scale)
 	else
 		p.CFrame = cf
 	end
+	-- the first placement leaves the parking spot: any Trail already on the part must not draw that jump
+	if p:GetAttribute("Parked") then
+		p:SetAttribute("Parked", nil)
+		for _, c in p:GetChildren() do
+			if c:IsA("Trail") and c.Enabled then
+				c.Enabled = false
+				task.delay(.03, function() if c.Parent then c.Enabled = true end end)
+			end
+		end
+	end
+end
+-- end a K.Stamp (or any kit-driven part) early: its loop stops, it fades over dur and is destroyed
+function K.Release(part, dur)
+	if not part or not part.Parent then return end
+	part:SetAttribute("Released", true)
+	FX.Tween(part, dur or .5, {Transparency = 1})
+	task.delay((dur or .5) + .05, function() if part.Parent then part:Destroy() end end)
 end
 -- a thin-lipped ring from the old CelebrationAssets unions (always available)
 function K.Ring(ctx, kind, d, thick, color, tr) return ctx:Ring(kind or "RingThin", d or .1, thick or .3, color or W, tr or 0) end
@@ -786,7 +804,7 @@ function K.Wings(ctx, P, o)
 					cf = cf * CFrame.Angles(0, side * -fold * (i == 1 and .6 or 1), side * -(bend[i] * (1 - fold * .5)) * .6)
 					K.Place(seg, cf, scale)
 					seg.Transparency = 1 - k * (i == 3 and .9 or 1)
-					seg.Color = c2:Lerp(c1, phase * .6)
+					seg.Color = Wg.Tint or c2:Lerp(c1, phase * .6)
 					cf = cf * CFrame.new(side * 4 * scale, 0, 0)
 					table.insert(pts, cf.Position)
 				end
@@ -831,7 +849,8 @@ function K.Seek(ctx, o)
 	local targets = o.Targets or K.Targets(ctx, count, o.Radius or 40)
 	if #targets == 0 then targets = K.Targets(ctx, count, o.Radius or 40) end
 	local tracked = {}
-	local Sk = {Parts = tracked, Done = 0}
+	local Sk = {Parts = tracked, Done = 0, Frozen = false}
+	function Sk:Freeze() self.Frozen = true end
 	local function spawnOne(i)
 		local tg = targets[(i - 1) % #targets + 1]
 		local m = o.Build and o.Build(ctx, i) or K.Mesh(ctx, o.Mesh or "GhostWisp", {Color = c1, Material = Enum.Material.ForceField})
@@ -869,7 +888,7 @@ function K.Seek(ctx, o)
 		local touched = false
 		local lastPos = p0
 		ctx:Every(function()
-			if not m.Parent then return true end
+			if not m.Parent or Sk.Frozen then return true end
 			local age = os.clock() - t0
 			if phase == "fly" then
 				local u = age / flyT
@@ -1086,7 +1105,8 @@ function K.Debris(ctx, o)
 			K.Place(m, CFrame.new(gp), items[i].Scale)
 		end
 		local t0 = os.clock()
-		local dropAt = (o.Until or 3) - (o.At or 0)
+		-- Until is a timeline time; the drop happens that many seconds after now (At may be 0 for "now")
+		local dropAt = math.max(.1, (o.Until or (ctx:Elapsed() + 3)) - math.max(o.At or 0, ctx:Elapsed()))
 		local falling = {}
 		ctx:Every(function()
 			local age = os.clock() - t0
@@ -1240,6 +1260,7 @@ function K.Stamp(ctx, pos, o)
 	local t0 = os.clock()
 	local life = o.Life or 3
 	ctx:Every(function()
+		if not m.Parent or m:GetAttribute("Released") then return true end
 		local age = os.clock() - t0
 		if age >= life then m:Destroy() return true end
 		local gk = FX.back(age / (o.Rise or .25))
@@ -1283,13 +1304,14 @@ function K.Skin(ctx, o)
 		end
 	end
 	local t0, t1 = o.T0 or 0, o.T1 or 99
+	ctx:OnCleanup(function() if bolts then bolts:Destroy() end if hl.Parent then hl:Destroy() end end)
 	ctx:Every(function(t)
 		local k = K.Soft(t, t0, t1, .3, .4)
 		hl.FillTransparency = 1 - k * (.35 + .25 * math.abs(math.sin(t * 17 + math.sin(t * 5))))
 		hl.OutlineTransparency = 1 - k * .15
 		for _, l in limbs do l[1].Enabled = k > .1 l[1].CurveSize0 = math.sin(t * 9) * .8 l[1].CurveSize1 = math.cos(t * 7) * .8 end
 		if bolts then bolts.Rate = k > .1 and 9 * (ctx.Quality or 1) or 0 end
-		if t > t1 then hl:Destroy() return true end
+		if t > t1 then hl:Destroy() if bolts then bolts:Destroy() bolts = nil end return true end
 	end)
 	return hl
 end

@@ -207,8 +207,12 @@ local function iceSpikes(ctx, at, c1, c2, R, n)
 		ctx:Every(function()
 			local age = os.clock() - t0
 			if age > .75 then
+				K.Starburst(ctx, centre + V3(0, 2, 0), {Colors = {W, c1}, Size = 10, Count = 24})
 				for i, s in spikes do
-					task.delay((i - 1) * .05, function() K.Starburst(ctx, s.Shell.Position, {Colors = {W, c1}, Size = 3.5, Count = 10}) end)
+					task.delay((i - 1) * .05, function()
+						ctx:Burst(s.Shell.Position, K.Count(ctx, 10), {Texture = K.Tex.Star, Color = {W, c1}, Size = {.6, 0}, Lifetime = {.25, .5}, Speed = {6, 12},
+							SpreadAngle = Vector2.new(180, 180), Drag = 4, Brightness = 5})
+					end)
 					FX.Tween(s.Shell, .3, {Transparency = 1}) FX.Tween(s.Core, .3, {Transparency = 1})
 					task.delay(.45, function() s.Shell:Destroy() s.Core:Destroy() end)
 				end

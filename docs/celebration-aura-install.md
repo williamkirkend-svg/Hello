@@ -42,6 +42,16 @@ Copy from `src/ReplicatedStorage/FarmLasso/`:
 With Script Sync, dropping the files into the synced folder creates the objects. Choose "Keep Disk" for these new files
 and for `CelebrationFX.lua`.
 
+Also add `src/ServerScriptService/AuraCollisionGroups.server.lua` as a Script named `AuraCollisionGroups` in
+ServerScriptService. It registers the "AuraPerformer" collision group so the celebration double (a client-side clone
+that stands on the real body while it acts) can never collide with the real character. Without it, the clone's
+Humanoid turns its head and torso collidable and shoves the real player (that is what launched a player off the map).
+Studio registers the group client-side as a fallback, so TRY works either way; live servers need the Script.
+
+If the old Studio-only preview is still installed (`StarterPlayerScripts.ClaudeCelebrationPreview` and the
+`ClaudeCelebrationPreview.VFX` modules), delete the LocalScript and the VFX folder: that preview moved the REAL
+character with PlatformStand. Keep `ClaudeCelebrationPreview.VFXMeshes`, the shows still use those meshes.
+
 ## 5. Test
 
 Open LOADOUT, pick a celebration, TRY plays Set 3 (the preview camera). Forced throws: set workspace attribute

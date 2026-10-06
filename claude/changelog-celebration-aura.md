@@ -52,6 +52,8 @@ New ModuleScripts under `ReplicatedStorage.FarmLasso.CelebrationFX`:
 - `AuraTextures` (asset ids for the painted texture pack; empty strings fall back to engine textures).
 - `Shows` plus 12 children `Shows.<Id>` ({Pre, Set1, Set2, Set3}).
 
+New Script: `ServerScriptService.AuraCollisionGroups` (registers the collision group the double uses).
+
 Patched: `CelebrationFX` (only `Play`: when `Shows[id]` exists it is used for the requested set, its `Pre` replaces
 Tiers.Pre, and Spectacle.Augment, Tiers.Overdrive and AuraAccents are skipped so nothing stacks on the show; ids without
 a show keep the old path). Untouched: `Celebrations`, `CelebrationClient`, `Free`, `Premium`, `Spectacle`, `Tiers`,
@@ -81,6 +83,16 @@ entry, the Set 2 float snap, the K.Skin emitter leak, seekers running through Ch
 ring, double impact frames, title timing) and the lightning strike stacks were budgeted down. Spirit Stampede's calls
 into the live `Voxel` module are pcall-guarded with a silhouette fallback because that module is not in the export;
 check it once in Studio.
+
+## Fix (Oct 6, evening): the player launched off the map
+
+The celebration double overlaps the real body. Its cloned Humanoid re-enables CanCollide on the clone's head and torso
+every frame, so when the double rose and flipped (Event Horizon's feet-first pull) its collidable torso shoved the real
+character out of the map. The double is now intangible by construction: every part is in the "AuraPerformer" collision
+group (new Script `ServerScriptService.AuraCollisionGroups`; Studio registers it client-side too), massless, with
+CanCollide forced off every frame; Constraints, BodyMovers and Animators are stripped from the clone and its Humanoid
+runs with the state machine off in the Physics state. Nothing in the kit or the shows writes to the real character's
+HumanoidRootPart, so there is no other path that can move the player.
 
 ## Still open
 

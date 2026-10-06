@@ -18,6 +18,7 @@ local TweenService = game:GetService("TweenService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 local Lighting = game:GetService("Lighting")
+local PhysicsService = game:GetService("PhysicsService")
 
 local FX = require(script.Parent)
 local okData, Data = pcall(require, script.Parent:FindFirstChild("AuraMeshData") or script)
@@ -401,6 +402,28 @@ end
 ---------------------------------------------------------------- the performer (a client-side double of the character)
 -- The real character keeps its physics, camera and gameplay; it is hidden locally and this double does the acting:
 -- poses on Motor6D C0, flight paths, explosions. Works for your own character and for other players' (reduced shows).
+-- The double overlaps the real body, so it must never collide with anything: its parts sit in the "AuraPerformer"
+-- collision group (registered here for Studio and by ServerScriptService.AuraCollisionGroups for live servers), are
+-- massless, and have CanCollide forced off every frame, because a Humanoid re-enables collision on its head and
+-- torso by itself (that shove is what launched a player off the map on Oct 6).
+local GROUP = "AuraPerformer"
+local groupReady = false
+local function collisionGroup()
+	if groupReady then return true end
+	local ok = pcall(function()
+		local have = false
+		for _, g in PhysicsService:GetRegisteredCollisionGroups() do if g.name == GROUP then have = true end end
+		if not have then PhysicsService:RegisterCollisionGroup(GROUP) end
+		for _, g in PhysicsService:GetRegisteredCollisionGroups() do PhysicsService:CollisionGroupSetCollidable(GROUP, g.name, false) end
+	end)
+	groupReady = ok
+	return ok
+end
+local function neutralise(part, useGroup)
+	part.CanCollide, part.CanTouch, part.CanQuery, part.CastShadow = false, false, false, false
+	part.Massless = true
+	if useGroup then pcall(function() part.CollisionGroup = GROUP end) end
+end
 local R15 = {Neck = "Head", Waist = "UpperTorso", RightShoulder = "RightUpperArm", LeftShoulder = "LeftUpperArm", RightElbow = "RightLowerArm",
 	LeftElbow = "LeftLowerArm", RightHip = "RightUpperLeg", LeftHip = "LeftUpperLeg", RightKnee = "RightLowerLeg", LeftKnee = "LeftLowerLeg", Root = "LowerTorso"}
 function K.Performer(ctx, o)
@@ -413,18 +436,28 @@ function K.Performer(ctx, o)
 	char.Archivable = old
 	if not ok or not ghost then return nil end
 	ghost.Name = "AuraPerformer"
+	local useGroup = collisionGroup()
 	for _, v in ghost:GetDescendants() do
 		if v:IsA("LuaSourceContainer") or v:IsA("Sound") or v:IsA("ParticleEmitter") or v:IsA("Trail") or v:IsA("Beam") or v:IsA("BillboardGui")
-			or v:IsA("Tool") or v:IsA("Highlight") or v:IsA("ForceField") or v:IsA("BodyMover") then v:Destroy()
+			or v:IsA("Tool") or v:IsA("Highlight") or v:IsA("ForceField") or v:IsA("BodyMover") or v:IsA("Constraint") or v:IsA("Animator")
+			or v:IsA("AnimationController") then v:Destroy()
 		elseif v:IsA("BasePart") then
-			v.CanCollide, v.CanTouch, v.CanQuery, v.CastShadow = false, false, false, false
+			neutralise(v, useGroup)
 			v.Anchored = v.Name == "HumanoidRootPart"
 		end
 	end
 	local root = ghost:FindFirstChild("HumanoidRootPart")
 	if not root then ghost:Destroy() return nil end
 	local hum = ghost:FindFirstChildOfClass("Humanoid")
-	if hum then hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None hum.AutoRotate = false hum.PlatformStand = true end
+	if hum then
+		-- kept only so Shirt / Pants render; it must not simulate or manage collisions
+		hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+		hum.AutoRotate = false
+		hum.PlatformStand = true
+		hum.BreakJointsOnDeath = false
+		pcall(function() hum.EvaluateStateMachine = false end)
+		pcall(function() hum:ChangeState(Enum.HumanoidStateType.Physics) end)
+	end
 	local P = {Model = ghost, Root = root, Alive = true, Joints = {}, Base = {}, Parts = {}, Look = {}, Shown = false, Hidden = {}, Ctx = ctx}
 	for _, v in ghost:GetDescendants() do
 		if v:IsA("Motor6D") then
@@ -498,6 +531,8 @@ function K.Performer(ctx, o)
 		if not P.Alive then return true end
 		if not char.Parent or (ctx.Hum and ctx.Hum.Health <= 0) then P:Release() return true end
 		if P.Follow then P.Root.CFrame = ctx.Hrp.CFrame end
+		-- a Humanoid turns collision back on for its head and torso; keep the double intangible every frame
+		for _, p in P.Parts do if p.CanCollide then p.CanCollide = false end end
 	end)
 	-- a pose library the shows share
 	P.Poses = {

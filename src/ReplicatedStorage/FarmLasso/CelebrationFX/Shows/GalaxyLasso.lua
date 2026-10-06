@@ -139,7 +139,7 @@ local function lasso(ctx, P, G, o)
 				pivot = tg.Model and tg.Model:GetPivot() or CFrame.new(goal())
 				if o.OnLand then o.OnLand(tg, goal()) end
 			end
-			if tg.Kind == "animal" and tg.Model.Parent then
+			if tg.Kind == "animal" and tg.Model.Parent and K.CanMove(tg) then
 				local lift = 2 * K.Soft(age, 0, o.Hold, .3, .35)
 				pcall(function() tg.Model:PivotTo(pivot * CFrame.new(0, lift, 0) * CFrame.Angles(math.sin(age * 4) * .06, 0, 0)) end)
 			end

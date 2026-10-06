@@ -354,7 +354,7 @@ function M.Set3(ctx, def)
 	K.Float(ctx, P, {T0 = 1.3, T1 = 6.02, Height = 3, Rise = .6, Fall = .25, Spin = -.55, Pose = "Wide"})
 	K.Echo(ctx, P, {Count = 3, Delay = .3, Color = c2, Transparency = .6, T0 = 1.5, T1 = 5.2})
 	local function hop(tg)
-		if tg.Kind ~= "animal" or not tg.Model then return end
+		if not K.CanMove(tg) then return end
 		local m = tg.Model
 		local base = m:GetPivot()
 		local away = base.Position - ctx.Base.Position

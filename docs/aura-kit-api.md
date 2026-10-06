@@ -27,7 +27,7 @@ Load the kit with `local K = require(script.Parent.Parent.AuraKit)` and the tool
 Maths and queries
 - `K.Ease`, `K.Back`, `K.Env(t, a, b, rise, fall)` (grow in with overshoot, fade out by b), `K.Soft` (no overshoot), `K.Flap(t, period)` (snap-down / ease-up 0..1), `K.Polar(a, r, y)`, `K.RandUnit()`, `K.Bezier(p0, p1, p2, u)`, `K.Behind(ctx)` flat direction away from the camera, `K.Count(ctx, n)` quality-scaled count, `K.Palette(def) -> c1, c2, c3, dark`.
 - `K.Ground(ctx, pos) -> pos, normal`, `K.GroundCF(ctx, pos, lift)` a CFrame lying on the ground (UpVector = normal).
-- `K.NearbyPlayers(ctx, r)`, `K.NearbyAnimals(ctx, r)`, `K.Targets(ctx, count, r)` (players, then animals, then orbit points; each `{Part, Model, Kind}` or `{Pos, Kind = "point"}`), `K.TargetPos(tg, y)`, `K.NearbyProps(ctx, r, n)` anchored prop parts (fence posts, lanterns).
+- `K.CanMove(tg)` true only for a CFrame-driven animal (anchored, no constraints); never PivotTo an animal without it. `K.NearbyPlayers(ctx, r)`, `K.NearbyAnimals(ctx, r)`, `K.Targets(ctx, count, r)` (players, then animals, then orbit points; each `{Part, Model, Kind}` or `{Pos, Kind = "point"}`), `K.TargetPos(tg, y)`, `K.NearbyProps(ctx, r, n)` anchored prop parts (fence posts, lanterns).
 - `K.Tex.<Name>` texture id with engine fallback: Glow, Ring, Flame, Streak, Star, Petal, Lightning, Smoke, Arc, Crack, Sigil, Nebula. `K.Flipbook(emitter, "Lightning" | "Smoke", mode, fps)` only applies when the painted sheet is uploaded.
 
 Meshes

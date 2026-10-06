@@ -111,6 +111,7 @@ local function pullUp(ctx, P, t0, drop, h)
 end
 -- an animal lifted a stud by its lead (after the kit's look-up hop), legs kicking, held until `drop`, then dropped
 local function dangle(ctx, tg, drop)
+	if not K.CanMove(tg) then return end
 	local m = tg.Model
 	local base = m:GetPivot()
 	local t0 = os.clock()

@@ -202,6 +202,18 @@ local function targetPos(tg, y)
 	return tg.Pos or Vector3.zero
 end
 K.TargetPos = targetPos
+-- may a show move this animal with PivotTo? Only a CFrame-driven rig (anchored root, no constraints): moving a
+-- physics-driven animal that is on a real lead yanks the player it is tied to. Everything else gets effects only.
+function K.CanMove(tg)
+	local m, root = tg.Model, tg.Part
+	if not m or not root or not root.Parent or tg.Kind ~= "animal" then return false end
+	if not root.Anchored then return false end
+	for _, d in m:GetDescendants() do
+		if d:IsA("Constraint") or d:IsA("BodyMover") then return false end
+		if d:IsA("BasePart") and not d.Anchored then return false end
+	end
+	return true
+end
 -- anchored world parts within radius that read as "props": fence posts, lanterns, fountain pieces (tall, thin, not
 -- terrain-sized). Used by chain lightning, light painting and shockwave flashes. Limited to n.
 function K.NearbyProps(ctx, radius, n)
@@ -1063,7 +1075,7 @@ function K.Herd(ctx, o)
 				task.delay(hold + .05, function() hl:Destroy() end)
 				if o.Effect then o.Effect(tg) end
 				ctx:Ripple(K.GroundCF(ctx, tg.Part.Position, .15), 1, o.Ring or 6, {W, c}, .5, K.Tex.Ring)
-				if o.Flavour == "freeze" then return end
+				if o.Flavour == "freeze" or not K.CanMove(tg) then return end
 				-- the hop (absolute from the pose sampled now; the game re-takes the animal when we stop)
 				local base = m:GetPivot()
 				local away = (base.Position - ctx.Base.Position)

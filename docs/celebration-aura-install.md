@@ -12,7 +12,7 @@ and rename the copy `CelebrationFX_old` (disable nothing: ModuleScripts are iner
 ## 2. Meshes
 
 1. In Studio: Avatar tab (or File) > 3D Importer > `blender/Aura_Pack.glb`. Import as a Model with "Rig type: None",
-   scale 1, keep the object names (55 MeshParts named `VFX2_*`).
+   scale 1, keep the object names (54 MeshParts named `VFX2_*`).
 2. Move every `VFX2_*` MeshPart into a new Folder named `AuraMeshes` under `ReplicatedStorage.FarmLasso.CelebrationFX`
    (the GLB import makes a Model; a Model works too, but a Folder keeps things tidy).
 3. Keep the v1 folder `ReplicatedStorage.FarmLasso.ClaudeCelebrationPreview.VFXMeshes` where it is: the shows still use

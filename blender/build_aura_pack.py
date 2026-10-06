@@ -359,7 +359,9 @@ def hull(points):
     for p in points:
         bm.verts.new(p)
     res = bmesh.ops.convex_hull(bm, input=list(bm.verts))
-    bmesh.ops.delete(bm, geom=res["geom_unused"] + res["geom_interior"], context="VERTS")
+    extra = {g for g in res["geom_unused"] + res["geom_interior"] if isinstance(g, bmesh.types.BMVert)}
+    if extra:
+        bmesh.ops.delete(bm, geom=list(extra), context="VERTS")
     bm.verts.ensure_lookup_table()
     idx = {v: i for i, v in enumerate(bm.verts)}
     verts = [tuple(v.co) for v in bm.verts]

@@ -1,0 +1,650 @@
+{
+  "VFX2_WingUpper": {
+    "bbox_center": [
+      1.89,
+      0.0,
+      -0.7889
+    ],
+    "size": [
+      4.22,
+      0.4185,
+      2.0178
+    ]
+  },
+  "VFX2_WingFore": {
+    "bbox_center": [
+      1.7756,
+      0.0,
+      -1.3381
+    ],
+    "size": [
+      4.4488,
+      0.3614,
+      3.0562
+    ]
+  },
+  "VFX2_WingPrimaries": {
+    "bbox_center": [
+      2.8811,
+      0.0,
+      -1.2445
+    ],
+    "size": [
+      6.2421,
+      0.4565,
+      3.4212
+    ]
+  },
+  "VFX2_WingUpperL": {
+    "bbox_center": [
+      -1.89,
+      0.0,
+      -0.7889
+    ],
+    "size": [
+      4.22,
+      0.4185,
+      2.0178
+    ]
+  },
+  "VFX2_WingForeL": {
+    "bbox_center": [
+      -1.7756,
+      0.0,
+      -1.3381
+    ],
+    "size": [
+      4.4488,
+      0.3614,
+      3.0562
+    ]
+  },
+  "VFX2_WingPrimariesL": {
+    "bbox_center": [
+      -2.8811,
+      0.0,
+      -1.2445
+    ],
+    "size": [
+      6.2421,
+      0.4565,
+      3.4212
+    ]
+  },
+  "VFX2_Feather": {
+    "bbox_center": [
+      0.0581,
+      0.0,
+      0.602
+    ],
+    "size": [
+      0.4283,
+      0.06,
+      1.2043
+    ]
+  },
+  "VFX2_WingSilhouette": {
+    "bbox_center": [
+      3.5,
+      0.0,
+      1.65
+    ],
+    "size": [
+      7.0,
+      0.06,
+      3.3
+    ]
+  },
+  "VFX2_FlamePetalFan": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      9.0,
+      9.0,
+      0.19
+    ]
+  },
+  "VFX2_FlamePetal": {
+    "bbox_center": [
+      0.0,
+      2.25,
+      0.0
+    ],
+    "size": [
+      1.0893,
+      4.5,
+      0.05
+    ]
+  },
+  "VFX2_SunDisc": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      16.0,
+      16.0,
+      0.05
+    ]
+  },
+  "VFX2_ScorchRing": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      6.4,
+      6.4,
+      0.06
+    ]
+  },
+  "VFX2_ShardChunk": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      1.0,
+      1.2,
+      0.8
+    ]
+  },
+  "VFX2_ShardSliver": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      0.2,
+      2.0,
+      0.5
+    ]
+  },
+  "VFX2_RiftLip": {
+    "bbox_center": [
+      0.2948,
+      0.0,
+      4.5
+    ],
+    "size": [
+      1.1897,
+      0.06,
+      9.0
+    ]
+  },
+  "VFX2_RiftVoid": {
+    "bbox_center": [
+      0.0,
+      0.025,
+      0.0
+    ],
+    "size": [
+      5.0,
+      0.11,
+      9.0
+    ]
+  },
+  "VFX2_GhostWisp": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      -1.25
+    ],
+    "size": [
+      2.1,
+      1.66,
+      4.1
+    ]
+  },
+  "VFX2_ClockRing": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0275
+    ],
+    "size": [
+      12.0,
+      12.0,
+      0.155
+    ]
+  },
+  "VFX2_ClockHand": {
+    "bbox_center": [
+      0.0,
+      2.1,
+      0.0
+    ],
+    "size": [
+      0.45,
+      5.0,
+      0.08
+    ]
+  },
+  "VFX2_ClockHandShort": {
+    "bbox_center": [
+      0.0,
+      1.3,
+      0.0
+    ],
+    "size": [
+      0.54,
+      3.4,
+      0.08
+    ]
+  },
+  "VFX2_TickSigil": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      12.0,
+      12.0,
+      0.04
+    ]
+  },
+  "VFX2_Numeral": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      0.8,
+      1.2,
+      0.1
+    ]
+  },
+  "VFX2_GlassShard": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0225
+    ],
+    "size": [
+      0.62,
+      2.2,
+      0.105
+    ]
+  },
+  "VFX2_Hourglass": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      1.0,
+      1.0,
+      1.6
+    ]
+  },
+  "VFX2_CrackA": {
+    "bbox_center": [
+      -0.6237,
+      2.9997,
+      0.02
+    ],
+    "size": [
+      1.9926,
+      6.0172,
+      0.08
+    ]
+  },
+  "VFX2_CrackB": {
+    "bbox_center": [
+      0.2875,
+      2.988,
+      0.02
+    ],
+    "size": [
+      2.6115,
+      6.0474,
+      0.08
+    ]
+  },
+  "VFX2_CrackC": {
+    "bbox_center": [
+      0.227,
+      2.9853,
+      0.02
+    ],
+    "size": [
+      2.4512,
+      6.0316,
+      0.08
+    ]
+  },
+  "VFX2_Cobble": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      0.9,
+      0.6,
+      0.8
+    ]
+  },
+  "VFX2_GrassClump": {
+    "bbox_center": [
+      -0.0628,
+      0.0236,
+      0.5917
+    ],
+    "size": [
+      1.3303,
+      1.6659,
+      1.2499
+    ]
+  },
+  "VFX2_HayStraw": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.09
+    ],
+    "size": [
+      1.5,
+      0.06,
+      0.24
+    ]
+  },
+  "VFX2_CloudLobe": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      6.0,
+      4.0,
+      3.0
+    ]
+  },
+  "VFX2_LightningBull": {
+    "bbox_center": [
+      -0.7805,
+      0.0,
+      0.3846
+    ],
+    "size": [
+      4.0,
+      0.06,
+      2.5
+    ]
+  },
+  "VFX2_TornadoRing": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      6.0,
+      6.0,
+      0.04
+    ]
+  },
+  "VFX2_Coin": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      0.7,
+      0.7,
+      0.09
+    ]
+  },
+  "VFX2_RibbonTwist": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      1.0,
+      0.9987,
+      10.0
+    ]
+  },
+  "VFX2_StarPoint": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      1.4,
+      1.4,
+      0.06
+    ]
+  },
+  "VFX2_PlanetRinged": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      4.2,
+      3.9604,
+      1.8
+    ]
+  },
+  "VFX2_LassoLoop": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.02
+    ],
+    "size": [
+      6.56,
+      6.56,
+      0.28
+    ]
+  },
+  "VFX2_Constellation": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      5.1672,
+      5.021,
+      0.4
+    ]
+  },
+  "VFX2_LightStep": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      2.4,
+      1.0,
+      0.1
+    ]
+  },
+  "VFX2_HaloCrystal": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      -0.9
+    ],
+    "size": [
+      0.6526,
+      0.6145,
+      1.8
+    ]
+  },
+  "VFX2_PrismCrystal": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      0.9,
+      0.7794,
+      2.2
+    ]
+  },
+  "VFX2_Gem": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      -0.05
+    ],
+    "size": [
+      0.6,
+      0.6,
+      0.54
+    ]
+  },
+  "VFX2_CherryTrunk": {
+    "bbox_center": [
+      0.4853,
+      -0.2744,
+      5.0
+    ],
+    "size": [
+      2.3986,
+      2.2979,
+      10.0
+    ]
+  },
+  "VFX2_Canopy": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      7.0,
+      7.0,
+      4.0
+    ]
+  },
+  "VFX2_Lotus": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.405
+    ],
+    "size": [
+      5.6,
+      5.6,
+      0.93
+    ]
+  },
+  "VFX2_FlowerCrown": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0327
+    ],
+    "size": [
+      1.6853,
+      1.5059,
+      0.1346
+    ]
+  },
+  "VFX2_LotusPetal": {
+    "bbox_center": [
+      0.0,
+      1.2,
+      0.35
+    ],
+    "size": [
+      1.1944,
+      2.4,
+      0.75
+    ]
+  },
+  "VFX2_SpikeCrown": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.7485
+    ],
+    "size": [
+      5.7557,
+      5.7557,
+      1.6545
+    ]
+  },
+  "VFX2_IceSpike": {
+    "bbox_center": [
+      0.0,
+      0.0091,
+      1.48
+    ],
+    "size": [
+      0.84,
+      0.7457,
+      3.04
+    ]
+  },
+  "VFX2_IceSpikeCluster": {
+    "bbox_center": [
+      -0.0614,
+      -0.0277,
+      1.6733
+    ],
+    "size": [
+      1.9728,
+      1.6104,
+      3.6534
+    ]
+  },
+  "VFX2_AccretionDisc": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0175
+    ],
+    "size": [
+      14.0,
+      14.0,
+      0.075
+    ]
+  },
+  "VFX2_LensSphere": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      2.0,
+      2.0,
+      2.0
+    ]
+  },
+  "VFX2_PortalFrame": {
+    "bbox_center": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "size": [
+      5.0,
+      0.06,
+      7.0
+    ]
+  }
+}

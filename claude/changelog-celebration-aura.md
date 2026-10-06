@@ -57,7 +57,7 @@ Tiers.Pre, and Spectacle.Augment, Tiers.Overdrive and AuraAccents are skipped so
 a show keep the old path). Untouched: `Celebrations`, `CelebrationClient`, `Free`, `Premium`, `Spectacle`, `Tiers`,
 `AuraAccents`, `Cinematic`, the server.
 
-Assets: `blender/Aura_Pack.glb` (55 meshes, `VFX2_*`, built by `blender/build_aura_pack.py`), imported to
+Assets: `blender/Aura_Pack.glb` (54 meshes, `VFX2_*`, built by `blender/build_aura_pack.py`), imported to
 `CelebrationFX.AuraMeshes`; `textures/*.png` (12 painted alpha textures and two flipbooks, `textures/paint_textures.py`).
 The v1 pack (`ClaudeCelebrationPreview.VFXMeshes`) stays: GalaxyArm, GalaxyCore, GodRay and the rings are still used.
 

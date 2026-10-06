@@ -14,11 +14,17 @@ local M = {Pre = 1.0}
 local PTS = {V3(3.9, 1.5, 0), V3(2.4, 1.2, 0), V3(-2.5, 1.2, 0), V3(-4, 2.2, 0), V3(-3, -1.7, 0), V3(-1.6, -1.7, 0), V3(.2, -.5, 0), V3(1.4, -1.7, 0), V3(2.8, -1.7, 0)}
 local LINES = {{1, 2}, {2, 3}, {3, 4}, {3, 5}, {5, 6}, {6, 7}, {7, 8}, {8, 9}, {9, 2}}
 
--- a four-point star mesh (the stand-in is a thin plate: the star lies in its XY plane, Z is its normal)
+-- a four-point star mesh: a flat XZ plate with +Y as its normal (like every flat disc in the pack)
 local function star(ctx, color)
 	local s = K.Mesh(ctx, "StarPoint", {Color = color})
-	if not s:IsA("MeshPart") then s.Size = V3(1.4, 1.4, .08) s:SetAttribute("BaseSize", s.Size) end
+	if not s:IsA("MeshPart") then s.Size = V3(1.4, .08, 1.4) s:SetAttribute("BaseSize", s.Size) end
 	return s
+end
+-- a star standing in the air reads as a flare: its plate (+Y normal) faces the camera, spun about that normal
+local function face(pos, spin)
+	local cam = workspace.CurrentCamera
+	local eye = cam and cam.CFrame.Position or pos + Vector3.zAxis
+	return CFrame.lookAt(pos, eye) * CFrame.Angles(math.pi / 2, 0, 0) * CFrame.Angles(0, spin or 0, 0)
 end
 -- the performer's feet (the double's, once a show has taken it over)
 local function feet(ctx)
@@ -42,7 +48,7 @@ local function starRings(ctx, o)
 			for i, s in rg.Stars do
 				local a = (i - 1) / #rg.Stars * TAU + t * (o.Speed or 1.4) * rg.Dir + rg.Phase
 				local pos = (plane * CFrame.new(K.Polar(a, (o.Radius or 4) * (.4 + .6 * k), 0))).Position
-				K.Place(s, CFrame.new(pos) * CFrame.Angles(0, -a, 0) * CFrame.Angles(0, 0, t * 2 + i), .55 + .15 * math.sin(t * 3 + i))
+				K.Place(s, face(pos, t * 2 + i), .55 + .15 * math.sin(t * 3 + i))
 				s.Transparency = 1 - k
 			end
 		end
@@ -138,7 +144,7 @@ local function starMap(ctx, o)
 	for i = 1, n do
 		local s = star(ctx, i % 3 == 0 and c2 or c1)
 		s.Transparency = 1
-		K.Place(s, cf * CFrame.new(PTS[i] * (o.Scale or 1)), .9)
+		K.Place(s, cf * CFrame.new(PTS[i] * (o.Scale or 1)) * CFrame.Angles(math.pi / 2, 0, 0), .9)
 		C.Stars[i], C.Atts[i] = s, ctx:Att(nil, s)
 	end
 	for _, l in LINES do
@@ -155,7 +161,7 @@ local function starMap(ctx, o)
 			if age < 0 then continue end
 			if not shown[i] then shown[i] = true ctx:Flare(s.Position, 3, c1, .3) end
 			local k = FX.back(age / .3)
-			K.Place(s, cf * CFrame.new(PTS[i] * (o.Scale or 1)) * CFrame.Angles(0, 0, t * .6 + i), math.max(.05, k) * (.9 + .2 * math.sin(t * 2.5 + i)))
+			K.Place(s, cf * CFrame.new(PTS[i] * (o.Scale or 1)) * CFrame.Angles(math.pi / 2, 0, 0) * CFrame.Angles(0, t * .6 + i, 0), math.max(.05, k) * (.9 + .2 * math.sin(t * 2.5 + i)))
 			s.Transparency = 0
 		end
 		for _, b in C.Beams do b.B.Enabled = t >= b.At end
@@ -179,7 +185,7 @@ local function tieUp(ctx, C, c1, c2, t1)
 			local age = os.clock() - t0
 			if t > t1 or not tg.Part.Parent then s:Destroy() b:Destroy() return true end
 			local k = K.Env(age, 0, 99, .3, .5)
-			K.Place(s, CFrame.new(tg.Part.Position + V3(0, tg.Part.Size.Y * .5 + 1.5 + math.sin(age * 3) * .15, 0)) * CFrame.Angles(0, age * 2, 0), .8 * math.max(.05, k))
+			K.Place(s, face(tg.Part.Position + V3(0, tg.Part.Size.Y * .5 + 1.5 + math.sin(age * 3) * .15, 0), age * 2), .8 * math.max(.05, k))
 			s.Transparency = 1 - math.min(1, k)
 			b.Enabled = k > .5
 		end)
@@ -264,7 +270,7 @@ function M.Set3(ctx, def)
 		local e = FX.ease(u) ^ 2
 		for i, p in pull do
 			local a = i / #pull * TAU + u * 1.5
-			K.Place(p.M, CFrame.new(ctx.Base.Position + K.Polar(a, 20 * (1 - e) + .5, 4 - 2 * e)) * CFrame.Angles(0, -a, 0) * CFrame.Angles(0, 0, u * 5), .6)
+			K.Place(p.M, face(ctx.Base.Position + K.Polar(a, 20 * (1 - e) + .5, 4 - 2 * e), u * 5), .6)
 			p.M.Transparency = .2
 		end
 	end)

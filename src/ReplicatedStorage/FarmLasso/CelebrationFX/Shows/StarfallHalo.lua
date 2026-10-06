@@ -8,7 +8,6 @@
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
-local STAR_FLAT = CFrame.Angles(math.pi / 2, 0, 0) -- the star mesh is a plate in its XY plane; this lays it on the ground
 local M = {Pre = 1.0}
 
 -- a pale streak trail hung on a part
@@ -28,17 +27,21 @@ local function trail(ctx, part, colors, life, width)
 	tr.Parent = part
 	return tr
 end
--- a four-point star mesh (the stand-in is a thin plate: the star lies in its XY plane, Z is its normal)
+-- a four-point star mesh: a flat XZ plate with +Y as its normal (like every flat disc in the pack)
 local function star(ctx, color)
 	local s = K.Mesh(ctx, "StarPoint", {Color = color})
-	if not s:IsA("MeshPart") then s.Size = V3(1.4, 1.4, .08) s:SetAttribute("BaseSize", s.Size) end
+	if not s:IsA("MeshPart") then s.Size = V3(1.4, .08, 1.4) s:SetAttribute("BaseSize", s.Size) end
 	return s
 end
--- the pink star-print: a star stamp laid flat on the ground
+-- a star standing in the air reads as a flare: its plate (+Y normal) faces the camera, spun about that normal
+local function face(pos, spin)
+	local cam = workspace.CurrentCamera
+	local eye = cam and cam.CFrame.Position or pos + Vector3.zAxis
+	return CFrame.lookAt(pos, eye) * CFrame.Angles(math.pi / 2, 0, 0) * CFrame.Angles(0, spin or 0, 0)
+end
+-- the pink star-print: a star stamp lying on the ground (K.GroundCF's frame is already Y-up; the stand-in plate is big)
 local function starPrint(ctx, pos, color, life)
-	local mesh = K.HasMesh("StarPoint")
-	return K.Stamp(ctx, pos, {Mesh = "StarPoint", Color = color, Scale = mesh and 1.4 or .25, Life = life or 3, Rise = .2, Transparency = .1,
-		OnAge = mesh and function(m) m.CFrame = m.CFrame * STAR_FLAT end or nil})
+	return K.Stamp(ctx, pos, {Mesh = "StarPoint", Color = color, Scale = K.HasMesh("StarPoint") and 1.4 or .25, Life = life or 3, Rise = .2, Transparency = .1})
 end
 -- the crystal halo: the HaloRing mesh (or a fat ring) D studs across with crystal stalactites hung from its inner
 -- edge pointing down. H.Place(cf, k) draws it at cf at size k; its own loop hangs it Height studs up, tilted and
@@ -113,7 +116,7 @@ local function starfall(ctx, o)
 					local a = a0 + st.Side + e * TAU * turns
 					local rr = r + (rTop - r) * (1 - math.min(1, e / .25))
 					local pos = centre + K.Polar(a, rr, top * (1 - e))
-					K.Place(m, CFrame.new(pos) * CFrame.Angles(0, -a, 0) * CFrame.Angles(0, 0, age * 4), .8)
+					K.Place(m, face(pos, age * 4), .8)
 					m.Transparency = 0
 					st.Land, st.A = pos, a
 				else
@@ -126,7 +129,7 @@ local function starfall(ctx, o)
 					end
 					if v >= 1 then m:Destroy() st.Done = true left -= 1 continue end
 					local pos = st.Land + K.Polar(st.A, 1.4 * v, math.sin(v * math.pi) * 1.1)
-					K.Place(m, CFrame.new(pos) * CFrame.Angles(0, -st.A, 0) * CFrame.Angles(0, 0, age * 4), .8 * (1 - v * .5))
+					K.Place(m, face(pos, age * 4), .8 * (1 - v * .5))
 					m.Transparency = v * .6
 				end
 			end
@@ -144,7 +147,7 @@ local function rider(ctx, color)
 			local age = os.clock() - t0
 			if age >= 3 or not tg.Part.Parent then s:Destroy() return true end
 			local k = K.Env(age, 0, 3, .3, .5)
-			K.Place(s, CFrame.new(tg.Part.Position + V3(0, tg.Part.Size.Y * .5 + 1.5 + math.sin(age * 3) * .15, 0)) * CFrame.Angles(0, age * 2, 0), .8 * math.max(.05, k))
+			K.Place(s, face(tg.Part.Position + V3(0, tg.Part.Size.Y * .5 + 1.5 + math.sin(age * 3) * .15, 0), age * 2), .8 * math.max(.05, k))
 			s.Transparency = 1 - math.min(1, k)
 		end)
 	end
@@ -172,7 +175,7 @@ function M.Set1(ctx, def)
 			local u = FX.ease((t - .25 - (i - 1) * .06) / 1.4)
 			local a = i / n * TAU + t * 2.2
 			local pos = ctx.Base.Position + K.Polar(a, 3.4 - .6 * u, .3 + 6.2 * u * u)
-			K.Place(s, CFrame.new(pos) * CFrame.Angles(0, -a, 0) * CFrame.Angles(0, 0, t * 3 + i), .7)
+			K.Place(s, face(pos, t * 3 + i), .7)
 			s.Transparency = (u <= 0 or u >= .97) and 1 or 0
 		end
 	end)

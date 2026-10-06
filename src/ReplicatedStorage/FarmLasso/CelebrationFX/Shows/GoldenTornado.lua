@@ -152,8 +152,8 @@ local function landing(ctx, P, t0, t1, c2, dark)
 		ctx:Shake(.25, .3)
 	end)
 	ctx:Every(function(t)
-		if t < t0 or not P.Alive then return t >= t1 end
-		if t > t1 then return true end
+		if not P.Alive or t > t1 then return true end
+		if t < t0 then return end
 		P:Toward("Kneel", FX.ease((t - t0) / .18) * (1 - FX.ease((t - t1 + .5) / .5)))
 	end)
 end
@@ -168,7 +168,7 @@ function M.Set1(ctx, def)
 		K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .2), 2, 18, dark, .6, .35)
 		K.Starburst(ctx, ctx.Base.Position + V3(0, 2.5, 0), {Colors = {c1, c2}, Size = 6, Count = 18})
 	end)
-	coins(ctx, c1, c2, {Count = 8, T0 = .3, Top = 4, Spread = 2.5, Until = 1.9, Stagger = .08})
+	coins(ctx, c1, c2, {Count = 8, T0 = .3, Top = 4, Spread = 2.5, Until = 1.6, Stagger = .08})
 	ctx:Repeat(.4, 1.8, .35, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 3.5), rng:NextNumber(1, 4)), rng:NextNumber(2, 3), c1, .3) end)
 	K.Title(ctx, .9, "embers", 7.5)
 	return LEN
@@ -187,7 +187,7 @@ function M.Set2(ctx, def)
 		K.Starburst(ctx, ctx.Base.Position + V3(0, 3, 0), {Colors = {c1, c2}, Size = 8, Count = 22})
 	end)
 	K.Debris(ctx, {At = .4, Count = 10, Radius = 6, Lift = 3, Orbit = 1.4, Until = SLAM, Centre = function() return ctx.Base.Position + V3(0, 3, 0) end})
-	coins(ctx, c1, c2, {Count = 14, T0 = .6, Top = 6, Spread = 3.2, Until = 4.5, Stagger = .07})
+	coins(ctx, c1, c2, {Count = 14, T0 = .6, Top = 6, Spread = 3.2, Until = 4.1, Stagger = .07})
 	K.Herd(ctx, {At = 1.2, Radius = 14, Color = c2, Flavour = "bolt"})
 	-- the body hangs tense inside the cone, spinning slowly; at the slam it snaps to the X
 	K.Float(ctx, P, {T0 = .3, T1 = SLAM + .5, Height = 3, Rise = .9, Fall = .35, Spin = 1.1,
@@ -223,7 +223,7 @@ function M.Set3(ctx, def)
 		for _, r in runes do
 			local k = FX.back((t - r.At) / .14)
 			if k <= 0 then continue end
-			K.Place(r.M, sigilCF * CFrame.Angles(0, r.A + t * .4, 0) * CFrame.new(0, .05, -4.6) * CFrame.Angles(0, 0, 0), .9 * k)
+			K.Place(r.M, sigilCF * CFrame.Angles(0, r.A + t * .4, 0) * CFrame.new(0, .05, -4.6), .9 * k)
 			r.M.Transparency = .1
 		end
 	end)

@@ -10,11 +10,17 @@ local K = require(script.Parent.Parent.AuraKit)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local M = {Pre = 1.0}
 
--- a four-point star mesh (the stand-in is a thin plate: the star lies in its XY plane, Z is its normal)
+-- a four-point star mesh: a flat XZ plate with +Y as its normal (like every flat disc in the pack)
 local function star(ctx, color)
 	local s = K.Mesh(ctx, "StarPoint", {Color = color})
-	if not s:IsA("MeshPart") then s.Size = V3(1.4, 1.4, .08) s:SetAttribute("BaseSize", s.Size) end
+	if not s:IsA("MeshPart") then s.Size = V3(1.4, .08, 1.4) s:SetAttribute("BaseSize", s.Size) end
 	return s
+end
+-- a star standing in the air reads as a flare: its plate (+Y normal) faces the camera, spun about that normal
+local function face(pos, spin)
+	local cam = workspace.CurrentCamera
+	local eye = cam and cam.CFrame.Position or pos + Vector3.zAxis
+	return CFrame.lookAt(pos, eye) * CFrame.Angles(math.pi / 2, 0, 0) * CFrame.Angles(0, spin or 0, 0)
 end
 -- the ground galaxy: three spiral arms 120 degrees apart spinning round a white core over a glow disc, irised in at
 -- In and out at Out. G.K is how open it is, G.Pos() the hub.
@@ -71,9 +77,7 @@ local function rope(ctx, o)
 	function R.Set(path, scale, tr)
 		for i, s in R.Stars do
 			local u = (i - 1) / n
-			local p, q = path(u), path((u + .02) % 1)
-			local d = q - p
-			K.Place(s, (d.Magnitude > .001 and CFrame.lookAt(p, q) or CFrame.new(p)) * CFrame.Angles(0, math.pi / 2, 0) * CFrame.Angles(0, 0, i + os.clock() * 2), scale or .7)
+			K.Place(s, face(path(u), i + os.clock() * 2), scale or .7)
 			s.Transparency = tr or 0
 		end
 		for _, b in R.Beams do b.Enabled = (tr or 0) < .9 end
@@ -173,7 +177,7 @@ local function starOver(ctx, tg, color, life)
 		if age >= life then s:Destroy() return true end
 		local k = K.Env(age, 0, life, .3, .4)
 		local p = tg.Part and tg.Part.Parent and tg.Part.Position + V3(0, tg.Part.Size.Y * .5 + 1.5, 0) or (tg.Pos or ctx.Base.Position) + V3(0, 2, 0)
-		K.Place(s, CFrame.new(p) * CFrame.Angles(0, age * 2.5, 0), .8 * math.max(.05, k))
+		K.Place(s, face(p, age * 2.5), .8 * math.max(.05, k))
 		s.Transparency = 1 - math.min(1, k)
 	end)
 end
@@ -209,7 +213,7 @@ local function constellation(ctx, c1, c2)
 			C.Mesh.Transparency = tr
 		else
 			for i, st in C.Stars do
-				K.Place(st.M, cf * CFrame.new(st.P * s) * CFrame.Angles(0, 0, os.clock() * .7 + i), .8 * math.max(.05, s))
+				K.Place(st.M, cf * CFrame.new(st.P * s) * CFrame.Angles(math.pi / 2, 0, 0) * CFrame.Angles(0, os.clock() * .7 + i, 0), .8 * math.max(.05, s))
 				st.M.Transparency = tr
 			end
 			for _, b in C.Beams do b.Enabled = tr < .9 end
@@ -243,7 +247,7 @@ function M.Set1(ctx, def)
 		for i, s in orbit do
 			local a = i / #orbit * TAU + t * 2.6
 			local pos = ctx.Base.Position + K.Polar(a, 4 * (.3 + .7 * math.min(1, k)), 3 + math.sin(t * 2 + i) * .4)
-			K.Place(s, CFrame.new(pos) * CFrame.Angles(0, -a, 0) * CFrame.Angles(0, 0, t * 3 + i), .8 * math.max(.05, k))
+			K.Place(s, face(pos, t * 3 + i), .8 * math.max(.05, k))
 			s.Transparency = 1 - math.min(1, k)
 		end
 		K.Place(sigil, ctx.Base * CFrame.new(0, 6.4 + math.sin(t * 1.6) * .15, 0) * CFrame.Angles(0, t * 1.8, 0), 1.8 * math.max(.05, k))
@@ -295,7 +299,7 @@ function M.Set3(ctx, def)
 		local e = FX.ease(u) ^ 2
 		for i, s in gather do
 			local a = i / #gather * TAU + u * 2
-			K.Place(s, CFrame.new(ctx.Base.Position + K.Polar(a, 15 * (1 - e), .4 + 1.5 * e)) * CFrame.Angles(0, -a, 0) * CFrame.Angles(0, 0, u * 6), .6)
+			K.Place(s, face(ctx.Base.Position + K.Polar(a, 15 * (1 - e), .4 + 1.5 * e), u * 6), .6)
 			s.Transparency = .2
 		end
 	end)

@@ -47,7 +47,7 @@ The performer (the body)
 - `K.Echo(ctx, P, {Count, Delay, Color, Transparency, T0, T1})` past copies trailing the double.
 
 Things that come out and touch the world
-- `K.Seek(ctx, {Mesh | Build(ctx, i), Scale, Colors, Count, Interval, T0, From = pos | fn(i), Radius, Speed, Trail, Light, Circle, Height, Return, Wobble, OnTouch(tg, pos), OnSpawn(part, i)})` seekers that fly to other players, then animals, circle, phase through (Highlight flicker), dissolve, optionally streak home.
+- `K.Seek(ctx, {Mesh | Build(ctx, i), Scale, Colors, Count, Interval, T0, From = pos | fn(i), Radius, Speed, Trail, Light, Circle, Height, Return, Wobble, OnTouch(tg, pos), OnSpawn(part, i), Targets = list})` seekers that fly to other players, then animals, circle, phase through (Highlight flicker), dissolve, optionally streak home.
 - `K.Herd(ctx, {At, Radius, Color, Flavour = "flinch" | "bolt" | "freeze" | "bounce" | "lookup", Max, Stagger, Ring, Effect(tg)})` the herd reacts.
 - `K.Cracks(ctx, {At, Count, Len, Color, Life, Radius, Stagger})` ground cracks. `K.Debris(ctx, {At, Count, Radius, Lift, Centre = fn, Orbit, Until, Meshes, Color, Stretch})` loose props lift, orbit, drop. `K.Stamp(ctx, pos, {Mesh, Color, Scale, Life, Material, Transparency, Rise, OnAge(m, age)})` a ground stamp.
 - `K.TimeScale(ctx, {T0, T1, Radius, Scale})` slow the world (own show only). `K.LightPaint(ctx, {At, Radius, Color, Hold, Boost, Highlight})` every light swings to the colour, props flash (own show only). `K.Chain(ctx, {At, From, Radius, Count, Color, Stagger})` chain lightning to props.

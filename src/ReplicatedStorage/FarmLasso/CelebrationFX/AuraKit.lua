@@ -822,11 +822,13 @@ end
 -- Spawn `Count` seekers over time from `From` (a position or fn -> position) that each fly to a target (players,
 -- then animals, then orbit points), circle its head once, phase through it with a flicker, dissolve and (Return)
 -- streak back to the origin. o: Mesh (name) or Build(ctx) -> part, Scale, Colors, Count, Interval, Speed, Trail
--- (life), Light, Circle (seconds), OnTouch(target), OnSpawn(part), Radius, T0, Wobble.
+-- (life), Light, Circle (seconds), OnTouch(target), OnSpawn(part), Radius, T0, Wobble, Targets (a list to use instead
+-- of K.Targets, e.g. {{Part = ctx.Hrp, Model = ctx.Char, Kind = "self"}}).
 function K.Seek(ctx, o)
 	local c1, c2, c3 = o.Colors[1], o.Colors[2], o.Colors[3] or o.Colors[2]
 	local count = K.Count(ctx, o.Count or 7)
-	local targets = K.Targets(ctx, count, o.Radius or 40)
+	local targets = o.Targets or K.Targets(ctx, count, o.Radius or 40)
+	if #targets == 0 then targets = K.Targets(ctx, count, o.Radius or 40) end
 	local tracked = {}
 	local Sk = {Parts = tracked, Done = 0}
 	local function spawnOne(i)

@@ -692,7 +692,7 @@ function K.Wings(ctx, P, o)
 			local n = 7
 			for i = 1, n do
 				local s = K.Mesh(ctx, "StarPoint", {Color = i % 2 == 0 and c1 or c2})
-				if not s:IsA("MeshPart") then s.Size = V3(1.2, 1.2, .1) s:SetAttribute("BaseSize", s.Size) end
+				if not s:IsA("MeshPart") then s.Size = V3(1.2, .08, 1.2) s:SetAttribute("BaseSize", s.Size) end
 				local a = ctx:Att(nil, s)
 				S.Stars[i] = {M = s, A = a}
 			end
@@ -768,7 +768,8 @@ function K.Wings(ctx, P, o)
 					local x = side * (1 + u * span * .5 * open)
 					local y = (math.sin(u * math.pi * .9) * span * .22 - u * u * span * .12) * open + math.sin(t * 2 + i) * .12
 					local z = -u * .6
-					K.Place(st.M, anchor * CFrame.new(x, y, z) * CFrame.Angles(0, 0, t * .8 + i), .6 + .25 * math.sin(t * 3 + i))
+					-- (StarPoint is a flat XZ plate: stand it up facing front/back and spin it about its normal)
+					K.Place(st.M, anchor * CFrame.new(x, y, z) * CFrame.Angles(math.pi / 2, 0, 0) * CFrame.Angles(0, t * .8 + i, 0), .6 + .25 * math.sin(t * 3 + i))
 					st.M.Transparency = 1 - k
 				end
 				for _, b in S.Links do b.Enabled = k > .05 end

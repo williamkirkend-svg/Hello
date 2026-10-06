@@ -29,7 +29,7 @@ return {
 		ScorchRing = {6.4, .08, 6.4}, ShardChunk = {1, 1.2, .8}, ShardSliver = {.2, 2, .5}, RiftLip = {1.2, 9, .3}, RiftVoid = {5, 9, .1}, GhostWisp = {1.2, 2.6, 1.2},
 		ClockRing = {12, .15, 12}, ClockHand = {.3, .1, 5}, ClockHandShort = {.3, .1, 3.4}, TickSigil = {12, .06, 12}, Numeral = {.8, .1, 1.2}, GlassShard = {.6, 2.2, .06},
 		Hourglass = {.8, 1.6, .8}, CrackA = {.3, .08, 6}, CrackB = {.3, .08, 6}, CrackC = {.3, .08, 6}, Cobble = {.9, .6, .8}, GrassClump = {1, 1.2, 1}, HayStraw = {.1, .1, 1.5},
-		CloudLobe = {6, 3, 4}, LightningBull = {4, 2.5, .08}, TornadoRing = {6, .1, 6}, Coin = {.7, .08, .7}, RibbonTwist = {1, 10, 1}, StarPoint = {1.4, 1.4, .08},
+		CloudLobe = {6, 3, 4}, LightningBull = {4, 2.5, .08}, TornadoRing = {6, .1, 6}, Coin = {.7, .08, .7}, RibbonTwist = {1, 10, 1}, StarPoint = {1.4, .08, 1.4},
 		PlanetRinged = {4.2, 1.8, 4.2}, LassoLoop = {6.3, .3, 6.3}, Constellation = {5.4, .4, 5.4}, LightStep = {2.4, .1, 1}, HaloCrystal = {.5, 1.8, .5}, PrismCrystal = {.9, 2.2, .9},
 		Gem = {.6, .6, .6}, CherryTrunk = {1.4, 10, 1.4}, Canopy = {7, 4, 7}, Lotus = {4.8, .9, 4.8}, FlowerCrown = {1.6, .3, 1.6}, LotusPetal = {.9, .5, 2.4},
 		SpikeCrown = {5.6, 1.7, 5.6}, IceSpike = {.6, 3, .6}, IceSpikeCluster = {2.4, 3.5, 2.4}, AccretionDisc = {14, .1, 14}, LensSphere = {2, 2, 2}, PortalFrame = {5, 7, .1},

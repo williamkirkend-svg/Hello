@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="680" viewBox="0 0 900 680">
+<rect width="100%" height="100%" fill="#f4f1ea"/>
+<text x="450.0" y="30.0" font-size="14" fill="#111" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" dominant-baseline="middle">Cursed Dodgeball arena, top-down, 1 square = 1 stud</text>
+<rect x="0.0" y="-10.0" width="900.0" height="700.0" fill="#d8d8e0" stroke="#999" stroke-width="1" fill-opacity="1" rx="0"/>
+<rect x="60.0" y="50.0" width="780.0" height="580.0" fill="#a9aab8" stroke="#555" stroke-width="2" fill-opacity="1" rx="0"/>
+<rect x="70.0" y="60.0" width="760.0" height="560.0" fill="#6a6a72" stroke="#555" stroke-width="1" fill-opacity="1" rx="0"/>
+<rect x="100.0" y="90.0" width="700.0" height="500.0" fill="none" stroke="#ffffff" stroke-width="3" fill-opacity="1" rx="0"/>
+<rect x="210.0" y="160.0" width="480.0" height="360.0" fill="none" stroke="#ffc83c" stroke-width="3" fill-opacity="1" rx="0"/>
+<rect x="300.0" y="220.0" width="300.0" height="240.0" fill="none" stroke="#ff5a5a" stroke-width="3" fill-opacity="1" rx="0"/>
+<text x="450.0" y="105.0" font-size="11" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">round 1 kerb 70 x 50</text>
+<text x="450.0" y="172.0" font-size="11" fill="#ffc83c" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">round 2 kerb 48 x 36</text>
+<text x="450.0" y="232.0" font-size="11" fill="#ff5a5a" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">final kerb 30 x 24</text>
+<rect x="-100.0" y="300.0" width="160.0" height="80.0" fill="#c9c9d0" stroke="#777" stroke-width="1" fill-opacity="1" rx="0"/>
+<rect x="840.0" y="300.0" width="160.0" height="80.0" fill="#c9c9d0" stroke="#777" stroke-width="1" fill-opacity="1" rx="0"/>
+<text x="-20.0" y="340.0" font-size="10" fill="#222" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">tunnel</text>
+<text x="920.0" y="340.0" font-size="10" fill="#222" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">tunnel</text>
+<rect x="250.0" y="195.0" width="400.0" height="10.0" fill="#ffe27a" stroke="#8a6d00" stroke-width="1" fill-opacity="0.9" rx="0"/>
+<rect x="250.0" y="475.0" width="400.0" height="10.0" fill="#ffe27a" stroke="#8a6d00" stroke-width="1" fill-opacity="0.9" rx="0"/>
+<text x="450.0" y="214.0" font-size="10" fill="#3a2d00" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">rail, 7 studs up</text>
+<text x="450.0" y="496.0" font-size="10" fill="#3a2d00" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">rail, 7 studs up</text>
+<rect x="230.0" y="180.0" width="40.0" height="40.0" fill="#3b3f55" stroke="#fff" stroke-width="1.5" fill-opacity="1" rx="0"/>
+<text x="250.0" y="200.0" font-size="11" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" dominant-baseline="middle">P</text>
+<rect x="230.0" y="460.0" width="40.0" height="40.0" fill="#3b3f55" stroke="#fff" stroke-width="1.5" fill-opacity="1" rx="0"/>
+<text x="250.0" y="480.0" font-size="11" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" dominant-baseline="middle">P</text>
+<rect x="630.0" y="180.0" width="40.0" height="40.0" fill="#3b3f55" stroke="#fff" stroke-width="1.5" fill-opacity="1" rx="0"/>
+<text x="650.0" y="200.0" font-size="11" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" dominant-baseline="middle">P</text>
+<rect x="630.0" y="460.0" width="40.0" height="40.0" fill="#3b3f55" stroke="#fff" stroke-width="1.5" fill-opacity="1" rx="0"/>
+<text x="650.0" y="480.0" font-size="11" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-weight="bold" dominant-baseline="middle">P</text>
+<rect x="410.0" y="175.0" width="80.0" height="10.0" fill="#2e8b57" stroke="#fff" stroke-width="1" fill-opacity="1" rx="0"/>
+<rect x="410.0" y="495.0" width="80.0" height="10.0" fill="#2e8b57" stroke="#fff" stroke-width="1" fill-opacity="1" rx="0"/>
+<rect x="165.0" y="300.0" width="10.0" height="80.0" fill="#2e8b57" stroke="#fff" stroke-width="1" fill-opacity="1" rx="0"/>
+<rect x="725.0" y="300.0" width="10.0" height="80.0" fill="#2e8b57" stroke="#fff" stroke-width="1" fill-opacity="1" rx="0"/>
+<text x="450.0" y="157.0" font-size="10" fill="#0d3d22" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">half-wall 8 x 3</text>
+<text x="450.0" y="523.0" font-size="10" fill="#0d3d22" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">half-wall 8 x 3</text>
+<text x="170.0" y="398.0" font-size="10" fill="#0d3d22" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">half-wall</text>
+<text x="730.0" y="398.0" font-size="10" fill="#0d3d22" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">half-wall</text>
+<rect x="390.0" y="280.0" width="120.0" height="120.0" fill="#8d6e63" stroke="#fff" stroke-width="1.5" fill-opacity="1" rx="0"/>
+<rect x="330.0" y="310.0" width="60.0" height="60.0" fill="#a1887f" stroke="#fff" stroke-width="1" fill-opacity="1" rx="0"/>
+<rect x="510.0" y="310.0" width="60.0" height="60.0" fill="#a1887f" stroke="#fff" stroke-width="1" fill-opacity="1" rx="0"/>
+<text x="360.0" y="340.0" font-size="9" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">ramp</text>
+<text x="540.0" y="340.0" font-size="9" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">ramp</text>
+<circle cx="450.0" cy="340.0" r="15.0" fill="#ffd54f" stroke="#fff" stroke-width="1.5"/>
+<text x="450.0" y="340.0" font-size="9" fill="#333" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">hatch</text>
+<text x="450.0" y="298.0" font-size="10" fill="#fff" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">stage 12 x 12, 4 high</text>
+<text x="450.0" y="58.0" font-size="10" fill="#111" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">pit wall, 8 studs tall, wall-runnable</text>
+<text x="450.0" y="670.0" font-size="11" fill="#333" text-anchor="middle" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">Ghost ring (walkway at the top of the wall), stands beyond</text>
+<text x="10.0" y="30.0" font-size="10" fill="#111" text-anchor="start" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">P = pillar 4 x 4 x 9, wall-run all faces, grapple top</text>
+<text x="10.0" y="47.0" font-size="10" fill="#111" text-anchor="start" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">green = half-wall, 3 high, mantle over</text>
+<text x="10.0" y="64.0" font-size="10" fill="#111" text-anchor="start" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">yellow = rail, 1 wide, 7 up</text>
+<text x="890.0" y="30.0" font-size="10" fill="#111" text-anchor="end" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">white / yellow / red = kerb per round</text>
+<text x="890.0" y="47.0" font-size="10" fill="#111" text-anchor="end" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">obstacles outside the next kerb sink during the replay</text>
+<text x="890.0" y="64.0" font-size="10" fill="#111" text-anchor="end" font-family="Arial, sans-serif" font-weight="normal" dominant-baseline="middle">spawns: 3 studs inside the kerb, 20 points</text>
+</svg>

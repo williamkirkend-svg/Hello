@@ -85,11 +85,12 @@ The twist used to live only in the balls. It now lives in the balls plus one abi
 | Snatch | The nearest loose ball within 20 studs flies into your hand. | Hold your ball; Snatch only takes loose balls. | Fixes the "no balls near me" problem without a Black Hole. |
 | Bubble | A 1.5-second bubble that catches the first ball that would hit you. Counts as a real catch: thrower out, shield gained. | Do not throw into a bubble; wait it out or throw a Giant (uncatchable). | The defensive read; punishes impatience. |
 | Phase | 1 second of translucency; balls pass through you. Not a catch, no shield. | Throw after it ends; it is loud and short. | The emergency button for a cornered player. |
-| Decoy | A clone of you sprints straight ahead for 3 seconds. A ball that hits it pops it and dies. | Decoys never dodge; the real one does. | Wastes an enemy throw, sells a fake. |
+| Vanish | You turn fully invisible for 1.5 seconds and target brackets drop off you. Your held ball stays visible, floating. | Watch the floating ball, or throw at where the footsteps were. | The reposition nobody sees; keeps the ball honest. |
 | Slam | Jump then slam down: a shockwave pushes players within 8 studs back 6 studs and scatters loose balls. Nobody is put out by the push; the Flood or the kerb can finish it. | Do not stand on the edge near a Slam player. | The only ability that touches other players, kept to a shove. |
 | Smoke | A 10-stud smoke cloud for 4 seconds. Target brackets cannot lock onto anyone inside it. | Throw blind at where you last saw them. | Breaks the target picker, which is the only aim help in the game. |
 
-- **Roadmap abilities:** Quickdraw (next throw is fully charged instantly), Shrink (half size for 3 s), Magnet (loose balls within 15 studs roll to you over 2 s), Swap Places (trade spots with your target), Spring (a bounce pad under your feet for 6 s), Rewind (return to where you stood 3 s ago).
+- **Roadmap abilities:** Quickdraw (next throw is fully charged instantly), Shrink (half size for 3 s), Magnet (loose balls within 15 studs roll to you over 2 s), Swap Places (trade spots with your target), Spring (a bounce pad under your feet for 6 s), Rewind (return to where you stood 3 s ago), Decoy (a clone that runs ahead and pops when hit).
+- Full per-ability sheets, including VFX, sound, mobile layout and every ball interaction, are in `abilities.md`. The arena layout with coordinates is in `arena.md`.
 - **Balance rule of thumb:** every ability is 1 to 3 seconds long, visible from the stands, and answerable by the simplest counter: wait.
 
 ## 5. The cursed balls
@@ -109,7 +110,7 @@ Full catalog with behaviours, counters, catch rules, art and sound notes is in `
 
 **Persistence.** Balls never despawn during a show. The roster is drawn once at show start (randomised, 8 balls: 4 plain and 4 cursed, one of them the spectator Wildcard) and the same balls are reused by the players through all three rounds. Between rounds the ball machine gathers every ball back to the centre circle. A ball that leaves the court rolls back in. There is no replacement machine fire: what is on the court is what there is, so every ball is a resource worth tracking.
 
-**Re-arm.** A cursed ball that triggers its curse (a Fuse that blew, a Black Hole that opened, a Paint that splatted, a Decoy that split, a Shadow that was caught) does not become plain for good. It goes dormant: a countdown number floats above the ball and counts down from 6 seconds, during which the ball behaves as a plain ball and reads dull. At zero a burst ripples across the whole face of the ball, like a charge replenishing, and the ball lights back up in its own colour with its idle animation restored. The countdown is a BillboardGui readable from the stands, so a spectator can see the Fuse is about to be live again before the players notice.
+**Re-arm.** A cursed ball that triggers its curse (a Fuse that blew, a Black Hole that opened, a Paint that splatted, a Decoy that split, a Shadow that was caught) does not become plain for good. It goes dormant: a countdown number floats above the ball and counts down from 6 seconds, during which the ball behaves as a plain ball and reads dull. At zero a burst ripples across the whole face of the ball, like a charge replenishing, and the ball is its original cursed self again: colour, glow, idle animation and sound all restored. The countdown is a BillboardGui readable from the stands, so a spectator can see the Fuse is about to be live again before the players notice.
 
 **Reveal.** Every cursed ball has a unique silhouette, colour, idle animation, and sound so it reads from the stands and from a phone. Nothing is a recolour.
 
@@ -213,7 +214,8 @@ Resolved 7 Oct 2026 with the owner:
 
 8. More PvP (v0.3): wall run and mantle added to the shared movement kit; one chosen ability per player, picked between games, one use per round, never eliminates; balls are drawn once per show, never despawn, re-arm after a 6-second countdown with a burst across the ball; the court gains pillars, half-walls, a centre stage and rails, all under 9 studs so the stands see over them.
 
+9. Decoy replaced by Vanish (1.5 s invisibility). Re-arm confirmed: after the burst the ball is its original cursed ball again.
+
 Open:
-- The owner's description of the re-arm effect was cut off after "and then make it look like its". Assumed: the ball lights back up in its own colour. Confirm.
 - Stamina numbers (4 s sprint, quarter-bar dodge, wall run 1.5 s) are first guesses for the grey-box playtest.
 - Whether the Ghost's one plain throw should be a quick throw only or allow a charge. Current draft: quick only, to keep it catchable.

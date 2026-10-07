@@ -11,3 +11,5 @@ Generated 7 Oct 2026 with Higgsfield (z_image, 16:9). The files live in your Hig
 | 5 | The catch-revive hero moment | The one rule that stays sacred, framed the way the slow-mo should feel | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183553_d75540e7-725b-4364-b984-50eaeabe9ec8.png |
 | 6 | Sideline jail bench with bleachers and jumbotron behind | Eliminated players stay visible and stay in the show | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183642_5606fd85-0dfc-4faf-b08a-e6f0f187b72c.png |
 | 7 | Lobby: bracket board on the fence, ball vending machine, practice wall | Where players wait, watch and queue | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183753_aae98903-f514-4893-821c-9e36e5c531a9.png |
+
+A sunken-pit arena image (the look decided later in the session) was attempted twice and failed on the generator side; the pit is described in DESIGN.md section 7. Retry it when the generator is healthy.

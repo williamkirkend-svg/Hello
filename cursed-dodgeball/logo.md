@@ -1,4 +1,6 @@
-# Logo and intro animation (v0.3)
+# Logo and intro animation (v0.4, approved)
+
+**Approved reference:** `concepts/logo-approved-reference.png` (the Figma take 1 render, image 25 in `concept-images.md`). This is the look. The production asset is a clean rebuild of it in separate layers, not the render itself.
 
 ## The logo
 
@@ -16,31 +18,33 @@ Rules for the final asset:
 
 Concept candidates are in `concept-images.md`: images 13 to 16 were the bubble-letter direction, 17 to 20 the multicolour block direction, 21 and 22 the current white-and-purple-fire direction. The final logo should be redrawn as vector art from the chosen image so the edges are clean at every size.
 
-## The intro animation (plays when a player joins)
+## The main screen (plays when a player joins)
 
-Total 3.5 seconds, skippable with a tap after 1 second. It runs over the loading screen before the stands fade in.
+The logo is the main screen, not a splash. Total about 5 seconds before the stands fade in, skippable with a tap after the slam. The owner's sequence: DODGEBALL alone in the middle, a few seconds of calm, CURSED slams down, then the purple fire ignites right after it lands.
 
 | Time | What happens | Sound |
 |---|---|---|
-| 0.0 | Black background. DODGEBALL pops in letter by letter from the left, each plain white letter overshooting and settling with a bounce (0.08 s apart). | A cheerful xylophone run, one note per letter |
-| 0.9 | Hold. A sparkle twinkles on the B. Plain, white, lovely. | A soft twinkle |
-| 1.3 | Nothing warns you. Maybe one pebble bounces across the D. | A single small rock click |
-| 1.5 | CURSED falls in fast from above, its stone frames dark and unlit, and lands on the top-left corner of DODGEBALL, overlapping the upper part of the first letters, at a 12-degree clockwise tilt. Screen shake, 0.15 s. The white letters under it squash, a puff of grey dust, a handful of pebbles scatter. It is a surprise, not a build-up. | A sharp rock slap with a bass thump, then a short rattle of pebbles |
-| 1.7 | The purple fire ignites inside the stone frames, letter by letter from left to right (0.05 s apart), and keeps burning: the flipbook loops, embers drift up, purple light flickers onto the white letters. DODGEBALL's letters bounce back up, slightly dented, carrying on as if nothing happened. | A whoosh as each letter lights, then a low purple-fire crackle, a short comic boing on the bounce-back |
-| 2.6 | The one-sentence tagline fades in beneath, small, in the block font: "It's dodgeball. The balls are cursed. Your friends are worse." (or the owner's choice). | None |
-| 3.2 | The whole logo shrinks to the top centre and the stands fade in behind it. The logo stays as a small HUD watermark for 2 seconds, then hides. | Crowd noise swells |
+| 0.0 | Black screen. DODGEBALL pops in letter by letter from the left, centred in the middle of the screen, each wide white letter overshooting and settling with a bounce (0.08 s apart). | A cheerful xylophone run, one note per letter |
+| 0.8 to 2.8 | Hold. DODGEBALL sits alone in the centre, plain and friendly. A sparkle twinkles on the B around 1.5 s. Nothing warns you. Two full seconds of calm so the slam lands as a surprise. | Soft crowd murmur, one twinkle |
+| 2.8 | CURSED SLAMS down from above the frame at full speed, stone frames dark and unlit, and lands on the top-left corner of DODGEBALL at a 12-degree clockwise tilt, overlapping the top of the first letters. Screen shake 0.2 s. The letters under it squash and crack, a burst of grey dust and pebbles scatters. | A huge rock slam with a bass drop, pebbles rattling |
+| 3.1 | The purple fire ignites inside the stone frames, letter by letter from left to right (0.05 s apart), flames bursting up above the tops, purple embers rising, purple glow flooding down onto the white letters. The fire keeps burning: the flipbook loops. DODGEBALL's letters bounce back up slightly dented. | A sharp whoosh per letter, then a low purple-fire crackle, a comic boing on the bounce-back |
+| 3.8 | The tagline fades in beneath, small, in the DODGEBALL font: "It's dodgeball. The balls are cursed. Your friends are worse." (owner's choice pending). PLAY prompt appears: "TAP TO PLAY" on phones, "PRESS ANY KEY" on PC. | None |
+| on input | The logo shrinks to the top centre and the stands fade in behind it. The logo stays as a small HUD watermark for 2 seconds, then hides. | Crowd noise swells |
 
-Skipping: any tap after 1.0 s jumps to 3.2.
+Skipping: any tap after 2.8 s jumps straight to the end of the fire ignition at 3.8.
+
+The same slam-then-ignite beat reuses at every show's crowning (the CURSED sticker slaps onto the winner's name and lights up) and the OUT stamp uses the same stone style.
 
 ## How it will be built in Roblox (later, not now)
 
 - A ScreenGui with two ImageLabels (the two layers) over a full-screen Frame.
-- DODGEBALL letters: either one image with a size-and-position tween, or seven small ImageLabels (one per letter) tweened in sequence with `Enum.EasingStyle.Back` for the overshoot. Seven labels gives the letter-by-letter pop; use them.
-- CURSED: two stacked ImageLabels about 40 percent of DODGEBALL's height, anchored at the top-left of the word, the stone frame and the fire flipbook, in one Frame starting above the screen at Rotation 20, tweened in 0.2 s with `Enum.EasingStyle.Quart` In to its overlap anchor with Rotation 12 (clockwise), then a 0.15 s shake on the root Frame, then a 0.2 s wobble tween (Rotation 15 to 12). CURSED's ZIndex is above DODGEBALL's so it always covers the white letters. The fire label starts at ImageTransparency 1 and fades in per letter using six masked sub-labels, or as one label if per-letter ignition proves fiddly. Anchored over the first letters so the two words can be positioned independently of screen size.
+- DODGEBALL letters: nine ImageLabels (one per letter) tweened in sequence with `Enum.EasingStyle.Back` for the overshoot, centred as a group in the middle of the screen. The letter-by-letter pop is the friendly beat.
+- CURSED: two stacked ImageLabels about 40 percent of DODGEBALL's height, anchored at the top-left of the word, the stone frame and the fire flipbook, in one Frame starting above the screen at Rotation 20, held invisible until 2.8 s, then tweened in 0.18 s with `Enum.EasingStyle.Quart` In to its top-left overlap anchor with Rotation 12 (clockwise), then a 0.2 s shake on the root Frame, then a 0.2 s wobble tween (Rotation 15 to 12). The fire label stays at ImageTransparency 1 until 3.1 s, then six masked sub-labels (one per letter) fade in 0.05 s apart and the flipbook starts looping. CURSED's ZIndex is above DODGEBALL's so it always covers the white letters. The fire label starts at ImageTransparency 1 and fades in per letter using six masked sub-labels, or as one label if per-letter ignition proves fiddly. Anchored over the first letters so the two words can be positioned independently of screen size.
 - Flames: a ParticleEmitter cannot live in a ScreenGui, so the purple fire is a 12-frame flipbook masked to the letter interiors, looping at 12 fps through ImageRectOffset on a spritesheet. The stone frame sits on top so the fire is clipped to the letter shapes.
 - Dust, pebbles and cracks: one crack image fading in under CURSED, scaled from 0.6 to 1.0 over 0.3 s, plus six small rock ImageLabels flung outward on short arcs.
 - Alternative for a true 3D logo: build the letters as MeshParts in a ViewportFrame and animate the CURSED model's CFrame dropping; this gives real bevels and lighting but costs more to make. Decide after the vector version exists.
-- Sounds: five SoundIds, played from a SoundGroup so the intro volume is one setting.
+- Sounds: six SoundIds (xylophone run, twinkle, rock slam, pebble rattle, fire whoosh, fire crackle loop), played from a SoundGroup so the intro volume is one setting.
+- The main screen is a LocalScript in StarterPlayerScripts that runs once per join, before the stands camera takes over; the show state keeps running underneath so the timer is live the moment the screen clears.
 - Reuse: the same slap animates at every show's crowning (the CURSED sticker slaps onto the winner's name), on the thumbnail, and as the OUT stamp style when a player is eliminated (a small rock stamp, same rotation).
 
 ## Owner's words that drove this

@@ -7,6 +7,7 @@
 -- lifted. Set 3: the disc forms from stars sucked in from 15 studs, two lassos, the constellation, rim stars.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local M = {Pre = 1.0}
 
@@ -43,6 +44,7 @@ local function galaxy(ctx, o)
 	ctx:Every(function(t)
 		local k = K.Env(t, o.In or 0, o.Out or 99, o.Rise or .45, .5)
 		G.K = k
+		if o.Hum then o.Hum:Set(k) end -- sound: the hum follows the disc
 		local s = (o.Scale or 1) * math.max(.02, k)
 		local cf = ground * CFrame.Angles(0, (o.Spin or .9) * t, 0)
 		for i, a in arms do
@@ -118,11 +120,13 @@ local function lasso(ctx, P, G, o)
 		if t < o.Whirl then
 			L.Phase = "rise"
 			local u = FX.ease((t - o.Rise) / (o.Whirl - o.Rise))
+			if o.WhirlLoop then o.WhirlLoop:Set(u * .6) end -- sound: the whirl loop climbs with the rope
 			local hub, h = G.Pos(), head()
 			R.Set(function(v) return K.Bezier(hub + K.Polar(v * TAU * 1.2 + t * .9, .8 + v * 5.5, .4), hub + V3(0, 6, 0), circle(h, v, t), u) end, .45 + .25 * u)
 			L.Centre = hub:Lerp(h, u)
 		elseif t < o.Throw then
 			L.Phase = "whirl"
+			if o.WhirlLoop then o.WhirlLoop:Set(1) end
 			local h = head()
 			R.Set(function(v) return circle(h, v, t) end, .7)
 			L.Centre = h
@@ -255,6 +259,10 @@ function M.Set1(ctx, def)
 	end)
 	ctx:Repeat(.4, 1.9, .3, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 5), rng:NextNumber(.3, 1)), 2.5, c1, .3) end)
 	K.Title(ctx, 1.0, "embers", 8)
+	-- sound (Set 1: three cues): the shock ring at .25, the disc's hum, the title
+	S.Cue(ctx, .25, "CelShockwave")
+	S.Loop(ctx, .2, 2.1, "CosmicHum", {K = .5, FadeIn = .4})
+	S.Cue(ctx, 1.0, "CelTitle")
 	return LEN
 end
 
@@ -265,11 +273,14 @@ function M.Set2(ctx, def)
 	local P = K.Performer(ctx)
 	if not P then return M.Set1(ctx, def) end
 	ctx:At(.02, function() P:Show() end)
-	local G = galaxy(ctx, {Colors = {c1, c2, c3}, In = .05, Out = 4.6, Scale = 1, Spin = 1})
+	local hum = S.Loop(ctx, .05, 4.6, "CosmicHum", {FadeIn = .3}) -- sound: under the disc (Set from the galaxy loop)
+	local G = galaxy(ctx, {Colors = {c1, c2, c3}, In = .05, Out = 4.6, Scale = 1, Spin = 1, Hum = hum})
 	ctx:At(.2, function() K.Starburst(ctx, ctx.Base.Position + V3(0, 1, 0), {Colors = {c1, c2}, Size = 7, Count = 20}) ctx:Flash(c1, .25, .3) end)
 	local tg = pickTarget(ctx)
 	lasso(ctx, P, G, {Colors = {c1, c2, c3}, Target = tg, Rise = .3, Whirl = .9, Throw = 2.3, Hold = 1.2,
+		WhirlLoop = S.Loop(ctx, .3, 2.3, "RopeWhirl", {FadeIn = .2}), -- sound: the rope whirling overhead
 		OnLand = function(target, pos)
+			S.Now(ctx, "StarChime", {At = pos}) -- sound: the catch
 			ctx:Ripple(K.GroundCF(ctx, pos, .2), 2, 12, {W, c2}, .5, K.Tex.Ring)
 			K.Starburst(ctx, pos + V3(0, 1, 0), {Colors = {c1, c2}, Size = 5, Count = 14})
 			ctx:Shake(.2, .3)
@@ -279,6 +290,11 @@ function M.Set2(ctx, def)
 	ctx:At(1.4, function() rimStars(ctx, G, c1, c3) end)
 	K.Herd(ctx, {At = 4.1, Radius = 16, Color = c2, Flavour = "lookup", Max = 5})
 	K.Title(ctx, 3.0, "embers", 8)
+	-- sound: the detonation at .2, the throw at 2.3, the title (the hum, the whirl and the catch are wired above)
+	S.Duck(ctx, 0, LEN)
+	S.Hit(ctx, .2, "M")
+	S.Cue(ctx, 2.3, "CelWhooshL")
+	S.Cue(ctx, 3.0, "CelTitle")
 	return LEN
 end
 
@@ -308,12 +324,15 @@ function M.Set3(ctx, def)
 		K.Hit(ctx, ctx.Base.Position, {Colors = {c1, c2}, Impact = true, Ring = 30, Burst = 16, Lines = 36})
 		ctx:Grade({Brightness = .05, Contrast = .15, Saturation = .12, TintColor = Color3.fromRGB(225, 235, 255)}, .1, 6.4, .8)
 	end)
-	local G = galaxy(ctx, {Colors = {c1, c2, c3}, In = 0, Out = 7.3, Scale = 1.2, Spin = 1, Rise = .3})
+	local hum = S.Loop(ctx, 0, 7.3, "CosmicHum", {FadeIn = .3}) -- sound: under the lift (Set from the galaxy loop)
+	local G = galaxy(ctx, {Colors = {c1, c2, c3}, In = 0, Out = 7.3, Scale = 1.2, Spin = 1, Rise = .3, Hum = hum})
 	K.Float(ctx, P, {T0 = .3, T1 = 6.6, Height = 2, Rise = .5, Fall = .5})
 	-- lasso one: the nearest animal, lifted inside the loop
 	local tg = pickTarget(ctx)
 	lasso(ctx, P, G, {Colors = {c1, c2, c3}, Target = tg, Rise = .3, Whirl = .9, Throw = 2.4, Hold = 1.2,
+		WhirlLoop = S.Loop(ctx, .3, 2.4, "RopeWhirl", {FadeIn = .2}), -- sound: the first whirl
 		OnLand = function(target, pos)
+			S.Now(ctx, "StarChime", {At = pos}) -- sound: the catch
 			ctx:Ripple(K.GroundCF(ctx, pos, .2), 2, 14, {W, c2}, .5, K.Tex.Ring)
 			K.Starburst(ctx, pos + V3(0, 1, 0), {Colors = {c1, c2}, Size = 6, Count = 16})
 			ctx:Shake(.25, .3)
@@ -325,7 +344,9 @@ function M.Set3(ctx, def)
 	local back = K.Behind(ctx)
 	local sky = {Pos = G.Pos() + V3(0, .5, 0), Kind = "sky"}
 	local L2 = lasso(ctx, P, G, {Colors = {c1, c2, c3}, Target = sky, Rise = 2.6, Whirl = 3.1, Throw = 4.2, Hold = 2.65,
+		WhirlLoop = S.Loop(ctx, 2.6, 4.2, "RopeWhirl", {FadeIn = .2}), -- sound: the second whirl
 		OnLand = function(_, pos)
+			S.Now(ctx, "CelShockwave", {At = pos, Volume = .6}) S.Now(ctx, "ConstellationPull", {At = pos}) -- sound: the constellation drawn out of the disc
 			K.Starburst(ctx, pos + V3(0, .5, 0), {Colors = {W, c1}, Size = 7, Count = 20})
 			K.ShockRing(ctx, K.GroundCF(ctx, pos, .2), 2, 18, c3, .5, .45)
 		end,
@@ -358,6 +379,17 @@ function M.Set3(ctx, def)
 		ctx:Streak(function(u) return c + right * (-16 + 32 * u) + V3(0, 4 - 7 * u, 0) end, .65, {W, c1, c2}, .9, .5)
 	end)
 	K.Title(ctx, 5.6, "embers", 8.5)
+	-- sound: the inhale, the detonation and the impact frame, the bed, the two throws, the title, the float's landing
+	-- (the hum, the whirls, the catch and the constellation pull are wired above)
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Bed(ctx, .4, LEN - .8)
+	S.Hit(ctx, 0, "L")
+	S.Cue(ctx, 0, "CelImpact")
+	S.Cue(ctx, 2.4, "CelWhooshL")
+	S.Cue(ctx, 4.2, "CelWhooshL")
+	S.Cue(ctx, 5.6, "CelTitle")
+	S.Cue(ctx, 6.6, "CelLand")
 	return LEN
 end
 

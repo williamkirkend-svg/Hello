@@ -7,6 +7,7 @@
 -- sigil scribing itself rune by rune in the charge-up, nine rings, the 7-stud hang, the slam, coin rain, the landing.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local M = {Pre = 1.0}
 
@@ -31,6 +32,7 @@ local function funnel(ctx, c1, c2, c3, dark, o)
 	ctx:Every(function(t)
 		if t > o.T1 + .6 then for _, rg in F.Rings do rg.M:Destroy() end ribbon:Destroy() return true end
 		local k = K.Env(t, o.T0, o.T1, .5, .5)
+		if o.Wind then o.Wind:Set(k) end -- sound: the wind loop follows the funnel's height
 		local centre = ctx.Base.Position
 		local settle = FX.ease((t - o.T0) / 1.4)
 		for i, rg in F.Rings do
@@ -137,6 +139,7 @@ local function slam(ctx, F, c1, c2, c3, dark, onHit)
 			hit = true
 			K.Hit(ctx, pos, {Colors = {c1, c2}, Impact = true, Ring = 28, Burst = 14, Lines = 36, Shake = .45})
 			F:Fire()
+			S.Now(ctx, "TornadoSlam", {Volume = 1}) S.Now(ctx, "CelImpact") S.Now(ctx, "CelShockwave", {Volume = .6}) -- sound: the slam, the impact frame, the rings firing
 			ctx:Burst(pos + V3(0, .5, 0), K.Count(ctx, 20), {Texture = K.Tex.Smoke, Color = {dark, c3}, Size = {{0, 1.5}, {1, 4}}, Transparency = {{0, .4}, {1, 1}}, Lifetime = {.7, 1.2},
 				Speed = {8, 14}, SpreadAngle = Vector2.new(80, 6), LightEmission = 0, Brightness = 1, Drag = 3, RotSpeed = {-60, 60}})
 			if onHit then onHit() end
@@ -146,6 +149,7 @@ end
 -- the superhero landing: a kneel blended in over [t0, t1], a ground ring and dust at the touch-down
 local function landing(ctx, P, t0, t1, c2, dark)
 	ctx:At(t0 + .05, function()
+		S.Now(ctx, "CelLand") -- sound: the superhero landing
 		K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .2), 2, 16, c2, .45, .4)
 		ctx:Burst(ctx.Base.Position + V3(0, .3, 0), K.Count(ctx, 12), {Texture = K.Tex.Smoke, Color = {dark, dark}, Size = {{0, 1}, {1, 2.5}}, Transparency = {{0, .5}, {1, 1}},
 			Lifetime = {.5, .9}, Speed = {4, 8}, SpreadAngle = Vector2.new(80, 6), LightEmission = 0, Brightness = 1, Drag = 3})
@@ -171,6 +175,10 @@ function M.Set1(ctx, def)
 	coins(ctx, c1, c2, {Count = 8, T0 = .3, Top = 4, Spread = 2.5, Until = 1.6, Stagger = .08})
 	ctx:Repeat(.4, 1.8, .35, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 3.5), rng:NextNumber(1, 4)), rng:NextNumber(2, 3), c1, .3) end)
 	K.Title(ctx, .9, "embers", 7.5)
+	-- sound (Set 1: three cues): the rings at .08, the coins climbing, the title
+	S.Cue(ctx, .08, "CelShockwave")
+	S.Cue(ctx, .3, "CoinSpiral")
+	S.Cue(ctx, .9, "CelTitle")
 	return LEN
 end
 
@@ -181,7 +189,8 @@ function M.Set2(ctx, def)
 	local P = K.Performer(ctx)
 	if not P then return M.Set1(ctx, def) end
 	ctx:At(.02, function() P:Show() end)
-	local F = funnel(ctx, c1, c2, c3, dark, {Rings = 6, BaseH = 1.0, T0 = .1, T1 = SLAM + .5})
+	local wind = S.Loop(ctx, .1, SLAM + .5, "WindFunnel", {FadeIn = .4}) -- sound: rises with the funnel (Set from its loop)
+	local F = funnel(ctx, c1, c2, c3, dark, {Rings = 6, BaseH = 1.0, T0 = .1, T1 = SLAM + .5, Wind = wind})
 	ctx:At(.1, function()
 		K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .15), 2, 18, c2, .45, .4)
 		K.Starburst(ctx, ctx.Base.Position + V3(0, 3, 0), {Colors = {c1, c2}, Size = 8, Count = 22})
@@ -200,6 +209,13 @@ function M.Set2(ctx, def)
 	end)
 	landing(ctx, P, SLAM + .55, 4.9, c2, dark)
 	K.Title(ctx, SLAM + .25, "embers", 7.5)
+	-- sound: the detonation at .1, the coins climbing at .6 and raining from 1.6, the title (the slam and the landing
+	-- come from the helpers)
+	S.Duck(ctx, 0, LEN)
+	S.Hit(ctx, .1, "L")
+	S.Cue(ctx, .6, "CoinSpiral")
+	S.Loop(ctx, 1.6, 3.3, "CoinRain", {K = .6})
+	S.Cue(ctx, SLAM + .25, "CelTitle")
 	return LEN
 end
 
@@ -237,7 +253,8 @@ function M.Set3(ctx, def)
 		ctx:Shake(.35, .4)
 		ctx:Grade({Brightness = .06, Contrast = .18, Saturation = .15, TintColor = Color3.fromRGB(255, 240, 214)}, .15, SLAM + 1.2, .8)
 	end)
-	local F = funnel(ctx, c1, c2, c3, dark, {Rings = 9, BaseH = 1.0, T0 = .05, T1 = SLAM + .5})
+	local wind = S.Loop(ctx, .05, SLAM + .5, "WindFunnel", {FadeIn = .5}) -- sound: rises with the funnel (Set from its loop)
+	local F = funnel(ctx, c1, c2, c3, dark, {Rings = 9, BaseH = 1.0, T0 = .05, T1 = SLAM + .5, Wind = wind})
 	K.Debris(ctx, {At = .5, Count = 16, Radius = 8, Lift = 4, Orbit = 1.6, Until = SLAM, Centre = function() return ctx.Base.Position + V3(0, 4, 0) end})
 	coins(ctx, c1, c2, {Count = 24, T0 = .7, Top = 8.5, Spread = 3.8, Until = 7.0, Stagger = .06})
 	K.Sweeps(ctx, {Colors = {c1, c2}, T0 = 1.0, T1 = 4.2, Period = .3, Radius = 6, Height = 4, Climb = 9, Dur = .6})
@@ -255,6 +272,16 @@ function M.Set3(ctx, def)
 	end)
 	landing(ctx, P, SLAM + .65, 7.0, c2, dark)
 	K.Title(ctx, SLAM + .3, "embers", 8)
+	-- sound: the inhale, the detonation, the bed, the lift at .35, the coins climbing at .7 and raining from 1.8, the
+	-- title (the slam and the landing come from the helpers)
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Bed(ctx, .4, LEN - .8)
+	S.Hit(ctx, 0, "L")
+	S.Cue(ctx, .35, "CelWhooshS")
+	S.Cue(ctx, .7, "CoinSpiral")
+	S.Loop(ctx, 1.8, 4.3, "CoinRain", {K = .7})
+	S.Cue(ctx, SLAM + .3, "CelTitle")
 	return LEN
 end
 

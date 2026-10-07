@@ -7,6 +7,7 @@
 -- float, falling stars with prints, stars riding animals. Set 3: two halos, the double helix, seekers, the ring toss.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local M = {Pre = 1.0}
 
@@ -112,6 +113,7 @@ local function starfall(ctx, o)
 				if u < 0 then continue end
 				local m = st.M
 				if u < 1 then
+					if not st.Heard then st.Heard = true S.Now(ctx, "StarTwinkle", {At = m, Volume = .5, Chance = .4}) end -- sound: rides the star, throttled
 					local e = u * u * .55 + u * .45 -- slow off the edge, faster near the ground
 					local a = a0 + st.Side + e * TAU * turns
 					local rr = r + (rTop - r) * (1 - math.min(1, e / .25))
@@ -139,7 +141,9 @@ local function starfall(ctx, o)
 end
 -- a star settles 1.5 studs over an animal and rides it, glowing, for 3 s (a K.Herd Effect)
 local function rider(ctx, color)
+	local chirped = false -- sound: the stars riding the herd give one AnimalGeneric chirp
 	return function(tg)
+		if not chirped then chirped = true S.Now(ctx, "AnimalGeneric", {At = tg.Part, Volume = .6}) end
 		local s = star(ctx, color)
 		s.Transparency = 1
 		local t0 = os.clock()
@@ -181,6 +185,10 @@ function M.Set1(ctx, def)
 	end)
 	ctx:Repeat(.5, 1.9, .35, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), 3, rng:NextNumber(5.5, 7)), 2.5, c3, .3) end)
 	K.Title(ctx, 1.0, "embers", 8)
+	-- sound (Set 1: three cues): the halo's chime at the starburst, the stars winking out at its edge, the title
+	S.Cue(ctx, .3, "StarChime")
+	S.Cue(ctx, 1.0, "CelTitle")
+	S.Cue(ctx, 1.6, "StarTwinkle", {Volume = .5})
 	return LEN
 end
 
@@ -205,6 +213,13 @@ function M.Set2(ctx, def)
 	K.Herd(ctx, {At = 2.0, Radius = 16, Color = c2, Flavour = "lookup", Max = 6, Effect = rider(ctx, c3)})
 	ctx:At(4.3, function() K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .2), 1.5, 12, c3, .4, .35) end)
 	K.Title(ctx, 2.6, "embers", 8.5)
+	-- sound: the detonation with the halo's chime at .35, the title, the float's landing at 4.3 (the falling stars and
+	-- the herd chirp come from the helpers above)
+	S.Duck(ctx, 0, LEN)
+	S.Hit(ctx, .35, "L")
+	S.Cue(ctx, .35, "StarChime")
+	S.Cue(ctx, 2.6, "CelTitle")
+	S.Cue(ctx, 4.3, "CelLand")
 	return LEN
 end
 
@@ -240,7 +255,8 @@ function M.Set3(ctx, def)
 	local players = K.NearbyPlayers(ctx, 40)
 	if #players > 0 then
 		K.Seek(ctx, {Mesh = "StarPoint", Scale = 1, Colors = {c1, c2, c3}, Count = math.min(4, #players), Interval = .3, T0 = 1.4, Radius = 40, Speed = 16, Trail = .6,
-			Circle = .7, Height = 2.5, From = function(i) return H1.CF.Position + K.Polar(i * 1.7, 6.5, -.5) end})
+			Circle = .7, Height = 2.5, From = function(i) return H1.CF.Position + K.Polar(i * 1.7, 6.5, -.5) end,
+			OnSpawn = function(m) S.Now(ctx, "StarTwinkle", {At = m, Volume = .6}) end}) -- sound: a twinkle rides each seeker
 	end
 	K.Herd(ctx, {At = 2.3, Radius = 18, Color = c2, Flavour = "lookup", Max = 6, Effect = rider(ctx, c3)})
 	-- the peak frame: a silhouette halfway up the pillar, two halos above, pink stars spiralling past
@@ -258,6 +274,7 @@ function M.Set3(ctx, def)
 			if u >= 1 then
 				H1.Place(to, .85)
 				K.Hit(ctx, ctx.Base.Position, {Colors = {W, c3}, Flash = .5, Ring = 30, Burst = 14, Lines = 30})
+				S.Now(ctx, "HaloLand", {Volume = 1}) S.Now(ctx, "CelShockwave") -- sound: the halo lands round the feet
 				ctx:Burst(ctx.Base.Position + V3(0, .5, 0), K.Count(ctx, 30), {Texture = K.Tex.Star, Color = {W, c3}, Size = {.6, 0}, Lifetime = {.5, .9}, Speed = {6, 14},
 					SpreadAngle = Vector2.new(70, 70), EmissionDirection = Enum.NormalId.Top, Drag = 2, Brightness = 5})
 				local l0 = os.clock()
@@ -277,6 +294,19 @@ function M.Set3(ctx, def)
 		end)
 	end)
 	K.Title(ctx, 6.3, "embers", 8.5)
+	-- sound: the inhale, the detonation with the halo's chime, the bed under the pillar, the lift, the drop out of the
+	-- pillar, the pillar bursting, the ring toss whoosh (HaloLand is on its landing above), the title
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Bed(ctx, .4, LEN - .8)
+	S.Hit(ctx, 0, "L")
+	S.Cue(ctx, 0, "CelImpact")
+	S.Cue(ctx, 0, "StarChime", {Volume = 1})
+	S.Cue(ctx, .3, "CelWhooshS")
+	S.Cue(ctx, 5.3, "CelLand")
+	S.Cue(ctx, 5.35, "CelShimmer")
+	S.Cue(ctx, 5.5, "CelWhooshS")
+	S.Cue(ctx, 6.3, "CelTitle")
 	return LEN
 end
 

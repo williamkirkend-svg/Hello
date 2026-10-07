@@ -8,11 +8,16 @@
 -- the ground webbed with arcs, the cage lift and the mega-bolt.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local M = {Pre = 1.0}
 -- wide stance, fists down, chin up (the body between the bolts)
 local STANCE = {RightShoulder = CFrame.Angles(.15, 0, .4), LeftShoulder = CFrame.Angles(.15, 0, -.4), RightHip = CFrame.Angles(0, 0, .3),
 	LeftHip = CFrame.Angles(0, 0, -.3), Waist = CFrame.Angles(.12, 0, 0), Neck = CFrame.Angles(-.25, 0, 0)}
+-- sound: the bolt ring's onLand, a ThunderCrack at every other crater (the first one loud)
+local function crackOnLand(ctx)
+	return function(i, e) if i % 2 == 1 then S.Now(ctx, "ThunderCrack", {At = e, Volume = i == 1 and 1 or .6}) end end
+end
 
 ---------------------------------------------------------------- lightning helpers (shared with Stormbreaker by copy)
 -- a sky bolt from p0 to p1: a white core bolt inside a coloured glow bolt, re-jagged three times over 0.2 s, standing
@@ -122,6 +127,7 @@ end
 -- sparks and a gallop bob, then vanishes in a starburst. The mesh faces +X and is centred at the chest.
 local function bull(ctx, from, dir, c1, c2, dark, dur)
 	local m = K.Mesh(ctx, "LightningBull", {Color = c1})
+	S.Now(ctx, "BullCharge", {At = m, Volume = .6, Cooldown = .15}) -- sound: rides the bull, at most one per .15 s
 	local rot = CFrame.lookAt(Vector3.zero, dir) * CFrame.Angles(0, math.pi / 2, 0)
 	local a0, a1 = ctx:Att(V3(0, .9, 0), m), ctx:Att(V3(0, -.9, 0), m)
 	local tr = Instance.new("Trail")
@@ -209,7 +215,7 @@ function M.Set1(ctx, def)
 		local back = K.Behind(ctx)
 		local ends = trackEnds(ctx, 3, 7, math.atan2(back.Z, back.X))
 		tracks(A, ctx, ends, .5, false, function(i, e)
-			if i == 1 then strike(ctx, e + V3(0, 25, 0), e, c2, false) end
+			if i == 1 then strike(ctx, e + V3(0, 25, 0), e, c2, false) S.Now(ctx, "ThunderCrack", {At = e}) end
 			crater(A, ctx, e, dark)
 		end)
 		K.Chain(ctx, {At = 0, From = ctx.Base.Position + V3(0, .5, 0), Radius = 12, Count = K.Count(ctx, 3), Color = c2, Stagger = .08})
@@ -217,6 +223,9 @@ function M.Set1(ctx, def)
 	ctx:Repeat(.5, 1.8, .3, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 4), rng:NextNumber(1, 5)), rng:NextNumber(1.5, 3), c1, .3) end)
 	ctx:At(2.3, function() A:Destroy() end)
 	K.Title(ctx, 1.0, "glitch", 7.5)
+	-- sound (Set 1: three cues): the shock ring at .35, the bolt's crack on its landing (above), the title
+	S.Cue(ctx, .35, "CelShockwave")
+	S.Cue(ctx, 1.0, "CelTitle")
 	return LEN
 end
 
@@ -241,7 +250,7 @@ function M.Set2(ctx, def)
 		ends = trackEnds(ctx, 6, 9, rng:NextNumber(0, TAU))
 		tracks(A, ctx, ends, .55)
 		K.Chain(ctx, {At = 0, From = ctx.Base.Position + V3(0, .5, 0), Radius = 14, Count = K.Count(ctx, 4), Color = c2, Stagger = .06})
-		boltRing(A, ctx, ends, c2, dark, .9, .12)
+		boltRing(A, ctx, ends, c2, dark, .9, .12, crackOnLand(ctx))
 	end)
 	K.LightPaint(ctx, {At = 1.0, Radius = 30, Color = c1, Hold = .5, Boost = 2, Highlight = true})
 	K.Herd(ctx, {At = 1.05, Radius = 14, Color = c2, Flavour = "flinch"})
@@ -257,6 +266,14 @@ function M.Set2(ctx, def)
 	ctx:Repeat(.5, 3.8, .35, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 5), rng:NextNumber(1, 6)), rng:NextNumber(1.5, 3), c1, .3) end)
 	ctx:At(4.7, function() A:Destroy() end)
 	K.Title(ctx, 2.3, "glitch", 7.5)
+	-- sound: the detonation at .3, arcs crackling while the tracks race (.35 to .9 and the second wave), the chain
+	-- lightning's impact at the nearest post, the title (the bolt cracks and the bulls come from the helpers)
+	S.Duck(ctx, 0, LEN)
+	S.Hit(ctx, .3, "L")
+	S.Loop(ctx, .35, .95, "ArcCrackle", {K = .8})
+	S.Cue(ctx, .35, "CelImpact", {Volume = .5, At = function() return K.NearbyProps(ctx, 14, 1)[1] end})
+	S.Cue(ctx, 2.3, "CelTitle")
+	S.Loop(ctx, 2.9, 3.5, "ArcCrackle", {K = .6})
 	return LEN
 end
 
@@ -290,7 +307,7 @@ function M.Set3(ctx, def)
 		ends = trackEnds(ctx, 8, 10, rng:NextNumber(0, TAU))
 		tracks(A, ctx, ends, .55)
 		K.Chain(ctx, {At = .25, From = ctx.Base.Position + V3(0, .5, 0), Radius = 15, Count = K.Count(ctx, 6), Color = c2, Stagger = .05})
-		boltRing(A, ctx, ends, c2, dark, .7, .12)
+		boltRing(A, ctx, ends, c2, dark, .7, .12, crackOnLand(ctx))
 		ctx:At(.9, function() web(A, ctx, ends, 1.3) end)
 	end)
 	ctx:At(.7, function() P:Silhouette() end)
@@ -327,6 +344,24 @@ function M.Set3(ctx, def)
 	ctx:At(4.9, function() K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .15), 2, 12, c2, .35, .35) end)
 	ctx:At(7.3, function() A:Destroy() end)
 	K.Title(ctx, 2.4, "glitch", 8)
+	-- sound: the inhale with arcs crawling in, the detonation with a crack, arcs under the tracks, bolts and web, the
+	-- chain's impact at a post, the title, the cage lift, the mega-bolt (crack, the cage's detonate, the impact frame,
+	-- the ring), the drop (the bolt cracks and the bulls come from the helpers)
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Bed(ctx, .4, LEN - .8)
+	S.Loop(ctx, -pre + .15, -.15, "ArcCrackle", {K = .5, Volume = .5})
+	S.Hit(ctx, 0, "L")
+	S.Cue(ctx, 0, "ThunderCrack")
+	S.Loop(ctx, .1, 2.4, "ArcCrackle", {K = .8})
+	S.Cue(ctx, .35, "CelImpact", {Volume = .5, At = function() return K.NearbyProps(ctx, 15, 1)[1] end})
+	S.Cue(ctx, 2.4, "CelTitle")
+	S.Cue(ctx, 3.2, "CelWhooshS")
+	S.Cue(ctx, 4.55, "ThunderCrack", {Volume = 1})
+	S.Cue(ctx, 4.55, "CelDetonate", {Volume = .6})
+	S.Cue(ctx, 4.55, "CelImpact")
+	S.Cue(ctx, 4.6, "CelShockwave")
+	S.Cue(ctx, 4.9, "CelLand")
 	return LEN
 end
 

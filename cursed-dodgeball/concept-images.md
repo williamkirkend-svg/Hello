@@ -27,5 +27,7 @@ Generated 7 Oct 2026 with Higgsfield (z_image, 16:9). The files live in your Hig
 | 22 | Same, second variant | The current logo direction | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_204531_c9036280-fe18-4464-93b5-0b1e3e960565.png |
 | 23 | Logo v3 (Figma, Gemini): rounder white DODGEBALL, CURSED on top, tilted clockwise, stone letters with purple fire | Closest so far; stone reads as solid fill rather than a hollow frame | https://www.figma.com/api/mcp/asset/b3de5707-993c-4506-96ea-e690a3c2e8c0.png (expires in 7 days, download it) |
 | 24 | Logo v3 variant (Figma, Gemini): same, hollow stone frames with flames inside, Desert Rock style border | Current best. Download before it expires | https://www.figma.com/api/mcp/asset/8670d289-e801-4510-a6f1-389e1718d25b.png (expires in 7 days) |
+| 25 | Logo v4 (Figma): wide rounded DODGEBALL, stone-and-fire CURSED on the top-left overlapping the first letters | Combined direction, take 1 | https://www.figma.com/api/mcp/asset/7709d889-c74f-49b8-b388-1cf005b38b50.png (expires in 7 days) |
+| 26 | Logo v4 (Figma): same, take 2 | Combined direction, take 2 | https://www.figma.com/api/mcp/asset/5757832b-8459-4ca4-8d52-8d704da897ee.png (expires in 7 days) |
 
 A sunken-pit arena image (the look decided later in the session) was attempted twice and failed on the generator side; the pit is described in DESIGN.md section 7. Retry it when the generator is healthy.

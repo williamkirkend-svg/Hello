@@ -10,6 +10,7 @@
 -- closing round the player at the end.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local M = {Pre = 1.0}
 
@@ -78,6 +79,7 @@ local function rays(ctx, n, origin, color, T0, T1, len)
 end
 -- petals drifting down over the area (a box volume emitter 18 studs up)
 local function petalRain(ctx, c1, c2, t0, t1, rate)
+	S.Loop(ctx, t0, t1, "PetalShimmer", {K = math.min(1, (rate or 18) / 18), Volume = .8})
 	local sky = ctx:Part({Transparency = 1, Size = V3(18, 1, 18)})
 	local e = ctx:Emitter(sky, {Texture = K.Tex.Petal, Color = {c1, c2}, Size = {.8, .5}, Transparency = {{0, .1}, {.8, .2}, {1, 1}}, Lifetime = {2.2, 3.2}, Speed = {.5, 1.5},
 		SpreadAngle = Vector2.new(180, 180), Rate = 0, Acceleration = V3(0, -4.5, 0), Drag = 2.5, RotSpeed = {-220, 220}, Rotation = {0, 360}, Brightness = 2,
@@ -129,6 +131,7 @@ local function orbs(ctx, c1, c2, c3, o)
 		return (P and P.Alive and P.Torso or ctx.Hrp).Position
 	end
 	ctx:At(o.T0, function()
+		S.Now(ctx, "CelWhooshS", {At = from(), Volume = .6})
 		for i = 1, n do
 			local tg = targets[(i - 1) % #targets + 1]
 			local p0 = from()
@@ -161,6 +164,7 @@ local function orbs(ctx, c1, c2, c3, o)
 				ob.Done = true
 				ob.Shell:Destroy() ob.Core:Destroy()
 				K.PetalFan(ctx, CFrame.new(goal), {Colors = {c1, c2, c3}, Radius = 3, Life = .45})
+				S.Now(ctx, "CelShimmer", {At = goal, Volume = .45, Pitch = 1.15})
 				ctx:Burst(goal, K.Count(ctx, 14), {Texture = K.Tex.Petal, Color = {c1, c2}, Size = {.6, .3}, Lifetime = {.8, 1.4}, Speed = {2, 5}, SpreadAngle = Vector2.new(180, 180),
 					Acceleration = V3(0, -5, 0), Drag = 3, RotSpeed = {-200, 200}, Brightness = 2})
 				if ob.Tg.Model and ob.Tg.Kind ~= "point" then
@@ -240,6 +244,9 @@ function M.Set1(ctx, def)
 		K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .15), 2, 12, c2, .45, .35)
 	end)
 	ctx:Repeat(.4, 1.3, .3, function(i) ctx:Flare(ctx.Base.Position + K.Polar(i * 2.1, 2.5, 2 + i), 2.8, i == 2 and c3 or c1, .35) end)
+	S.Cue(ctx, .12, "LotusBloom", {At = pos, Volume = .8})
+	S.Cue(ctx, .12, "CelShockwave")
+	S.Cue(ctx, .9, "CelTitle")
 	K.Title(ctx, .9, "embers", 7.5)
 	return LEN
 end
@@ -264,6 +271,12 @@ function M.Set2(ctx, def)
 	K.Herd(ctx, {At = 1.2, Radius = 14, Color = c2, Flavour = "lookup"})
 	lotus(ctx, P, c1, c2, c3, {Single = true, T0 = .85, T1 = 4.3, T2 = 5.0})
 	K.Float(ctx, P, {T0 = .9, T1 = 4.4, Height = 3, Rise = .7, Fall = .4, Spin = .5, Pose = "Wide"})
+	S.Duck(ctx, 0, LEN)
+	S.Cue(ctx, .1, "TreeGrow", {At = T.Base})
+	S.Hit(ctx, .55, "M")
+	S.Cue(ctx, .85, "LotusBloom", {At = function() return P.Root end})
+	S.Cue(ctx, 1.0, "CelTitle")
+	S.Cue(ctx, 4.4, "CelLand")
 	K.Title(ctx, 1.0, "embers", 7.5)
 	return LEN
 end
@@ -330,6 +343,17 @@ function M.Set3(ctx, def)
 	K.Herd(ctx, {At = 2.6, Radius = 16, Color = c2, Flavour = "lookup"})
 	-- the settle: the lotus closes round the player, petals and rays fade, the tree goes last
 	ctx:At(6.3, function() K.PetalFan(ctx, K.GroundCF(ctx, ctx.Base.Position, .3), {Colors = {c3, c2, c1}, Radius = 6, Life = .6}) end)
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Hit(ctx, 0, "L")
+	S.Bed(ctx, .4, LEN - .8)
+	S.Cue(ctx, .1, "TreeGrow", {At = T.Base})
+	S.Cue(ctx, .7, "CelDetonate", {At = function() return P.Torso end, Volume = .7})
+	S.Cue(ctx, 1.2, "LotusBloom", {At = function() return P.Root end})
+	S.Cue(ctx, 1.35, "CelShockwave", {At = function() return T.Top end, Volume = .8})
+	S.Cue(ctx, 1.7, "CelTitle")
+	S.Cue(ctx, 6.3, "LotusBloom", {Pitch = .85, Volume = .7})
+	S.Cue(ctx, 6.4, "CelLand")
 	K.Title(ctx, 1.7, "embers", 8)
 	return LEN
 end

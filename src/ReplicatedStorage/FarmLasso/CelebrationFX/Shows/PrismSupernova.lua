@@ -9,6 +9,7 @@
 -- triple shell, one ray rotation, the crown. Set 3: colour drains over the charge-up, two rotations, the shard scatter.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local RB = FX.Rainbow
 local PALMS = {RightElbow = CFrame.Angles(.85, 0, .35), LeftElbow = CFrame.Angles(.85, 0, -.35)}
@@ -113,6 +114,7 @@ end
 local function rays(ctx, o)
 	local T0, T1 = o.T0, o.T0 + o.Turns * 2.4
 	local list, targets = {}, {}
+	for i = 1, 7 do S.Cue(ctx, T0 + (i - 1) * .1, "LighthouseSweep", {Pitch = 1 + i * .06, Volume = .6, At = o.Origin}) end
 	ctx:At(T0, function()
 		for i = 1, 7 do
 			local r = K.Mesh(ctx, "GodRay", {Color = RB[i], Transparency = .35})
@@ -176,6 +178,7 @@ end
 local function shards(ctx, at, origin)
 	ctx:At(at, function()
 		local from = origin()
+		S.Now(ctx, "GlassShatter", {At = from})
 		local list = {}
 		for i = 1, K.Count(ctx, 24) do
 			local col = RB[(i - 1) % 7 + 1]
@@ -253,6 +256,9 @@ function M.Set1(ctx, def)
 	-- four ribbon arcs leave the frame, the small crown forms
 	K.Sweeps(ctx, {Colors = {c3, W}, T0 = .35, T1 = .55, Period = .05, Radius = 4, Height = 3, Climb = 10, Dur = .5, Width = .8})
 	crown(ctx, {T0 = .5, T1 = 2.15, Radius = 1.2, Scale = .7})
+	S.Cue(ctx, .3, "CelShockwave")
+	S.Cue(ctx, .5, "GemCrown", {Volume = .6})
+	S.Cue(ctx, 1.0, "CelTitle")
 	K.Title(ctx, 1.0, "glitch", 7.5)
 	return LEN
 end
@@ -269,6 +275,7 @@ function M.Set2(ctx, def)
 	K.TimeScale(ctx, {T0 = .05, T1 = SNAP, Radius = 30, Scale = .02})
 	ctx:Grade({Saturation = -1}, .1, SNAP - .1, .4)
 	freeze(ctx, P, .05, SNAP)
+	for i = 1, 2 do S.Cue(ctx, .05 + i * .12, "CelImpact", {Volume = .35, Pitch = 1.3, Rate = 1}) end -- sound: the stutter ticks (rate pinned inside the freeze)
 	local Pm = prism(ctx, {T0 = .15, T1 = 4.4})
 	star(ctx, P, SNAP - .4, c3)
 	-- the snap: time resumes, the impact frame, the body shatters for three frames inside the three shells
@@ -276,6 +283,8 @@ function M.Set2(ctx, def)
 	K.Shatter(ctx, P, {At = SNAP, Colors = {W, c2, c3}, Chunks = 20, Spread = .9, Reform = .35, ReformCF = home * CFrame.new(0, 2, 0), FanRadius = 3,
 		OnExplode = function(origin)
 			ctx:ImpactFrame()
+			S.Now(ctx, "CelImpact")
+			S.Now(ctx, "CelDetonate", {At = origin})
 			shells(ctx, origin, SNAP, 18, c2, c3, 6)
 		end})
 	K.Herd(ctx, {At = SNAP + .05, Radius = 16, Color = c2, Flavour = "flinch"})
@@ -283,6 +292,11 @@ function M.Set2(ctx, def)
 	hover(ctx, P, SNAP + .37, 4.6, 2)
 	rays(ctx, {T0 = 1.0, Turns = 1, Origin = Pm.Pos})
 	crown(ctx, {T0 = 1.0, T1 = 4.8, Radius = 1.6})
+	S.Duck(ctx, 0, LEN)
+	for i = 0, 2 do S.Cue(ctx, SNAP + i * .12, "CelShockwave", {Volume = i == 0 and 1 or .7}) end
+	S.Cue(ctx, 1.0, "GemCrown")
+	S.Cue(ctx, 3.8, "CelTitle")
+	S.Cue(ctx, 4.6, "CelLand")
 	K.Title(ctx, 3.8, "glitch", 7.5)
 	return LEN
 end
@@ -303,6 +317,7 @@ function M.Set3(ctx, def)
 	-- t = 0: the freeze proper: time stops within thirty studs, the stutter ticks, the star condenses at the chest
 	K.TimeScale(ctx, {T0 = 0, T1 = SNAP, Radius = 30, Scale = .02})
 	freeze(ctx, P, 0, SNAP)
+	for i = 1, 2 do S.Cue(ctx, i * .12, "CelImpact", {Volume = .35, Pitch = 1.3, Rate = 1}) end -- sound: the stutter ticks (rate pinned inside the freeze)
 	star(ctx, P, SNAP - .42, c3)
 	-- the snap: the FOV punch and impact frame, the three shells, every light flashes white, the shards scatter, the
 	-- herd restarts at once, the body re-forms hovering
@@ -310,6 +325,8 @@ function M.Set3(ctx, def)
 	K.Shatter(ctx, P, {At = SNAP, Colors = {W, c2, c3}, Chunks = 26, Spread = 1.1, Reform = .35, ReformCF = home * CFrame.new(0, 2, 0), FanRadius = 3,
 		OnExplode = function(origin)
 			ctx:ImpactFrame()
+			S.Now(ctx, "CelImpact")
+			S.Now(ctx, "CelDetonate", {At = origin})
 			K.FOV(ctx, 12, .06, .45)
 			shells(ctx, origin, SNAP, 22, c2, c3, 6)
 			K.LightPaint(ctx, {At = 0, Radius = 40, Color = W, Hold = .5, Boost = 2})
@@ -320,6 +337,14 @@ function M.Set3(ctx, def)
 	-- the rays sweep two full rotations and leave every animal a colour; the crown cycles for the hold and lands
 	rays(ctx, {T0 = 1.15, Turns = 2, Origin = Pm.Pos, Leave = 1.0})
 	crown(ctx, {T0 = 1.1, T1 = 7.1, Radius = 1.6})
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	for i = 0, 2 do S.Cue(ctx, SNAP + i * .12, "CelShockwave", {Volume = i == 0 and 1 or .7}) end
+	S.Cue(ctx, SNAP + .3, "CelShimmer")
+	S.Bed(ctx, SNAP + .4, LEN - .8)
+	S.Cue(ctx, 1.1, "GemCrown")
+	S.Cue(ctx, 5.9, "CelTitle")
+	S.Cue(ctx, 6.9, "CelLand")
 	K.Title(ctx, 5.9, "glitch", 8)
 	return LEN
 end

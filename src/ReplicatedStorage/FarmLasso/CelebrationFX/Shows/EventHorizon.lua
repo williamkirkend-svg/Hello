@@ -9,6 +9,7 @@
 local Players = game:GetService("Players")
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W = Vector3.new, FX.W
 local BLACK = Color3.new()
 local M = {Pre = 1.0}
@@ -214,6 +215,7 @@ end
 -- the crater: an orange scorch ring and cracks underfoot, a ground ring, sparks, a shake, and a kneel held until near
 -- the end of the show (t0 is the landing time)
 local function crater(ctx, P, C, t0, len)
+	S.Now(ctx, "CelLand")
 	local c1, c2 = C[1], C[2]
 	local pos = ctx.Base.Position
 	K.Stamp(ctx, pos, {Mesh = "ScorchRing", Color = c2, Scale = 1.6, Life = len - t0 - .1, Rise = .3})
@@ -245,6 +247,9 @@ function M.Set1(ctx, def)
 		shellPop(ctx, pos, 5, c1)
 		K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .15), 1, 10, c2, .4, .35)
 	end)
+	S.Loop(ctx, 0, 1.7, "SuckDrone", {K = .3, Volume = .5, Fade = .25})
+	S.Cue(ctx, 1.95, "CelShockwave", {Volume = .7})
+	S.Cue(ctx, 1.9, "CelTitle")
 	K.Title(ctx, 1.9, "embers", 7.5)
 	return LEN
 end
@@ -269,6 +274,14 @@ function M.Set2(ctx, def)
 	ctx:At(3.25, function() P:Visible(false) blackout(ctx) end)
 	ctx:At(3.33, function() supernova(ctx, centre(), 15, C, 1.6) end)
 	comet(ctx, P, centre, 3.5, C, function() crater(ctx, P, C, 3.8, LEN) end)
+	S.Duck(ctx, 0, 3.33, 0, 0)
+	S.Duck(ctx, 3.45, LEN)
+	local suck = S.Loop(ctx, 0, 2.95, "SuckDrone", {Fade = .3})
+	ctx:Every(function(t) if t > 2.95 then return true end suck:Set(math.clamp(t / 2.9, 0, 1)) end)
+	S.Cue(ctx, 3.33, "Supernova")
+	S.Cue(ctx, 3.33, "CelImpact")
+	S.Cue(ctx, 3.5, "CelWhooshL", {At = function() return P.Torso end})
+	S.Cue(ctx, 3.95, "CelTitle")
 	K.Title(ctx, 3.95, "embers", 7.5)
 	return LEN
 end
@@ -304,6 +317,18 @@ function M.Set3(ctx, def)
 	ctx:At(4.25, function() P:Visible(false) blackout(ctx) end)
 	ctx:At(4.33, function() supernova(ctx, centre(), 30, C, 2.5) end)
 	comet(ctx, P, centre, 4.55, C, function() crater(ctx, P, C, 4.85, LEN) end)
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, 4.33, 0, 0)
+	S.Duck(ctx, 4.45, LEN)
+	S.Hit(ctx, 0, "M")
+	local suck = S.Loop(ctx, 0, 3.95, "SuckDrone", {Fade = .3})
+	ctx:Every(function(t) if t > 3.95 then return true end suck:Set(math.clamp(t / 3.9, 0, 1)) end)
+	S.Cue(ctx, 4.33, "Supernova")
+	S.Cue(ctx, 4.33, "CelImpact")
+	S.Cue(ctx, 4.4, "CelShockwave", {Volume = .7})
+	S.Cue(ctx, 4.55, "CelWhooshL", {At = function() return P.Torso end})
+	S.Bed(ctx, 4.7, LEN - .8, {K = .35})
+	S.Cue(ctx, 5.1, "CelTitle")
 	K.Title(ctx, 5.1, "embers", 8)
 	return LEN
 end

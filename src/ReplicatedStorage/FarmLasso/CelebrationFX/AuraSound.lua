@@ -40,7 +40,7 @@ local function book(ctx)
 		local r = ctx.TimeRate or 1
 		if r ~= lastRate then
 			lastRate = r
-			for _, h in list do if not h.Done then h:SetRate(r) end end
+			for _, h in list do if not h.Done and not h.FixedRate then h:SetRate(r) end end
 		end
 	end)
 	ctx:OnCleanup(function()
@@ -71,26 +71,31 @@ local function where(ctx, at)
 end
 local function opts(ctx, o)
 	o = o or {}
-	return {At = where(ctx, o.At), Volume = (o.Volume or 1) * (ctx.Quality or 1), Pitch = o.Pitch, Rate = ctx.TimeRate or 1,
+	return {At = where(ctx, o.At), Volume = (o.Volume or 1) * (ctx.Quality or 1), Pitch = o.Pitch, Rate = o.Rate or ctx.TimeRate or 1,
 		Group = o.Group or "Celebration", Cooldown = o.Cooldown}
 end
+-- o.Rate pins a sound's rate (it ignores ctx.TimeRate: the stutter ticks inside a freeze)
+local function keep(list, h, o)
+	if h then
+		if o and o.Rate then h.FixedRate = true end
+		table.insert(list, h)
+	end
+	return h
+end
 
--- a one-shot at time t (negative t is the charge-up). o: At, Volume, Pitch, Air, Local, MinSet, Chance, Cooldown.
+-- a one-shot at time t (negative t is the charge-up). o: At, Volume, Pitch, Rate (pinned), Air, Local, MinSet, Chance, Cooldown.
 function S.Cue(ctx, t, name, o)
 	if not allowed(ctx, name, o) then return end
 	local list = book(ctx)
 	ctx:At(t, function()
 		if not ctx.Alive then return end
-		local h = Kit.Play(name, opts(ctx, o))
-		if h then table.insert(list, h) end
+		keep(list, Kit.Play(name, opts(ctx, o)), o)
 	end)
 end
 -- play now (from inside a callback such as OnExplode / OnU)
 function S.Now(ctx, name, o)
 	if not allowed(ctx, name, o) or not ctx.Alive then return nil end
-	local h = Kit.Play(name, opts(ctx, o))
-	if h then table.insert(book(ctx), h) end
-	return h
+	return keep(book(ctx), Kit.Play(name, opts(ctx, o)), o)
 end
 -- a loop from t0 to t1 (nil t1 = until the show ends). Returns a proxy: :Set(k) works before the loop starts.
 function S.Loop(ctx, t0, t1, name, o)
@@ -110,11 +115,10 @@ function S.Loop(ctx, t0, t1, name, o)
 		local po = opts(ctx, o)
 		po.K = proxy.K
 		po.FadeIn = o.FadeIn
-		local h = Kit.Loop(name, po)
+		local h = keep(list, Kit.Loop(name, po), o)
 		if h then
 			proxy.H = h
 			h.Loop = true
-			table.insert(list, h)
 		end
 	end)
 	if t1 then ctx:At(t1, function() proxy:Stop(o.Fade or .35) end) end

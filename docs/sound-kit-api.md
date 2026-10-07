@@ -62,7 +62,7 @@ local S = require(script.Parent.Parent.AuraSound)   -- from a Shows/<Id>.lua
 
 - `S.Cue(ctx, t, name, o)`: a one-shot at show time `t` (negative = charge-up), 3D at the player's feet (`ctx.Anchor`)
   or `o.At` (a part, attachment, Vector3, or a function returning one, evaluated at `t`). `o.Volume`, `o.Pitch`,
-  `o.Cooldown`; `o.Local = true` only for your own show; `o.MinSet` skips below that set; `o.Chance` (0..1);
+  `o.Cooldown`; `o.Rate` pins the playback rate (the sound ignores `ctx.TimeRate`: stutter ticks inside a freeze); `o.Local = true` only for your own show; `o.MinSet` skips below that set; `o.Chance` (0..1);
   `o.Air = true` marks a tail / shimmer (skipped on far shows, like the cues in AuraSound's AIR list).
 - `S.Now(ctx, name, o)`: play immediately (inside OnExplode / OnU / an Every body). Returns the handle.
 - `S.Loop(ctx, t0, t1, name, o)`: a loop between two beats (nil `t1` = until the show stops), returns a proxy with

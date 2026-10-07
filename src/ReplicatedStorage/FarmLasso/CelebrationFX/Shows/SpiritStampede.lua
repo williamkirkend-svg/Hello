@@ -11,6 +11,7 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local NAVY = Color3.fromRGB(22, 18, 60)
 local FALLBACK_HERD = {"Horse", "Bison", "Cow", "Llama", "Reindeer", "Donkey"}
@@ -172,15 +173,19 @@ local function herd(ctx, V, Pt, c1, c2, c3, o)
 		players[j] = {Part = tg.Part, Hl = hl, Hot = 0}
 	end
 	local spawn = V3(Pt.Pos.X, groundY, Pt.Pos.Z)
+	local hooves = S.Loop(ctx, o.Born, o.End or o.Until, "GhostHooves", {Fade = .5})
+	local lastLive = -1
 	ctx:Every(function(t, dt)
 		if t > (o.End or 99) then for _, g in H.Ghosts do if not g.Gone then vanish(ctx, g, c3) end end for _, p in players do p.Hl:Destroy() end return true end
 		local parts, cfs = {}, {}
 		local centre = ctx.Base.Position
+		local live = 0
 		for i, g in H.Ghosts do
 			local age = t - g.Born
 			if g.Gone or age < 0 then continue end
 			local over = t - g.Until
 			if over > .6 then vanish(ctx, g, c3) continue end
+			live += 1
 			local vis = math.clamp(age / .35, 0, 1)
 			local alt = o.Alt(t) + math.max(0, over) ^ 2 * 16
 			if i == 1 and H.LeadAlt then alt += (H.LeadAlt - alt) * H.LeadK end
@@ -198,6 +203,7 @@ local function herd(ctx, V, Pt, c1, c2, c3, o)
 			end
 			for _, p in players do if p.Part.Parent and (p.Part.Position - pos).Magnitude < 3 then p.Hot = .4 end end
 		end
+		if live ~= lastLive then lastLive = live hooves:Set(live / math.max(1, n)) end
 		if #parts > 0 then workspace:BulkMoveTo(parts, cfs, Enum.BulkMoveMode.FireCFrameChanged) end
 		for _, g in H.Ghosts do if not g.Gone then eye(g) end end
 		for _, p in players do
@@ -256,6 +262,7 @@ local function bison(ctx, V, Pt, c1, c2, c3, o)
 			local k = FX.ease(w / .7)
 			pos = p2:Lerp(stop, k)
 			local bell = FX.ease((w - .7) / .35)
+			if not g.Bellowed and w > .9 then g.Bellowed = true S.Now(ctx, "SpiritBellow", {At = g.Head or g.Root}) end
 			cf = CFrame.lookAt(pos, pos + (stop - p2).Unit):Lerp(stopCF * CFrame.Angles(.3 * bell, 0, 0), k)
 			walking = k < 1
 			if breath then breath.Rate = (w > .9 and w < .9 + o.Bellow) and 40 * (ctx.Quality or 1) or 0 end
@@ -294,6 +301,8 @@ function M.Set1(ctx, def)
 	ctx:At(.12, function() open(ctx, Pt, c1, c2, c3, false) end)
 	herd(ctx, V, Pt, c1, c2, c3, {Count = 3, Born = .35, Interval = .15, Dur = 2.2, Laps = .5, End = 2.5,
 		R = function() return 5.5 end, Dir = function() return 1 end, Alt = function(t) return math.max(0, (t - .8)) * .6 end})
+	S.Cue(ctx, .12, "PortalOpen", {At = function() return Pt.Pos end, Volume = .7})
+	S.Cue(ctx, .9, "CelTitle")
 	K.Title(ctx, .9, "embers", 7.5)
 	return LEN
 end
@@ -310,11 +319,17 @@ function M.Set2(ctx, def)
 	ctx:At(.15, function() open(ctx, Pt, c1, c2, c3, true) end)
 	herd(ctx, V, Pt, c1, c2, c3, {Count = 8, Born = .4, Interval = .14, Dur = 2.4, Until = 4.0, End = 4.8,
 		R = function() return 7 end, Dir = function() return 1 end, Alt = function(t) return 3 * FX.ease((t - .8) / 3.2) end})
-	bison(ctx, V, Pt, c1, c2, c3, {Born = 2.2, Lap = 1.0, Leap = .6, OnLeap = function() ctx:Shake(.2, .3) K.FOV(ctx, 4, .08, .4) end})
+	bison(ctx, V, Pt, c1, c2, c3, {Born = 2.2, Lap = 1.0, Leap = .6, OnLeap = function() S.Now(ctx, "SpiritBellow") ctx:Shake(.2, .3) K.FOV(ctx, 4, .08, .4) end})
 	K.Herd(ctx, {At = .9, Radius = 16, Color = c2, Flavour = "lookup"})
 	K.Herd(ctx, {At = 3.4, Radius = 16, Color = c2, Flavour = "flinch"})
 	K.Float(ctx, P, {T0 = .3, T1 = 4.3, Height = 1.5, Rise = .6, Fall = .4, Spin = .35, Pose = "Wide"})
 	ctx:At(4.0, function() K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .2), 2, 24, c2, .5, .4) end)
+	S.Duck(ctx, 0, LEN)
+	S.Hit(ctx, .15, "M")
+	S.Cue(ctx, .15, "PortalOpen", {At = function() return Pt.Pos end})
+	S.Cue(ctx, 3.3, "CelTitle")
+	S.Cue(ctx, 4.0, "CelShockwave", {Volume = .7})
+	S.Cue(ctx, 4.3, "CelLand")
 	K.Title(ctx, 3.3, "embers", 7.5)
 	return LEN
 end
@@ -342,6 +357,7 @@ function M.Set3(ctx, def)
 		end
 	end)
 	ctx:Repeat(-pre + .25, -.05, .33, function()
+		S.Now(ctx, "CelLand", {Volume = .5, Pitch = .8})
 		ctx:Shake(.12, .18)
 		K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .15), 1, 7, dark, .4, .3)
 	end)
@@ -386,6 +402,8 @@ function M.Set3(ctx, def)
 	bison(ctx, V, Pt, c1, c2, c3, {Born = 3.2, Lap = 1.3, Leap = .7, Bellow = 1.0,
 		OnLeap = function(pos)
 			ctx:ImpactFrame()
+			S.Now(ctx, "CelImpact")
+			S.Now(ctx, "CelWhooshL", {At = pos, Volume = .8})
 			ctx:Shake(.3, .35)
 			K.FOV(ctx, 6, .08, .5)
 			K.Starburst(ctx, pos, {Colors = {c1, c3}, Size = 10, Count = 24})
@@ -395,6 +413,16 @@ function M.Set3(ctx, def)
 		K.ShockRing(ctx, CFrame.new(Pt.Pos) * (CFrame.lookAt(Vector3.zero, -Pt.Back) * CFrame.Angles(math.pi / 2, 0, 0)), 4, 26, c3, .6, .4)
 		ctx:Flare(Pt.Pos, 10, c2, .5)
 	end)
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Hit(ctx, 0, "L")
+	S.Bed(ctx, .4, LEN - .8)
+	S.Cue(ctx, .1, "PortalOpen", {At = function() return Pt.Pos end})
+	S.Cue(ctx, R0 + .1, "CelWhooshL", {At = function() return P.Torso end})
+	S.Cue(ctx, 4.9, "AnimalDairyCow", {Pitch = .6, Volume = .6})
+	S.Cue(ctx, 5.0, "CelTitle")
+	S.Cue(ctx, R1 + .45, "CelLand")
+	S.Cue(ctx, 6.6, "CelShockwave", {At = function() return Pt.Pos end, Volume = .7})
 	K.Title(ctx, 5.0, "embers", 8)
 	return LEN
 end

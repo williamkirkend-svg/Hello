@@ -45,8 +45,14 @@ tags to the scripts (Script Sync drops them).
 GameSounds works on its own: music, ambience, the fountain, random animal calls, herd joins (it watches the `Herd`
 attribute on the player and the character), footsteps for every character, hover / click / open / close / tab on every
 button and panel, selling (a RemoteEvent named `Sold`, or `Event` with `"Sold"` as its first argument), quest flashes
-(a BindableEvent named `QuestFlash`) and the settings panel (the note button bottom-left; move it with the
-`ButtonPosition` attribute on the `SoundSettings` ScreenGui).
+(a BindableEvent named `QuestFlash`) and the settings panel (the note button bottom-left; move it by setting the
+`ButtonPosition` attribute (a UDim2) on the `SoundSettings` ScreenGui at runtime). It mutes the default character
+sounds' `Running` loop on every character so footsteps don't double (jump and land stay).
+
+Two things to confirm in Studio: that herd animals in the world are Models named by their species (or carry a
+`Species` attribute) under `workspace.FarmLassoWorld`, which is how the random calls find them; and whether `Sold`
+is sent to everyone. If it is broadcast with the seller in the payload (`Player`, `UserId` or `Name`), only the
+seller hears it; if it is broadcast without one, add the seller to the payload or everyone hears each sale.
 
 ## 4. The lasso loop: one-line hooks in FarmLassoClient
 

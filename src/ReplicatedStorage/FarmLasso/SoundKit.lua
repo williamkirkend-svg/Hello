@@ -2,7 +2,7 @@
 --
 --   local Snd = require(ReplicatedStorage.FarmLasso.SoundKit)
 --   Snd.Play("CatchChime")                                  -- 2D, the cue's own volume and pitch spread
---   Snd.Play("RopeLand", {At = animalPart, Volume = .8})    -- 3D from a part / attachment / Vector3
+--   Snd.Play("RopeLand", {At = animalPart, Volume = .8})    -- 3D from a part / attachment / model / Vector3
 --   local h = Snd.Loop("LassoCharge")  h:Set(charge)  h:Stop(.2)   -- a loop with an intensity curve
 --   Snd.Duck("Music", .3, 5)                                -- dip a group for 5 s, ease back
 --   Snd.SetVolume("Music", .5)  Snd.GetVolume("Music")      -- the player's sliders (0..1)
@@ -13,8 +13,11 @@
 --
 -- Groups (SoundGroups under SoundService, made client-side on first use):
 --   Master > Music, SFX (> UI, Celebration), Ambience.  Volume = default x the player's slider x the duck.
--- Budget: at most 24 one-shots (14 on touch) and 8 loops at once; the oldest one-shot is dropped first. A cue can't
--- start twice inside its cooldown (default 40 ms). Variants round-robin and never repeat back to back.
+-- 3D sounds never live under the caller's part: every Sound sits under one of the kit's own Attachments on the
+-- Terrain and follows its part each frame, so a part destroyed mid-sound (a respawn, a caught animal, a show's
+-- folder) can never take a pooled Sound with it.
+-- Budget: at most 24 one-shots (14 on touch) and 8 loops at once; the oldest is dropped first. A cue can't start
+-- twice inside its cooldown (default 40 ms). Variants round-robin and never repeat back to back.
 -- Server: everything is a no-op (sounds are client-side), so modules shared with the server can require this safely.
 local SoundService = game:GetService("SoundService")
 local RunService = game:GetService("RunService")
@@ -37,14 +40,15 @@ K.Cues = Cues
 K.Ids = Ids
 
 local TREE = {Music = "Master", SFX = "Master", Ambience = "Master", UI = "SFX", Celebration = "SFX"}
-local groups, state = {}, {}   -- name -> SoundGroup; name -> {User = 1, Duck = 1, DuckTarget = 1, DuckUntil = 0}
-local pool = {}                -- file stem -> {Sound, ...}
+local groups, state = {}, {}   -- name -> SoundGroup; name -> {User, Duck, Ducks = {token -> {Level, Until, Fade}}}
+local pool = {}                -- file stem -> {Sound, ...} (idle Sounds sit under SoundService)
 local playing = {}             -- one-shot handles, oldest first
 local loops = {}               -- loop handles
 local lastAt, lastVariant = {}, {}
 local warned = {}
-local anchors = {}             -- free attachments for Vector3 positions
+local anchors = {}             -- free Terrain attachments for 3D positions
 local listeners = {}           -- volume-changed callbacks
+local EMPTY = {}
 
 ---------------------------------------------------------------- groups and volumes
 local function applyVolume(name)
@@ -63,7 +67,7 @@ local function group(name)
 		g.Parent = parent
 	end
 	groups[name] = g
-	state[name] = state[name] or {User = 1, Duck = 1, DuckTarget = 1, DuckUntil = 0, DuckFade = .6}
+	state[name] = state[name] or {User = 1, Duck = 1, Ducks = {}, DuckFade = .6}
 	applyVolume(name)
 	return g
 end
@@ -72,6 +76,7 @@ function K.SetVolume(name, v)
 	v = math.clamp(tonumber(v) or 1, 0, 1)
 	group(name)
 	if not state[name] then return end
+	if state[name].User == v then return end
 	state[name].User = v
 	applyVolume(name)
 	if name == "SFX" then
@@ -97,30 +102,22 @@ function K.LoadVolumes(tbl)
 	for _, n in K.Sliders do if tbl[n] ~= nil then K.SetVolume(n, tbl[n]) end end
 end
 function K.OnVolumeChanged(fn) table.insert(listeners, fn) end
+
+local ensureStep
 -- dip a group to `level` (0..1 of its normal volume) for `hold` seconds, then ease back over `fade` (default .6).
--- Overlapping ducks keep the lowest level and the latest end time.
+-- Ducks stack: the lowest active level wins; each one ends on its own. Returns a release function.
 function K.Duck(name, level, hold, fade)
 	group(name)
 	local s = state[name]
-	if not s then return end
-	local now = os.clock()
-	local untilT = now + (hold or 1)
-	if s.DuckUntil > now then
-		s.DuckTarget = math.min(s.DuckTarget, level)
-		s.DuckUntil = math.max(s.DuckUntil, untilT)
-	else
-		s.DuckTarget = level
-		s.DuckUntil = untilT
-	end
-	s.DuckFade = fade or .6
+	if not s then return function() end end
+	ensureStep()
+	local token = {Level = math.clamp(tonumber(level) or 1, 0, 1), Until = os.clock() + (hold or 1), Fade = fade or .6}
+	s.Ducks[token] = true
+	return function() s.Ducks[token] = nil end
 end
 -- hold a duck until the returned function is called (celebrations of unknown length, menus)
-function K.DuckHold(name, level)
-	K.Duck(name, level, 3600, .6)
-	return function()
-		local s = state[name]
-		if s then s.DuckUntil = os.clock() end
-	end
+function K.DuckHold(name, level, fade)
+	return K.Duck(name, level, 3600, fade)
 end
 
 ---------------------------------------------------------------- cue lookup
@@ -172,8 +169,13 @@ end
 local function pickFile(name, files)
 	if #files == 1 then return files[1] end
 	local last = lastVariant[name]
-	local i = math.random(1, #files - 1)
-	if last and i >= last then i += 1 end
+	local i
+	if last then
+		i = math.random(1, #files - 1)
+		if i >= last then i += 1 end
+	else
+		i = math.random(1, #files)
+	end
 	lastVariant[name] = i
 	return files[i] or files[1]
 end
@@ -184,22 +186,32 @@ local function spread(range, rng)
 end
 
 ---------------------------------------------------------------- instances
-local function acquire(file, def)
+local function acquire(file)
 	local list = pool[file.Key]
 	if not list then list = {} pool[file.Key] = list end
-	for _, s in list do
-		if not s.IsPlaying and not s:GetAttribute("Busy") then return s end
+	for i = #list, 1, -1 do
+		local s = list[i]
+		if s.Parent == nil then
+			table.remove(list, i) -- destroyed from outside; never hand it out again
+		elseif not s.IsPlaying and not s:GetAttribute("Busy") then
+			return s
+		end
 	end
 	local s = Instance.new("Sound")
 	s.Name = "FL_" .. file.Key
 	s.SoundId = file.Id
 	s.RollOffMode = Enum.RollOffMode.InverseTapered
+	s.Parent = SoundService
+	s.Destroying:Connect(function()
+		local idx = table.find(list, s)
+		if idx then table.remove(list, idx) end
+	end)
 	table.insert(list, s)
 	return s
 end
 local function anchor(pos)
 	local a = table.remove(anchors)
-	if not a then
+	if not a or a.Parent == nil then
 		a = Instance.new("Attachment")
 		a.Name = "FL_SoundAnchor"
 		a.Parent = workspace.Terrain
@@ -207,24 +219,27 @@ local function anchor(pos)
 	a.WorldPosition = pos
 	return a
 end
-local function placeSound(s, at, def)
-	local release
-	if typeof(at) == "Vector3" then
-		local a = anchor(at)
+local function posOf(inst)
+	if typeof(inst) == "Vector3" then return inst end
+	if typeof(inst) ~= "Instance" or inst.Parent == nil then return nil end
+	if inst:IsA("Attachment") then return inst.WorldPosition end
+	if inst:IsA("BasePart") then return inst.Position end
+	if inst:IsA("Model") then return inst:GetPivot().Position end
+	return nil
+end
+-- put the Sound where `at` is: 2D under SoundService, or 3D under one of our anchors (following `at` each frame)
+local function placeSound(h, s, at, def)
+	local pos = posOf(at)
+	if pos then
+		local a = anchor(pos)
+		h.Anchor = a
+		h.Follow = typeof(at) == "Instance" and at or nil
 		s.Parent = a
-		release = function() if a.Parent then table.insert(anchors, a) end end
-	elseif typeof(at) == "Instance" and (at:IsA("BasePart") or at:IsA("Attachment")) then
-		s.Parent = at
-	elseif typeof(at) == "Instance" and at:IsA("Model") then
-		s.Parent = at.PrimaryPart or at:FindFirstChildWhichIsA("BasePart") or SoundService
+		s.RollOffMinDistance = def.Min or 8
+		s.RollOffMaxDistance = def.Max or 80
 	else
 		s.Parent = SoundService
 	end
-	if s.Parent ~= SoundService then
-		s.RollOffMinDistance = def.Min or 8
-		s.RollOffMaxDistance = def.Max or 80
-	end
-	return release
 end
 
 -- a handle wraps one Sound for the caller: Stop(fade), SetVolume, SetPitch, SetRate, Set(intensity) for loops
@@ -232,88 +247,139 @@ local Handle = {}
 Handle.__index = Handle
 function Handle:Apply()
 	local s = self.Sound
-	if not s then return end
-	s.PlaybackSpeed = math.clamp(self.Pitch * self.Rate, .05, 8)
-	s.Volume = math.clamp(self.Volume * self.Scale, 0, 10)
+	if not s or s.Parent == nil then return end
+	local rate = math.clamp(self.Pitch * self.Rate, .05, 8)
+	local vol = math.clamp(self.Volume * self.Scale, 0, 10)
+	if rate ~= self.AppliedRate then self.AppliedRate = rate s.PlaybackSpeed = rate end
+	if vol ~= self.AppliedVolume then self.AppliedVolume = vol s.Volume = vol end
 end
-function Handle:SetVolume(v) self.Volume = v or self.Volume self:Apply() end
-function Handle:SetPitch(p) self.Pitch = p or self.Pitch self:Apply() end
+-- one-shots: an absolute volume / pitch. Loops: a multiplier on top of the cue's curve.
+function Handle:SetVolume(v)
+	if self.Loop then self.UserVolume = v or 1 else self.Volume = v or self.Volume end
+	self:Apply()
+end
+function Handle:SetPitch(p)
+	if self.Loop then self.UserPitch = p or 1 else self.Pitch = p or self.Pitch end
+	self:Apply()
+end
 function Handle:SetRate(r) self.Rate = r or 1 self:Apply() end
 -- loops: 0..1 along the cue's Curve (Pitch / Volume ranges); smoothed so a jittery input doesn't buzz
 function Handle:Set(k)
 	self.Target = math.clamp(tonumber(k) or 0, 0, 1)
 end
+function Handle:Finish()
+	if self.Finished then return end
+	self.Finished = true
+	self.Fading = nil
+	local s = self.Sound
+	if s and s.Parent ~= nil then
+		s:Stop()
+		s:SetAttribute("Busy", nil)
+		if s.Parent ~= SoundService then s.Parent = SoundService end
+	end
+	if self.Anchor then
+		if self.Anchor.Parent then table.insert(anchors, self.Anchor) end
+		self.Anchor = nil
+	end
+	self.Follow = nil
+end
+-- stop now (fade 0) or over `fade` seconds; a second Stop while fading finishes at once
 function Handle:Stop(fade)
-	if self.Done then return end
+	if self.Done then
+		if self.Fading and (fade or 0) <= 0 then self:Finish() end
+		return
+	end
 	self.Done = true
 	local s = self.Sound
 	fade = fade or 0
-	local function finish()
-		if s then s:Stop() s:SetAttribute("Busy", nil) end
-		if self.Release then self.Release() end
-		if s and s.Parent ~= SoundService and s.Parent then s.Parent = SoundService end
-	end
-	if fade > 0 and s and s.IsPlaying then
+	if fade > 0 and s and s.Parent ~= nil and s.IsPlaying then
 		local v0 = s.Volume
 		local t0 = os.clock()
 		self.Fading = function()
 			local u = (os.clock() - t0) / fade
-			if u >= 1 then finish() return true end
+			if u >= 1 or s.Parent == nil then self:Finish() return true end
 			s.Volume = v0 * (1 - u)
 		end
 	else
-		finish()
+		self:Finish()
+	end
+end
+-- the per-frame tick of a loop handle (returns true when the handle can be dropped)
+local function tickLoop(h, dt)
+	if h.Done then
+		if h.Fading then return h.Fading() end
+		return true
+	end
+	local k = h.Target or 0
+	h.K += (k - h.K) * math.min(1, dt * 12)
+	local c = h.Curve or EMPTY
+	local p, v = c.Pitch, c.Volume
+	h.Pitch = (p and (p[1] + (p[2] - p[1]) * h.K) or 1) * h.BasePitch * h.UserPitch
+	h.Volume = h.BaseVolume * (v and (v[1] + (v[2] - v[1]) * h.K) or 1) * h.UserVolume
+	h:Apply()
+	return false
+end
+local function follow(h)
+	local a = h.Anchor
+	if a and h.Follow then
+		local pos = posOf(h.Follow)
+		if pos then a.WorldPosition = pos else h.Follow = nil end -- the part is gone: stay where it was
 	end
 end
 
 local stepConn
-local function ensureStep()
+ensureStep = function()
 	if stepConn or not K.IsClient then return end
 	stepConn = RunService.Heartbeat:Connect(function(dt)
 		local now = os.clock()
-		-- ducks ease toward their target and back after their hold
+		-- ducks: the lowest active level wins; down in .15 s, back over the duck's fade
 		for name, s in state do
-			local target = s.DuckUntil > now and s.DuckTarget or 1
-			local rate = (target < s.Duck and .15 or s.DuckFade or .6)
+			local target, fadeT = 1, s.DuckFade
+			for token in s.Ducks do
+				if token.Until > now then
+					if token.Level < target then target = token.Level end
+					fadeT = token.Fade
+				else
+					s.Ducks[token] = nil
+				end
+			end
+			if target < 1 then s.DuckFade = fadeT end
+			local rate = target < s.Duck and .15 or (s.DuckFade or .6)
 			local step = dt / math.max(.05, rate)
 			local nd = s.Duck + math.clamp(target - s.Duck, -step, step)
 			if math.abs(nd - s.Duck) > 1e-4 then s.Duck = nd applyVolume(name) end
 		end
-		-- loops follow their intensity, with smoothing
 		for i = #loops, 1, -1 do
 			local h = loops[i]
-			if h.Done then
-				if not h.Fading or h.Fading() then table.remove(loops, i) end
-			else
-				local k = h.Target or 0
-				h.K += (k - h.K) * math.min(1, dt * 12)
-				local c = h.Curve or {}
-				local p, v = c.Pitch, c.Volume
-				h.Pitch = p and (p[1] + (p[2] - p[1]) * h.K) or h.BasePitch
-				h.Volume = h.BaseVolume * (v and (v[1] + (v[2] - v[1]) * h.K) or 1)
-				h:Apply()
-			end
+			follow(h)
+			if tickLoop(h, dt) then table.remove(loops, i) end
 		end
 		for i = #playing, 1, -1 do
 			local h = playing[i]
+			follow(h)
 			if h.Done then
 				if not h.Fading or h.Fading() then table.remove(playing, i) end
-			elseif not h.Sound.IsPlaying and now - h.T0 > .1 then
-				h:Stop()
-				table.remove(playing, i)
+			else
+				local s = h.Sound
+				local age = now - h.T0
+				-- finished (loaded, not playing, past its first frames), or never loaded within 30 s
+				if s.Parent == nil or (s.IsLoaded and not s.IsPlaying and age > .1) or age > 30 then
+					h:Stop()
+					table.remove(playing, i)
+				end
 			end
 		end
 	end)
 end
 
 ---------------------------------------------------------------- play
--- Play a cue. o: At (part / attachment / Vector3 / Model; nil = 2D), Volume (x cue), Pitch (x cue spread), Rate,
+-- Play a cue. o: At (part / attachment / model / Vector3; nil = 2D), Volume (x cue), Pitch (x cue spread), Rate,
 -- Group (override), Delay (s), Cooldown (override). Returns a handle or nil (silent / budget / cooldown).
 function K.Play(name, o)
 	if not K.IsClient then return nil end
 	local def = cue(name)
 	if not def then return nil end
-	o = o or {}
+	o = o or EMPTY
 	if o.Delay and o.Delay > 0 then
 		local d = table.clone(o) d.Delay = nil
 		task.delay(o.Delay, K.Play, name, d)
@@ -329,16 +395,16 @@ function K.Play(name, o)
 	if def.Loop then return K.Loop(name, o) end
 	if #playing >= K.MaxOneShots then
 		local victim = table.remove(playing, 1)
-		if victim then victim:Stop() end
+		if victim then victim:Stop(0) victim:Finish() end
 	end
 	local file = pickFile(name, files)
-	local s = acquire(file, def)
+	local s = acquire(file)
 	s:SetAttribute("Busy", true)
 	s.Looped = false
 	s.SoundGroup = group(o.Group or def.Group or "SFX")
 	local h = setmetatable({Sound = s, Name = name, T0 = now, Rate = o.Rate or 1, Scale = 1,
 		Pitch = spread(o.Pitch or 1) * spread(def.Pitch or {.95, 1.05}), Volume = (def.Volume or .7) * (o.Volume or 1)}, Handle)
-	h.Release = placeSound(s, o.At, def)
+	placeSound(h, s, o.At, def)
 	h:Apply()
 	s.TimePosition = 0
 	s:Play()
@@ -350,23 +416,24 @@ function K.Loop(name, o)
 	if not K.IsClient then return nil end
 	local def = cue(name)
 	if not def then return nil end
-	o = o or {}
+	o = o or EMPTY
 	local files = filesFor(name, def)
 	if #files == 0 then return nil end
 	ensureStep()
 	if #loops >= K.MaxLoops then
 		local victim = table.remove(loops, 1)
-		if victim then victim:Stop(.1) end
+		if victim then victim:Stop(0) victim:Finish() end
 	end
 	local file = pickFile(name, files)
-	local s = acquire(file, def)
+	local s = acquire(file)
 	s:SetAttribute("Busy", true)
 	s.Looped = true
 	s.SoundGroup = group(o.Group or def.Group or "SFX")
-	local h = setmetatable({Sound = s, Name = name, T0 = os.clock(), Rate = o.Rate or 1, Scale = 0, Loop = true, K = 0, Target = o.K or 0,
-		BasePitch = spread(o.Pitch or 1) * spread(def.Pitch or 1), BaseVolume = (def.Volume or .5) * (o.Volume or 1), Curve = def.Curve}, Handle)
+	local h = setmetatable({Sound = s, Name = name, T0 = os.clock(), Rate = o.Rate or 1, Scale = 0, Loop = true, K = o.K or 0, Target = o.K or 0,
+		BasePitch = spread(o.Pitch or 1) * spread(def.Pitch or 1), BaseVolume = (def.Volume or .5) * (o.Volume or 1), Curve = def.Curve,
+		UserVolume = 1, UserPitch = 1}, Handle)
 	h.Pitch, h.Volume = h.BasePitch, h.BaseVolume
-	h.Release = placeSound(s, o.At, def)
+	placeSound(h, s, o.At, def)
 	h:Apply()
 	s.TimePosition = (def.RandomStart ~= false and s.TimeLength > 0) and math.random() * s.TimeLength or 0
 	s:Play()
@@ -397,7 +464,7 @@ function K.Preload(names)
 	task.spawn(function()
 		local list = {}
 		for name, def in Cues do
-			if not names or table.find(names, name) then
+			if type(def) == "table" and (def.File or def.Volume) and (not names or table.find(names, name)) then
 				for _, f in filesFor(name, def) do
 					local s = Instance.new("Sound")
 					s.SoundId = f.Id
@@ -412,11 +479,11 @@ end
 -- cue helpers for the UI and shows
 function K.Has(name)
 	local def = Cues[name]
-	return def ~= nil and #filesFor(name, def) > 0
+	return type(def) == "table" and #filesFor(name, def) > 0
 end
 -- a numbered ladder: K.Ladder("LuckImpact", tier, o) plays LuckImpact<tier> clamped to the cues that exist
 function K.Ladder(prefix, n, o)
-	n = math.floor(tonumber(n) or 1)
+	n = math.max(1, math.floor(tonumber(n) or 1))
 	while n > 1 and not Cues[prefix .. n] do n -= 1 end
 	return K.Play(prefix .. n, o)
 end

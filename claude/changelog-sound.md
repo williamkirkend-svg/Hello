@@ -35,6 +35,8 @@ Sets 2 and 3 and come back.
   every 8 to 20 s from an animal within 60 studs at .3 to .45.
 - Time scale: `AuraKit.TimeScale` now sets `ctx.TimeRate` (its Scale, then 1); AuraSound applies it to every live
   show sound as playback speed.
+- 3D sounds never sit under the caller's part: the kit's own Terrain attachments follow the part each frame and
+  stay put when it is destroyed.
 - Loops in the pack are seamless (the last 10 percent crossfaded into the head); one-shots start within 5 ms, peak
   at -1 dBFS, loudness set per cue in SoundCues, never in the file.
 
@@ -67,7 +69,19 @@ celebration; a second player's show nearby; the sliders.
 
 ## Review
 
-REVIEWNOTES
+An independent adversarial review of SoundKit, AuraSound, GameSounds and three scored shows (Roblox API misuse,
+nil paths, pool and budget logic, per-frame cost, the mixing rules) found one crash path and eight behaviour bugs,
+all fixed: pooled Sounds parented under a caller's part were destroyed with it (a respawn, a caught animal, a
+show's folder) and then errored on reuse, so 3D sounds now live under the kit's own Terrain attachments and follow
+their part each frame; an evicted loop or an already-fading one-shot kept playing (Stop now finishes a fade on a
+second call); un-cached first plays were cut by the end sweep (it now waits for IsLoaded); the herd-join watcher
+shared one count table between the player and the character (per source now); every client would hear every sale
+if `Sold` is broadcast (the seller is checked in the payload; verify in Studio); loop SetVolume / SetPitch were
+overwritten each frame (multipliers now); ducks didn't tick before the first audible cue and a released hold
+cancelled other ducks (token ducks); the AIR cues reached near remote shows (own show only now); the Set 3
+ambience duck is .4 as pitched. Per-frame table allocation and redundant property writes in the loop tick, the
+slider spam, the first-variant pick, the Ladder clamp, "Stable" matching as a tab and the ButtonPosition attribute
+were tidied too.
 
 ## Still open
 

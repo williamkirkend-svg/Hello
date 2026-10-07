@@ -8,7 +8,7 @@
 --   S.Bed(ctx, .4, LEN - .8)                             -- CelBed under Set 3 (own show only)
 --   S.Duck(ctx, 0, LEN)                                  -- Music and Ambience down for the show (own show only)
 --
--- Rules (docs/sound-pitch.md section 4): volume scales by ctx.Quality; far shows (Quality < .5) skip "air" cues
+-- Rules (docs/sound-pitch.md section 4): volume scales by ctx.Quality; other players' shows skip the "air" cues
 -- (Air = true: shimmers, tails, beds, titles, the charge-up); only your own show ducks; only one remote show keeps
 -- loops; o.MinSet skips a cue below that set; o.Local = true plays only for your own show. Every live sound follows
 -- ctx.TimeRate (AuraKit.TimeScale publishes it: 1 normally, .1 during a slow-down) and dies with the show.
@@ -59,8 +59,8 @@ local function allowed(ctx, name, o)
 	o = o or {}
 	if o.Local and not ctx.Local then return false end
 	if o.MinSet and (ctx.Set or 3) < o.MinSet then return false end
-	local q = ctx.Quality or 1
-	if q < .5 and (o.Air or AIR[name]) then return false end
+	-- tails, beds, the title and the charge-up are for your own show only (other players hear the hits and signatures)
+	if not ctx.Local and (o.Air or AIR[name]) then return false end
 	if o.Chance and math.random() > o.Chance then return false end
 	return true
 end
@@ -102,7 +102,7 @@ function S.Loop(ctx, t0, t1, name, o)
 	o = o or {}
 	local proxy = {K = o.K or 0, Done = false}
 	function proxy:Set(k) self.K = k if self.H then self.H:Set(k) end end
-	function proxy:SetRate(r) if self.H then self.H:SetRate(r) end end
+	function proxy:SetRate(r) self.R = r if self.H then self.H:SetRate(r) end end
 	function proxy:Stop(fade) self.Done = true if self.H then self.H:Stop(fade or .3) end end
 	if not allowed(ctx, name, o) then return proxy end
 	if not ctx.Local then
@@ -115,6 +115,7 @@ function S.Loop(ctx, t0, t1, name, o)
 		local po = opts(ctx, o)
 		po.K = proxy.K
 		po.FadeIn = o.FadeIn
+		if proxy.R then po.Rate = proxy.R end
 		local h = keep(list, Kit.Loop(name, po), o)
 		if h then
 			proxy.H = h
@@ -139,18 +140,19 @@ function S.Hit(ctx, t, size, o)
 end
 -- the airy pad under a Set 3 (own show only, skipped far away). Returns the loop proxy.
 function S.Bed(ctx, t0, t1, o)
-	o = o or {}
+	o = o and table.clone(o) or {}
 	o.Local = true
 	o.K = o.K or .6
 	return S.Loop(ctx, t0, t1, "CelBed", o)
 end
--- Music and Ambience down for the show (own show only). levels default .3 / .6.
+-- Music and Ambience down for the show (own show only). Levels default .3 and .4 (Set 3) / .6 (Set 2).
 function S.Duck(ctx, t0, t1, music, ambience)
 	if not ctx.Local then return end
-	local dur = math.max(.5, (t1 or ctx.Length or 5) - (t0 or 0))
 	ctx:At(t0 or 0, function()
+		-- ctx.Length is only known after the builder returns, so read it here, at the beat
+		local dur = math.max(.5, (t1 or ctx.Length or 5) - (t0 or 0))
 		Kit.Duck("Music", music or .3, dur, .8)
-		Kit.Duck("Ambience", ambience or .6, dur, .8)
+		Kit.Duck("Ambience", ambience or ((ctx.Set or 3) >= 3 and .4 or .6), dur, .8)
 	end)
 end
 -- the Set 3 charge-up inhale ending exactly at t = 0 (own show only)

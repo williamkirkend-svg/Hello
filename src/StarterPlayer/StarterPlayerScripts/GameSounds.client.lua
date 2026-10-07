@@ -67,20 +67,21 @@ end
 ---------------------------------------------------------------- settings (volumes), saved through the server when it listens
 guard("settings", function()
 	local DEFAULTS = {Music = 1, SFX = 1, Ambience = 1}
+	local loading = false
 	local function load()
+		loading = true
 		local raw = player:GetAttribute("SoundVolumes")
-		if type(raw) == "string" and raw ~= "" then
-			local ok, tbl = pcall(HttpService.JSONDecode, HttpService, raw)
-			if ok and type(tbl) == "table" then Snd.LoadVolumes(tbl) return end
-		end
-		Snd.LoadVolumes(DEFAULTS)
+		local ok, tbl = false, nil
+		if type(raw) == "string" and raw ~= "" then ok, tbl = pcall(HttpService.JSONDecode, HttpService, raw) end
+		Snd.LoadVolumes(ok and type(tbl) == "table" and tbl or DEFAULTS)
+		task.defer(function() loading = false end)
 	end
 	load()
 	player:GetAttributeChangedSignal("SoundVolumes"):Connect(load)
 	-- send changes to the server (RemoteEvent FarmLasso.SoundSettings, optional), at most once a second
 	local pending = false
 	Snd.OnVolumeChanged(function()
-		if pending then return end
+		if pending or loading then return end
 		pending = true
 		task.delay(1, function()
 			pending = false
@@ -173,30 +174,31 @@ guard("animals", function()
 		end
 	end)
 	-- herd joins: the Herd attribute ("Chick:3,Pig:1") on the player or the character
-	local counts = {}
+	local counts = {} -- per source (the player and the character each carry their own attribute)
 	local function parse(raw)
 		local out = {}
 		for key, n in tostring(raw or ""):gmatch("([^,:]+):(%d+)") do out[key] = tonumber(n) end
 		return out
 	end
-	local function onHerd(raw, first)
+	local function onHerd(inst, raw, first)
 		local new = parse(raw)
+		local old = counts[inst] or {}
 		if not first then
 			local char = player.Character
 			local hrp = char and char:FindFirstChild("HumanoidRootPart")
 			for key, n in new do
-				if n > (counts[key] or 0) then
+				if n > (old[key] or 0) then
 					Snd.Play("HerdJoin", {Delay = .05})
 					animalCall(key, hrp, {Volume = .8, Delay = .25})
 					break
 				end
 			end
 		end
-		counts = new
+		counts[inst] = new
 	end
 	local function watch(inst, first)
-		onHerd(inst:GetAttribute("Herd"), first)
-		inst:GetAttributeChangedSignal("Herd"):Connect(function() onHerd(inst:GetAttribute("Herd"), false) end)
+		onHerd(inst, inst:GetAttribute("Herd"), first)
+		inst:GetAttributeChangedSignal("Herd"):Connect(function() onHerd(inst, inst:GetAttribute("Herd"), false) end)
 	end
 	watch(player, true)
 	local function onChar(char) watch(char, true) end
@@ -227,6 +229,12 @@ guard("footsteps", function()
 		if not hum or not hrp then return end
 		local st = {Hum = hum, Hrp = hrp, Local = isLocal, Dist = 0, Vol = isLocal and 1 or .5}
 		walkers[char] = st
+		-- the default character sounds' "Running" loop would double ours: mute it (jump, land and the rest stay)
+		local function muteRunning(c)
+			if c:IsA("Sound") and c.Name == "Running" then c.Volume = 0 end
+		end
+		for _, c in hrp:GetChildren() do muteRunning(c) end
+		hrp.ChildAdded:Connect(muteRunning)
 		hum.StateChanged:Connect(function(_, new)
 			if new == Enum.HumanoidStateType.Landed and hum.FloorMaterial ~= Enum.Material.Air then
 				Snd.Play(stepCue(hum.FloorMaterial), {At = hrp, Volume = st.Vol * 1.4, Pitch = .85})
@@ -282,7 +290,7 @@ guard("menus", function()
 	local function isTab(b)
 		local p = b.Parent
 		if not p then return false end
-		local hint = (p.Name:lower():find("tab") or b.Name:lower():find("tab")) ~= nil
+		local hint = (p.Name:lower():find("%f[%a]tab") or b.Name:lower():find("%f[%a]tab")) ~= nil -- "Tabs", not "Stable"
 		if not hint then return false end
 		local n = 0
 		for _, s in p:GetChildren() do if s:IsA("GuiButton") then n += 1 end end
@@ -351,7 +359,16 @@ end)
 
 ---------------------------------------------------------------- selling and quests (events the live scripts already fire)
 guard("events", function()
-	local function sell()
+	-- (if the server broadcasts Sold to everyone with the seller in the payload, only the seller hears it)
+	local function mine(data)
+		if type(data) ~= "table" then return true end
+		if data.Player ~= nil and data.Player ~= player then return false end
+		if data.UserId ~= nil and data.UserId ~= player.UserId then return false end
+		if data.Name ~= nil and type(data.Name) == "string" and data.Name ~= player.Name then return false end
+		return true
+	end
+	local function sell(data)
+		if not mine(data) then return end
 		Snd.Play("SellShower")
 		Snd.Play("SellDing", {Delay = 1.1})
 		Snd.Duck("Music", .5, 2.2, .8)
@@ -364,8 +381,8 @@ guard("events", function()
 			r.OnClientEvent:Connect(sell)
 		elseif r.Name == "Event" or r.Name == "Remote" or r.Name == "Client" then
 			-- a multiplexed remote: (kind, data)
-			r.OnClientEvent:Connect(function(kind)
-				if kind == "Sold" then sell() end
+			r.OnClientEvent:Connect(function(kind, data)
+				if kind == "Sold" then sell(data) end
 			end)
 		end
 	end
@@ -403,7 +420,11 @@ guard("panel", function()
 	btn.Name = "SoundButton"
 	btn.Size = UDim2.fromOffset(44, 44)
 	btn.AnchorPoint = Vector2.new(0, 1)
-	btn.Position = sg:GetAttribute("ButtonPosition") or UDim2.new(0, 12, 1, -12)
+	btn.Position = UDim2.new(0, 12, 1, -12)
+	sg:GetAttributeChangedSignal("ButtonPosition"):Connect(function()
+		local p = sg:GetAttribute("ButtonPosition")
+		if typeof(p) == "UDim2" then btn.Position = p end
+	end)
 	btn.BackgroundColor3 = Color3.fromRGB(28, 28, 34)
 	btn.BackgroundTransparency = .15
 	btn.Text = "♪"

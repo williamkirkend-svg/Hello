@@ -16,7 +16,8 @@ no-op, so shared modules can require the kit safely.
   Returns nil when silent, on cooldown or over budget. Variants round-robin and never repeat back to back.
 - `Snd.Ladder("LuckImpact", tier, o)` plays `LuckImpact<tier>` clamped to the highest cue that exists
   (`LuckImpact1..4`, `Fanfare1..4`, `RareReveal1..7`).
-- `handle:Stop(fade)`, `handle:SetVolume(v)`, `handle:SetPitch(p)`, `handle:SetRate(r)`.
+- `handle:Stop(fade)`, `handle:SetVolume(v)`, `handle:SetPitch(p)`, `handle:SetRate(r)`. On a loop, SetVolume and
+  SetPitch are multipliers on top of the cue's curve; on a one-shot they are absolute.
 
 ## Loops
 
@@ -34,8 +35,8 @@ no-op, so shared modules can require the kit safely.
   Setting `SFX` also sets `UI` and `Celebration`. `Snd.Volumes()` / `Snd.LoadVolumes(tbl)` for saving;
   `Snd.OnVolumeChanged(fn(name, v))`.
 - `Snd.Duck("Music", level, hold, fade)` dips a group to `level` for `hold` seconds (down in .15 s, back over `fade`,
-  default .6). Overlapping ducks keep the lowest level and the latest end. `Snd.DuckHold(name, level)` returns a
-  release function.
+  default .6) and returns a release function. Ducks stack: the lowest active level wins and each ends on its own.
+  `Snd.DuckHold(name, level)` is a duck with no end; call its release function.
 
 ## Budget and misc
 
@@ -63,15 +64,19 @@ local S = require(script.Parent.Parent.AuraSound)   -- from a Shows/<Id>.lua
 - `S.Cue(ctx, t, name, o)`: a one-shot at show time `t` (negative = charge-up), 3D at the player's feet (`ctx.Anchor`)
   or `o.At` (a part, attachment, Vector3, or a function returning one, evaluated at `t`). `o.Volume`, `o.Pitch`,
   `o.Cooldown`; `o.Rate` pins the playback rate (the sound ignores `ctx.TimeRate`: stutter ticks inside a freeze); `o.Local = true` only for your own show; `o.MinSet` skips below that set; `o.Chance` (0..1);
-  `o.Air = true` marks a tail / shimmer (skipped on far shows, like the cues in AuraSound's AIR list).
+  `o.Air = true` marks a tail / shimmer: own show only, like the cues in AuraSound's AIR list (beds, shimmers, the
+  title, the charge-up); other players hear the hits, loops and signatures.
 - `S.Now(ctx, name, o)`: play immediately (inside OnExplode / OnU / an Every body). Returns the handle.
 - `S.Loop(ctx, t0, t1, name, o)`: a loop between two beats (nil `t1` = until the show stops), returns a proxy with
   `:Set(k)`, `:SetRate(r)`, `:Stop(fade)` that work before and after the loop starts. Other players' shows: only one
   remote show at a time keeps loops.
 - `S.Hit(ctx, t, "S" | "M" | "L", o)`: CelImpact; CelDetonate; CelDetonate + CelShockwave + CelShimmer.
 - `S.Bed(ctx, t0, t1, o)`: the CelBed pad loop (own show only, skipped far away), returns the proxy.
-- `S.Duck(ctx, t0, t1, music, ambience)`: Music / Ambience down (default .3 / .6) for the window; own show only.
+- `S.Duck(ctx, t0, t1, music, ambience)`: Music / Ambience down (default .3, and .4 in Set 3 / .6 in Set 2) for the
+  window (nil `t1` = the show's length); own show only.
 - `S.ChargeUp(ctx)`: the inhale cue ending at t = 0 when the show has `ctx.Pre`.
 
+3D cues sit under the kit's own Terrain attachments and follow their part each frame, so a seeker or a double that is
+destroyed mid-sound never takes the Sound with it (the sound stays where the part was).
 Volume scales by `ctx.Quality` (1 own, .7 within 120 studs, .4 beyond); every live show sound follows `ctx.TimeRate`
 (AuraKit.TimeScale sets it to its Scale and back to 1) and stops with the show.

@@ -33,5 +33,6 @@ Generated 7 Oct 2026 with Higgsfield (z_image, 16:9). The files live in your Hig
 | 28 | Logo v5 (Figma, Gemini): hollow-stone attempt 2, big flames above | Solid stone, best flames | https://www.figma.com/api/mcp/asset/8a453d57-1eed-4e03-ae97-eafbc39e628e.png (expires in 7 days) |
 | 29 | Logo v5 (Figma, GPT image): hollow-stone attempt 3 | Closest to hollow frames with fire showing through | https://www.figma.com/api/mcp/asset/dad6e66e-a34d-4c88-a5ac-c88698018b70.png (expires in 7 days) |
 | 30 | Logo v6 (Canva generator): stone-outlined CURSED with purple fire inside, top-left over wide white DODGEBALL | Current best. Saved in the Canva library, media id MAHXXH78rHE | https://www.canva.com/M/MAHXXH78rHE |
+| 31 | Editable Canva logo design (real text layers) | Open in Canva to swap fonts and apply the Hollow text effect and a fire texture | https://canva.link/1a6sr4r8is4vncp |
 
 A sunken-pit arena image (the look decided later in the session) was attempted twice and failed on the generator side; the pit is described in DESIGN.md section 7. Retry it when the generator is healthy.

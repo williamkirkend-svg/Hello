@@ -24,7 +24,7 @@ This is a standalone experience, not part of Farm Lasso. Create a new empty plac
 | `src/ServerScriptService/CursedDodgeball/Main.server.lua` | Script `Main` in the same folder |
 | `src/StarterPlayer/StarterPlayerScripts/CursedDodgeball/*.client.lua` | one LocalScript each (`Movement`, `Throwing`, `HUD`, `Spectate`) in Folder `StarterPlayerScripts.CursedDodgeball` |
 
-One thing to change by hand: `ShowState.lua` requires `./Balls` so the headless tests can run. In Studio that line must be `require(script.Parent.Balls)`. Rojo users can leave it: Rojo does not rewrite requires either, so change it in the source and keep the test runner happy by setting `LUAU_STUDIO_REQUIRE=1`... simpler: edit the one line after pasting. (Tracked as a follow-up to make both styles work.)
+Nothing needs editing after the paste: the pure modules detect whether they run in Studio or in the headless runner.
 
 ## Playtesting
 

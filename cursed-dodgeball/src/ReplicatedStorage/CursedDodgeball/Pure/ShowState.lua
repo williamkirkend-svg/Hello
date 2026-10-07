@@ -2,7 +2,9 @@
 -- Phases: Intermission -> Round (1..n) -> Replay -> Round ... -> Crowning -> Intermission.
 -- Roles: Waiting (in the stands, will play next show), Live (on the court), Ghost (on the ring with
 -- throws left), Spectator (in the stands for the rest of this show).
-local Balls = require("./Balls")
+-- In Studio `script` exists and the sibling ModuleScript is required; under the luau CLI `script` is nil
+-- and the file next to this one is required by path.
+local Balls = if script then require(script.Parent.Balls) else require("./Balls")
 
 local ShowState = {}
 ShowState.__index = ShowState

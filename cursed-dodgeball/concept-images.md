@@ -21,7 +21,9 @@ Generated 7 Oct 2026 with Higgsfield (z_image, 16:9). The files live in your Hig
 | 16 | Mid-impact animation frame | CURSED an instant before landing, bubble letters flinching | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_203839_b6a8478e-92f2-4e43-8152-95c8831579ce.png |
 | 17 | Logo, chunky multicolour block letters, rocky CURSED full-width slam, starry background | Superseded composition (CURSED too big) | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_203943_ef61f960-7aac-4586-9304-5544fac94deb.png |
 | 18 | Same on white | Superseded composition | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_203943_e12d4335-52b2-416f-bba1-5968f88e3c1a.png |
-| 19 | Logo, chosen composition: big block DODGEBALL, small tilted rocky CURSED sticker top-left, starry | The current logo direction | (link recorded after render) |
-| 20 | Same on white | The current logo direction, light version | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_204028_844841ae-7a78-4e89-bed4-00291661bbc6.png |
+| 19 | Logo, block DODGEBALL with small tilted rocky CURSED, starry | Failed on the generator twice; superseded by 21 and 22 | (none) |
+| 20 | Same on white | Superseded by 21 and 22 | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_204028_844841ae-7a78-4e89-bed4-00291661bbc6.png |
+| 21 | Logo on black: plain white outlined DODGEBALL, CURSED as boxy stone frames filled with purple fire, overlapping | The current logo direction | (link recorded after render) |
+| 22 | Same, second variant | The current logo direction | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_204531_c9036280-fe18-4464-93b5-0b1e3e960565.png |
 
 A sunken-pit arena image (the look decided later in the session) was attempted twice and failed on the generator side; the pit is described in DESIGN.md section 7. Retry it when the generator is healthy.

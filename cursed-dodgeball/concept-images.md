@@ -15,5 +15,9 @@ Generated 7 Oct 2026 with Higgsfield (z_image, 16:9). The files live in your Hig
 | 10 | Dormant cursed ball with countdown, and the re-arm burst | The replenish effect across the ball face | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_202002_20b9f50c-33b4-4cbc-9a1a-c5126d95a7aa.png |
 | 11 | Wall run up a pillar toward a rail while two players throw from below | The high route the movement kit is built for | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_202221_095ca0c0-0886-4484-a3a3-479648712be6.png |
 | 12 | Ability pick board on the concourse, players choosing, icons over heads | The between-games pick moment | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_202239_3a5effe0-c78b-46ee-adca-f21f4df44308.png |
+| 13 | Logo direction A, cream background | Cute bubble DODGEBALL, jagged flaming CURSED crashed on top | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_203751_dd5ae3a1-a2f9-4ce9-ba79-fa75ab404c99.png |
+| 14 | Logo direction B, dark background, red ball as the O | Same idea, darker, for the thumbnail | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_203751_ed780eff-dec5-4160-830f-b3a767e40c57.png |
+| 15 | Square icon crop | CURSED fills the frame, DODGEBALL crushed beneath | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_203839_67f700ae-43ca-469c-bc63-7549ba9b7b35.png |
+| 16 | Mid-impact animation frame | CURSED an instant before landing, bubble letters flinching | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_203839_b6a8478e-92f2-4e43-8152-95c8831579ce.png |
 
 A sunken-pit arena image (the look decided later in the session) was attempted twice and failed on the generator side; the pit is described in DESIGN.md section 7. Retry it when the generator is healthy.

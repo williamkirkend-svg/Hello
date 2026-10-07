@@ -1,6 +1,7 @@
 -- Headless test runner for the pure modules. Usage: luau tests/run.luau (from cursed-dodgeball/).
 local TESTS = {
 	"./Config.test",
+	"./Balls.test",
 }
 
 local passed, failed = 0, 0

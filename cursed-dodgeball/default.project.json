@@ -1,0 +1,17 @@
+{
+  "name": "CursedDodgeball",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "CursedDodgeball": { "$path": "src/ReplicatedStorage/CursedDodgeball" }
+    },
+    "ServerScriptService": {
+      "CursedDodgeball": { "$path": "src/ServerScriptService/CursedDodgeball" }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "CursedDodgeball": { "$path": "src/StarterPlayer/StarterPlayerScripts/CursedDodgeball" }
+      }
+    }
+  }
+}

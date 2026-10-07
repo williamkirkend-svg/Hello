@@ -1,0 +1,13 @@
+# Concept images
+
+Generated 7 Oct 2026 with Higgsfield (z_image, 16:9). The files live in your Higgsfield library; the session container cannot download from the image host, so they are linked here rather than committed. Links expire, so save the ones you like into `cursed-dodgeball/concepts/`.
+
+| # | Subject | What it is for | Link |
+|---|---|---|---|
+| 1 | Schoolyard blacktop court, bleachers both sides | The default arena: blue half, orange half, centre line of balls, benches on the sideline | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183620_6a15c6f2-618a-4001-b0b3-d3ed0b195375.png |
+| 2 | Backyard arena with pool, deck stands, trampoline, sprinkler, dog | Second venue, shows hazards and the deck-as-stands idea | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183703_e43db46b-e635-4187-9348-12f537640a79.png |
+| 3 | School gym interior with pull-out bleachers and scoreboard | Third venue, indoor variant | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183725_475ba864-cc83-4e62-af78-c49b61aa266c.png |
+| 4 | Eight cursed balls on a shelf | Silhouette and colour language for the ball roster: eye, giant, swap, slime, fuse, boomerang, ghost, vortex | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183620_9a0e6301-f233-4ca3-9824-cf034c2fe49b.png |
+| 5 | The catch-revive hero moment | The one rule that stays sacred, framed the way the slow-mo should feel | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183553_d75540e7-725b-4364-b984-50eaeabe9ec8.png |
+| 6 | Sideline jail bench with bleachers and jumbotron behind | Eliminated players stay visible and stay in the show | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183642_5606fd85-0dfc-4faf-b08a-e6f0f187b72c.png |
+| 7 | Lobby: bracket board on the fence, ball vending machine, practice wall | Where players wait, watch and queue | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_183753_aae98903-f514-4893-821c-9e36e5c531a9.png |

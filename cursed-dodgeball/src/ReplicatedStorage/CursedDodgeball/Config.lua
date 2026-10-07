@@ -4,7 +4,7 @@ local Config = {}
 Config.Players = {
 	Max = 20, -- launch server size
 	Min = 6, -- minimum to start a show
-	SmallShowBelow = 6, -- below this many at show start the show collapses to two rounds
+	SmallShowBelow = 12, -- below this many at show start the show plays two rounds (cut to half, then final)
 }
 
 Config.Show = {
@@ -16,9 +16,9 @@ Config.Show = {
 		{ Cap = 60, CutTo = 4 },
 		{ Cap = 45, CutTo = 1 }, -- the final: last one standing
 	},
-	SmallRounds = {
-		{ Cap = 60, CutTo = 3 },
-		{ Cap = 45, CutTo = 1 },
+	SmallRounds = { -- CutTo for round 1 is computed from the player count (ShowState.roundsFor)
+		{ Cap = 75 },
+		{ Cap = 45 },
 	},
 	FloodSpeed = 2, -- studs per second the paint edge moves inward at the buzzer
 	GhostThrows = 1, -- plain-ball throws a Ghost gets per round

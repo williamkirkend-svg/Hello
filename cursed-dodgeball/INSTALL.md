@@ -28,8 +28,8 @@ Nothing needs editing after the paste: the pure modules detect whether they run 
 
 ## Playtesting
 
-- Studio: Test tab, Clients and Servers, set players to 6 or more (the show needs `Config.Players.Min`), Start.
-- Game Settings: set max players to 20. Disable the default character reset on death; outs are teleports, not deaths.
+- Studio: Test tab, Clients and Servers, set players to 6 or more (the show needs `Config.Players.Min`), Start. With 6 to 11 players the show is two rounds (cut to half, then the final); 12 or more plays the full three.
+- Game Settings: set max players to 20. Outs are teleports, not deaths, so nothing about respawning needs changing.
 - Controls: WASD, Shift sprint, Q dodge (also in the air), mouse 1 hold-to-charge throw, mouse 2 or F catch, Tab cycle target, C cycle spectator camera. Touch buttons appear on phones.
 - What to look at first: the feel of the 8-second hold, the 0.25 s catch press, dodge reads, and whether 20 players on the 70 by 50 court is crowded enough.
 

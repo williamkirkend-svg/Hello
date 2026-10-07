@@ -23,7 +23,11 @@ local balls = {} -- name -> record
 local held = {} -- userId -> ball name
 local lastThrow = {} -- userId -> os.clock()
 local catchPressed = {} -- userId -> os.clock()
+local lastCatchPress = {} -- userId -> os.clock(), for the whiff lockout
+local chargeStart = {} -- userId -> os.clock() when the server saw the charge begin
+local ghostBusy = {} -- userId -> true while a Ghost's one throw is in the air
 local counter = 0
+local CATCH_LOCKOUT = 0.5
 
 local throwRequest, catchRequest, ballSpawn, ballState
 
@@ -84,6 +88,12 @@ local function clearBalls()
 		balls[name] = nil
 	end
 	held = {}
+	ghostBusy = {}
+	chargeStart = {}
+	for _, p in Players:GetPlayers() do
+		p:SetAttribute("HeldBall", "")
+		p:SetAttribute("HeldSince", 0)
+	end
 end
 
 local function spawnRound(ids)
@@ -136,7 +146,7 @@ local function canPick(player)
 	if role == "Live" then return true end
 	if role == "Ghost" then
 		local rec = state.players[player.UserId]
-		return rec ~= nil and rec.throwsLeft > 0
+		return rec ~= nil and rec.throwsLeft > 0 and not ghostBusy[player.UserId]
 	end
 	return false
 end
@@ -157,6 +167,10 @@ local function launch(rec, player, targetPlayer, charge01)
 	local aim = BallFlight.aim(tv(origin), tv(aimTo), charge01, Config)
 	local dist = (aimTo - origin).Magnitude
 	release(rec)
+	if state:roleOf(player.UserId) == "Ghost" then ghostBusy[player.UserId] = true end
+	local hl, hw = arena.PitHalfLength, arena.PitHalfWidth
+	local radius = rec.def.size / 2
+	local startsInPit = math.abs(origin.X) < hl - radius and math.abs(origin.Z) < hw - radius
 	rec.state = "Flight"
 	rec.part.Anchored = true
 	rec.part:SetAttribute("State", "Flight")
@@ -171,6 +185,7 @@ local function launch(rec, player, targetPlayer, charge01)
 		started = os.clock(),
 		window = BallFlight.catchWindow(charge01, Config),
 		hitIds = {},
+		inPit = startsInPit, -- a Ghost's ball starts over the ring; walls only count once it is inside
 	}
 	rec.part.CFrame = CFrame.new(origin)
 	ballState:FireAllClients({
@@ -180,7 +195,14 @@ local function launch(rec, player, targetPlayer, charge01)
 	})
 end
 
-local function onThrow(player, ballName, targetUserId, charge01, clientStamp)
+-- The client only says when it started charging; the server measures the charge with its own clock.
+local function onChargeBegin(player, ballName)
+	local rec = balls[ballName]
+	if not rec or rec.holder ~= player.UserId or rec.state ~= "Held" then return end
+	chargeStart[player.UserId] = os.clock()
+end
+
+local function onThrow(player, ballName, targetUserId)
 	local rec = balls[ballName]
 	if not rec or rec.holder ~= player.UserId or rec.state ~= "Held" then return end
 	if state.phase ~= "Round" then return end
@@ -189,8 +211,9 @@ local function onThrow(player, ballName, targetUserId, charge01, clientStamp)
 	local hrp = rootOf(player)
 	if not hrp then return end
 	local role = state:roleOf(player.UserId)
-	charge01 = tonumber(charge01) or 0
-	charge01 = math.clamp(charge01, 0, 1)
+	local began = chargeStart[player.UserId]
+	chargeStart[player.UserId] = nil
+	local charge01 = began and math.clamp((now - began) / Config.Throw.ChargeTime, 0, 1) or 0
 	if role == "Ghost" then
 		charge01 = 0
 		local srec = state.players[player.UserId]
@@ -200,17 +223,27 @@ local function onThrow(player, ballName, targetUserId, charge01, clientStamp)
 	end
 	local target = targetUserId and targetUserId ~= 0 and Players:GetPlayerByUserId(targetUserId) or nil
 	if target and (target == player or state:roleOf(target.UserId) ~= "Live") then target = nil end
+	if target then
+		local c = chestOf(target)
+		if not c or (c - hrp.Position).Magnitude > Config.Targeting.MaxRange then target = nil end
+	end
 	lastThrow[player.UserId] = now
 	launch(rec, player, target, charge01)
 end
 
+-- A catch press is live for the catch window; mashing is throttled by a lockout per press.
 local function onCatch(player)
-	catchPressed[player.UserId] = os.clock()
+	local now = os.clock()
+	local last = lastCatchPress[player.UserId]
+	if last and now - last < CATCH_LOCKOUT then return end
+	lastCatchPress[player.UserId] = now
+	catchPressed[player.UserId] = now
 end
 
 local function finishGhostThrow(rec, hitVictim)
 	local ghostId = rec.flight and rec.flight.thrower
 	if not ghostId or rec.flight.throwerRole ~= "Ghost" then return end
+	ghostBusy[ghostId] = nil
 	if hitVictim then
 		Show.handleEvents(state:ghostThrowHit(ghostId, hitVictim))
 	else
@@ -261,8 +294,14 @@ local function stepFlights(dt)
 				end
 			end
 			if not hitThisStep then
+				local inside = math.abs(p1.x) < hl - radius and math.abs(p1.z) < hw - radius
+				if inside then f.inPit = true end
 				local floorHit = p1.y <= radius
-				local wallHit = math.abs(p1.x) > hl - radius or math.abs(p1.z) > hw - radius
+				local wallHit = f.inPit and not inside
+				if not f.inPit and p1.y <= arena.RingY - 2 and not inside then
+					-- a Ghost's ball that drops outside the pit without ever entering it is a miss
+					floorHit = true
+				end
 				if floorHit or wallHit then
 					local lx = math.clamp(p1.x, -(hl - radius), hl - radius)
 					local lz = math.clamp(p1.z, -(hw - radius), hw - radius)
@@ -281,6 +320,7 @@ local function stepFlights(dt)
 		if rec.state ~= "Flight" then continue end
 		local pressed = catchPressed[victim.UserId]
 		local caught = pressed ~= nil and (now - pressed) <= f.window
+		local contact = chestOf(victim) or v3(f.pos) -- read before any teleport
 		if caught then
 			catchPressed[victim.UserId] = nil
 			local thrower = Players:GetPlayerByUserId(f.thrower)
@@ -290,11 +330,16 @@ local function stepFlights(dt)
 				finishGhostThrow(rec, nil)
 				rec.part:Destroy()
 				balls[rec.part.Name] = nil
-			else
+			elseif rec.part.Parent then
 				rec.state = "Idle"
 				rec.flight = nil
-				hold(rec, victim)
-				rec.part:SetAttribute("State", "Held")
+				local already = held[victim.UserId] and balls[held[victim.UserId]]
+				if already and already ~= rec then dropAtFeet(already) end
+				if state:roleOf(victim.UserId) == "Live" then
+					hold(rec, victim)
+				else
+					setIdle(rec, contact)
+				end
 				ballState:FireAllClients({ name = rec.part.Name, state = "Caught", by = victim.UserId, thrower = thrower and thrower.UserId or 0 })
 			end
 		else
@@ -305,8 +350,7 @@ local function stepFlights(dt)
 			else
 				Show.handleEvents(state:hit(victim.UserId, f.thrower, h.at))
 				ballState:FireAllClients({ name = rec.part.Name, state = "Hit", victim = victim.UserId, thrower = f.thrower })
-				local c = chestOf(victim) or v3(f.pos)
-				setIdle(rec, c + Vector3.new(0, 0, 0))
+				if rec.part.Parent then setIdle(rec, contact) end
 			end
 		end
 	end
@@ -378,9 +422,13 @@ function BallServer.start(config, showServer)
 	ballSpawn = Remotes.get("BallSpawn")
 	ballState = Remotes.get("BallState")
 
-	throwRequest.OnServerEvent:Connect(function(player, ballName, targetUserId, charge01, clientStamp)
+	throwRequest.OnServerEvent:Connect(function(player, ballName, targetUserId)
 		if typeof(ballName) ~= "string" then return end
-		onThrow(player, ballName, tonumber(targetUserId), charge01, clientStamp)
+		if targetUserId == "begin" then
+			onChargeBegin(player, ballName)
+			return
+		end
+		onThrow(player, ballName, tonumber(targetUserId))
 	end)
 	catchRequest.OnServerEvent:Connect(onCatch)
 
@@ -412,7 +460,10 @@ function BallServer.start(config, showServer)
 			if rec.ghostBall then rec.part:Destroy(); balls[name] = nil else setIdle(rec, rec.part.Position) end
 		end
 		catchPressed[p.UserId] = nil
+		lastCatchPress[p.UserId] = nil
 		lastThrow[p.UserId] = nil
+		chargeStart[p.UserId] = nil
+		ghostBusy[p.UserId] = nil
 	end)
 
 	RunService.Heartbeat:Connect(function(dt)

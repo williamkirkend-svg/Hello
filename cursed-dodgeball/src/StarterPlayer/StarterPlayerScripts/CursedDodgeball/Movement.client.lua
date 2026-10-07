@@ -56,8 +56,11 @@ local function tryDodge()
 	lv.Name = "Dodge"
 	lv.MaxForce = math.huge
 	lv.RelativeTo = Enum.ActuatorRelativeTo.World
-	lv.VelocityConstraintMode = Enum.VelocityConstraintMode.Vector
-	lv.VectorVelocity = dir * (M.DodgeDistance / M.DodgeSeconds) + Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
+	-- Plane mode drives only the horizontal axes, so gravity and jump height are untouched
+	lv.VelocityConstraintMode = Enum.VelocityConstraintMode.Plane
+	lv.PrimaryTangentAxis = Vector3.xAxis
+	lv.SecondaryTangentAxis = Vector3.zAxis
+	lv.PlaneVelocity = Vector2.new(dir.X, dir.Z) * (M.DodgeDistance / M.DodgeSeconds)
 	local att = root:FindFirstChild("RootAttachment") or Instance.new("Attachment", root)
 	lv.Attachment0 = att
 	lv.Parent = root

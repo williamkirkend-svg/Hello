@@ -54,13 +54,19 @@ ContextActionService:BindAction("CD_Spectate", function(_, inputState)
 end, true, Enum.KeyCode.C, Enum.KeyCode.ButtonB)
 ContextActionService:SetTitle("CD_Spectate", "CAM")
 
+local lastRole = nil
 RunService.RenderStepped:Connect(function()
 	local role = player:GetAttribute("Role")
 	if role == "Live" or role == nil then
-		if camera.CameraType ~= Enum.CameraType.Custom then resetToSelf() end
+		local myHum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
+		if role ~= lastRole or camera.CameraType ~= Enum.CameraType.Custom or (myHum and camera.CameraSubject ~= myHum) then
+			resetToSelf()
+		end
+		lastRole = role
 		mode = 1
 		return
 	end
+	lastRole = role
 	local m = MODES[mode]
 	if m == "Seat" then
 		if camera.CameraType ~= Enum.CameraType.Custom then resetToSelf() end

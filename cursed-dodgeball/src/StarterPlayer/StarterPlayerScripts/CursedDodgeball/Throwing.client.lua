@@ -73,16 +73,17 @@ local function beginThrow()
 	if myRole() ~= "Live" and myRole() ~= "Ghost" then return end
 	chargeStart = os.clock()
 	if player.Character then player.Character:SetAttribute("Charging", true) end
+	throwRequest:FireServer(heldBall(), "begin")
 end
 
 local function endThrow()
 	if not chargeStart then return end
-	local charge = math.clamp((os.clock() - chargeStart) / Config.Throw.ChargeTime, 0, 1)
 	chargeStart = nil
 	if player.Character then player.Character:SetAttribute("Charging", false) end
 	local ball = heldBall()
 	if not ball then return end
-	throwRequest:FireServer(ball, targetId or 0, charge, workspace:GetServerTimeNow())
+	-- the server measures the charge itself from the "begin" message; the client sends no number
+	throwRequest:FireServer(ball, targetId or 0)
 end
 
 local function pressCatch()

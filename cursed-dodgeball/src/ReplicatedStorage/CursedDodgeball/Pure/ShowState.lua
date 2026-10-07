@@ -27,6 +27,19 @@ end
 
 local function push(events, e) events[#events + 1] = e end
 
+-- Round list for a show that starts with n players. Twelve or more play the full three rounds
+-- (cut to 8, cut to 4, final). Six to eleven play two: cut to half, then the final.
+function ShowState.roundsFor(n, config)
+	if n >= config.Players.SmallShowBelow then
+		return config.Show.Rounds
+	end
+	local small = config.Show.SmallRounds
+	return {
+		{ Cap = small[1].Cap, CutTo = math.max(3, math.floor(n / 2)) },
+		{ Cap = small[2].Cap, CutTo = 1 },
+	}
+end
+
 function ShowState:roleOf(id)
 	local p = self.players[id]
 	return p and p.role or nil
@@ -85,6 +98,16 @@ function ShowState:startRound(roundIndex, events)
 		p.throwsLeft = 0
 		p.ghostThrowUsed = false
 	end
+	-- Leavers during the replay can leave too few players for this round: skip ahead rather than
+	-- start a round nobody can finish.
+	if self:liveCount() <= self.rounds[roundIndex].CutTo then
+		if self:isFinal() then
+			self:checkCut(events)
+		else
+			self:startRound(roundIndex + 1, events)
+		end
+		return
+	end
 	push(events, { type = "PhaseChanged", phase = "Round", round = roundIndex })
 	local drawRound = math.min(roundIndex, #self.config.Balls.Rounds)
 	if #self.rounds == 2 and roundIndex == 2 then drawRound = 3 end
@@ -93,7 +116,7 @@ end
 
 function ShowState:startShow(events)
 	local n = self:playerCount()
-	self.rounds = (n < self.config.Players.SmallShowBelow) and self.config.Show.SmallRounds or self.config.Show.Rounds
+	self.rounds = ShowState.roundsFor(n, self.config)
 	self.winner = nil
 	self.lastOut = nil
 	for _, p in self.players do
@@ -174,7 +197,7 @@ function ShowState:checkCut(events)
 		if #ids == 0 and self.winner and self.players[self.winner] then
 			self.players[self.winner].role = "Live"
 		end
-		push(events, { type = "Winner", id = self.winner })
+		if self.winner then push(events, { type = "Winner", id = self.winner }) end
 		push(events, { type = "PhaseChanged", phase = "Crowning", round = self.round })
 	else
 		self.phase = "Replay"
@@ -207,8 +230,10 @@ function ShowState:catch(catcherId, throwerId)
 	if th and th.role == "Live" then
 		self:eliminate(throwerId, catcherId, events)
 	end
-	c.shieldUntil = self.now + self.config.Catch.ShieldSeconds
-	push(events, { type = "ShieldGained", id = catcherId })
+	if not c.shieldUntil then
+		c.shieldUntil = self.now + self.config.Catch.ShieldSeconds
+		push(events, { type = "ShieldGained", id = catcherId })
+	end
 	self:checkCut(events)
 	return events
 end

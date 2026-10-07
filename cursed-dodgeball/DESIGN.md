@@ -36,7 +36,7 @@ A server runs an endless loop of Shows. A Show is three rounds on one court with
 
 Total: about 4 to 5 minutes. The server never has a lobby wait longer than 20 seconds.
 
-**Server size.** Launch at 20 players. The owner wants the biggest crowd possible, so 24 is the stretch target once the court and phone performance prove out. Minimum to start a show is 6; below 6 the show collapses to two rounds (cut to 3, then final). A player joining mid-show lands in the stands with the round timer on screen and plays from the next intermission.
+**Server size.** Launch at 20 players. The owner wants the biggest crowd possible, so 24 is the stretch target once the court and phone performance prove out. Minimum to start a show is 6. Rounds come from the starting count: 12 or more plays the full three rounds (cut to 8, cut to 4, final); 6 to 11 plays two rounds (cut to half, then the final), so a small server never gets a round that ends on the first hit. A player joining mid-show lands in the stands with the round timer on screen and plays from the next intermission.
 
 **The buzzer.** If a round hits its timer before the cut, the Flood starts: paint pours in from the court edges at 2 studs per second and anyone standing in it is out. It stops the moment the cut is reached. This keeps rounds from stalling and gives the crowd something to scream at.
 

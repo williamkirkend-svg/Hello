@@ -43,9 +43,15 @@ local function placeAt(player, cf)
 	end
 end
 
--- Spreads a set of players across spawn points, deterministic by user id so clients can predict seats.
+-- Spreads players across spawn points. A full-group placement walks the points in user-id order;
+-- a single late placement picks a point from the user id so stragglers do not stack on point 1.
 local function placeAll(playersList, points)
 	table.sort(playersList, function(a, b) return a.UserId < b.UserId end)
+	if #playersList == 1 then
+		local p = playersList[1]
+		placeAt(p, points[(p.UserId % #points) + 1])
+		return
+	end
 	for i, p in playersList do
 		placeAt(p, points[((i - 1) % #points) + 1])
 	end
@@ -73,7 +79,8 @@ local function applyRoles(force)
 		end
 		lastRoles[p.UserId] = role
 	end
-	if #live > 0 then placeAll(live, arena:spawnPointsCourt(math.max(#live, 8), courtIndex())) end
+	local inset = state.flood and floodTime * Config.Show.FloodSpeed or 0
+	if #live > 0 then placeAll(live, arena:spawnPointsCourt(math.max(#live, 8), courtIndex(), inset)) end
 	if #ghosts > 0 then placeAll(ghosts, arena:spawnPointsRing(math.max(#ghosts, 12))) end
 	if #stands > 0 then placeAll(stands, arena:spawnPointsStands(#stands)) end
 end

@@ -39,8 +39,9 @@ function ArenaBuilder.build(config)
 	arena.Floor = part(model, "Floor", Vector3.new(pitL + 2, 1, pitW + 2), CFrame.new(0, -0.5, 0), Color3.fromRGB(60, 60, 66), Enum.Material.Asphalt)
 
 	-- Centre circle marker and ball hatch
-	local circle = part(model, "CentreCircle", Vector3.new(court.CentreCircle, 0.1, court.CentreCircle), CFrame.new(0, 0.05, 0), Color3.fromRGB(255, 230, 90))
+	local circle = part(model, "CentreCircle", Vector3.new(0.1, court.CentreCircle, court.CentreCircle), CFrame.new(0, 0.05, 0), Color3.fromRGB(255, 230, 90))
 	circle.Shape = Enum.PartType.Cylinder
+	circle.CanCollide = false
 	circle.CFrame = CFrame.new(0, 0.05, 0) * CFrame.Angles(0, 0, math.rad(90))
 	arena.Hatch = Vector3.new(0, 2.5, 0)
 
@@ -71,13 +72,18 @@ function ArenaBuilder.build(config)
 	local y = depth - 0.5
 	part(ring, "RingNorth", Vector3.new(outerL, 1, ringW), CFrame.new(0, y, -(pitW / 2 + wallT + ringW / 2)), ringColour)
 	part(ring, "RingSouth", Vector3.new(outerL, 1, ringW), CFrame.new(0, y, (pitW / 2 + wallT + ringW / 2)), ringColour)
-	part(ring, "RingEast", Vector3.new(ringW, 1, pitW + 2 * wallT), CFrame.new((pitL / 2 + wallT + ringW / 2), y, 0), ringColour)
-	part(ring, "RingWest", Vector3.new(ringW, 1, pitW + 2 * wallT), CFrame.new(-(pitL / 2 + wallT + ringW / 2), y, 0), ringColour)
-	local railH = 3
+	local gapW = 8
+	local sideSeg = (pitW + 2 * wallT - gapW) / 2
+	for _, sgn in { -1, 1 } do
+		local x = sgn * (pitL / 2 + wallT + ringW / 2)
+		part(ring, "RingEnd" .. sgn .. "A", Vector3.new(ringW, 1, sideSeg), CFrame.new(x, y, -(gapW / 2 + sideSeg / 2)), ringColour)
+		part(ring, "RingEnd" .. sgn .. "B", Vector3.new(ringW, 1, sideSeg), CFrame.new(x, y, (gapW / 2 + sideSeg / 2)), ringColour)
+	end
+	local railH = 10 -- taller than a jump so nobody hops into the pit; glass so it reads as a rail
 	local glass = Color3.fromRGB(170, 220, 255)
 	local function rail(name, size, cf)
 		local g = part(ring, name, size, cf, glass, Enum.Material.Glass)
-		g.Transparency = 0.5
+		g.Transparency = 0.75
 		return g
 	end
 	rail("RailNorth", Vector3.new(pitL + 2 * wallT, railH, 0.3), CFrame.new(0, depth + railH / 2, -(pitW / 2 + wallT + 0.15)))
@@ -104,8 +110,12 @@ function ArenaBuilder.build(config)
 		part(stands, "RowN" .. row, Vector3.new(lenL, court.RowRise, court.RowDepth), CFrame.new(0, top - court.RowRise / 2, -halfZ), colour)
 		part(stands, "RowS" .. row, Vector3.new(lenL, court.RowRise, court.RowDepth), CFrame.new(0, top - court.RowRise / 2, halfZ), colour)
 		local lenW = pitW + 2 * wallT + 2 * (ringW + (row - 1) * court.RowDepth)
-		part(stands, "RowE" .. row, Vector3.new(court.RowDepth, court.RowRise, lenW), CFrame.new(halfX, top - court.RowRise / 2, 0), colour)
-		part(stands, "RowW" .. row, Vector3.new(court.RowDepth, court.RowRise, lenW), CFrame.new(-halfX, top - court.RowRise / 2, 0), colour)
+		local chan = 8
+		local seg = (lenW - chan) / 2
+		for _, sgn in { -1, 1 } do
+			part(stands, "RowEnd" .. sgn .. row .. "A", Vector3.new(court.RowDepth, court.RowRise, seg), CFrame.new(sgn * halfX, top - court.RowRise / 2, -(chan / 2 + seg / 2)), colour)
+			part(stands, "RowEnd" .. sgn .. row .. "B", Vector3.new(court.RowDepth, court.RowRise, seg), CFrame.new(sgn * halfX, top - court.RowRise / 2, (chan / 2 + seg / 2)), colour)
+		end
 		-- seat positions: every 4 studs along the long sides, facing the court
 		for x = -math.floor(lenL / 2) + 4, math.floor(lenL / 2) - 4, 4 do
 			table.insert(arena.SeatCFrames, CFrame.new(x, top + 3, -halfZ) * CFrame.Angles(0, math.pi, 0))
@@ -132,6 +142,16 @@ function ArenaBuilder.build(config)
 		local mid = Vector3.new((x0 + x1) / 2, depth / 2, 0)
 		wedge.CFrame = CFrame.lookAt(mid, mid + Vector3.new(sgn, 0, 0)) * CFrame.Angles(0, math.pi, 0)
 		wedge.Parent = tunnels
+		local deckLen = court.StandRows * court.RowDepth + ringW + 2
+		local deckX = sgn * (pitL / 2 + wallT + rampLen + deckLen / 2 - 0.5)
+		part(tunnels, "Deck" .. sgn, Vector3.new(deckLen, 1, gap), CFrame.new(deckX, depth - 0.5, 0), Color3.fromRGB(150, 150, 160))
+		-- rails on the channel sides so stands players step down into the tunnel, not off its edge
+		local chanLen = rampLen + deckLen
+		local chanX = sgn * (pitL / 2 + wallT + chanLen / 2)
+		for _, zs in { -1, 1 } do
+			local r = part(tunnels, "ChannelRail" .. sgn .. zs, Vector3.new(chanLen, 3, 0.3), CFrame.new(chanX, depth + 1.5, zs * (gap / 2 + 0.15)), Color3.fromRGB(170, 220, 255), Enum.Material.Glass)
+			r.Transparency = 0.75
+		end
 		local gate = part(tunnels, "Gate" .. sgn, Vector3.new(0.5, depth, gap), CFrame.new(x0 - sgn * 0.5, depth / 2, 0), Color3.fromRGB(255, 80, 80))
 		gate.Transparency = 0.6
 		gate.CanCollide = false
@@ -231,26 +251,43 @@ function ArenaBuilder.build(config)
 		self.FloodParts.W.CFrame = CFrame.new(-hl + inset / 2, y, 0)
 	end
 
-	-- n points spread on an ellipse inside the round's court, facing the centre
-	function arena:spawnPointsCourt(n, round)
+	-- n points spread on an ellipse inside the round's court (shrunk by `inset` studs, e.g. the
+	-- flood band), facing the centre
+	function arena:spawnPointsCourt(n, round, inset)
 		local rc = config.Court.Rounds[round or 1]
+		local hl = math.max(4, rc.Length / 2 - (inset or 0) - 3)
+		local hw = math.max(4, rc.Width / 2 - (inset or 0) - 3)
 		local out = {}
 		for i = 1, n do
 			local a = (i - 1) / n * math.pi * 2
-			local pos = Vector3.new(math.cos(a) * rc.Length * 0.38, 3, math.sin(a) * rc.Width * 0.38)
+			local pos = Vector3.new(math.cos(a) * hl * 0.8, 3, math.sin(a) * hw * 0.8)
 			out[i] = CFrame.lookAt(pos, Vector3.new(0, 3, 0))
 		end
 		return out
 	end
 
-	-- n points around the Ghost ring walkway, facing the pit
+	-- n points along the Ghost ring walkway (the rectangle's perimeter, skipping the tunnel gaps),
+	-- facing the pit
 	function arena:spawnPointsRing(n)
 		local out = {}
 		local hl, hw = self.RingHalfLength, self.RingHalfWidth
 		local y = self.RingY + 3
+		local perim = 4 * (hl + hw)
 		for i = 1, n do
-			local a = (i - 1) / n * math.pi * 2
-			local pos = Vector3.new(math.cos(a) * hl, y, math.sin(a) * hw)
+			local d = (i - 0.5) / n * perim
+			local pos
+			if d < 2 * hl then
+				pos = Vector3.new(-hl + d, y, -hw)
+			elseif d < 2 * hl + 2 * hw then
+				pos = Vector3.new(hl, y, -hw + (d - 2 * hl))
+			elseif d < 4 * hl + 2 * hw then
+				pos = Vector3.new(hl - (d - 2 * hl - 2 * hw), y, hw)
+			else
+				pos = Vector3.new(-hl, y, hw - (d - 4 * hl - 2 * hw))
+			end
+			if math.abs(pos.X) > hl - 0.5 and math.abs(pos.Z) < 6 then
+				pos = Vector3.new(pos.X, y, pos.Z < 0 and -7 or 7) -- step off the tunnel gap
+			end
 			out[i] = CFrame.lookAt(pos, Vector3.new(0, y, 0))
 		end
 		return out

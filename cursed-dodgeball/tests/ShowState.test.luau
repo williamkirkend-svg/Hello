@@ -145,30 +145,78 @@ return function(t)
 		t.ok(has(ev, "Cut"), "leaving triggers the cut")
 	end
 
-	-- small show (5 players) runs two rounds
+	-- rounds derive from the starting count: 12+ is three rounds (8, 4, 1); 6 to 11 is two rounds (half, 1)
 	do
+		local r20 = ShowState.roundsFor(20, Config)
+		t.eq(#r20, 3, "20 players: three rounds")
+		t.eq(r20[1].CutTo, 8, "20: cut to 8")
+		t.eq(r20[2].CutTo, 4, "20: cut to 4")
+		t.eq(r20[3].CutTo, 1, "20: final")
+		local r12 = ShowState.roundsFor(12, Config)
+		t.eq(#r12, 3, "12 players: three rounds")
+		local r10 = ShowState.roundsFor(10, Config)
+		t.eq(#r10, 2, "10 players: two rounds")
+		t.eq(r10[1].CutTo, 5, "10: cut to half")
+		t.eq(r10[2].CutTo, 1, "10: final")
+		local r6 = ShowState.roundsFor(6, Config)
+		t.eq(#r6, 2, "6 players: two rounds")
+		t.eq(r6[1].CutTo, 3, "6: cut to 3")
+		local r9 = ShowState.roundsFor(9, Config)
+		t.eq(r9[1].CutTo, 4, "9: cut to floor(9/2)")
+
 		local s = fresh(5)
 		run(s, 20)
 		t.eq(s.phase, "Intermission", "5 is below the minimum, no start")
 		s:addPlayer("p6")
 		run(s, 20)
 		t.eq(s.phase, "Round", "6 starts")
-		s:removePlayer("p6")
-		-- 5 live, show was planned at 6 so uses normal rounds; test the explicit small path
-		local small = ShowState.new(Config, rng)
-		for i = 1, 6 do small:addPlayer("q" .. i) end
-		run(small, 20)
-		t.eq(#small.rounds, 3, "6 players use three rounds")
-		-- force a small show by config
-		local cfg = table.clone(Config)
-		cfg.Players = table.clone(Config.Players)
-		cfg.Players.Min = 4
-		cfg.Players.SmallShowBelow = 6
-		local s4 = ShowState.new(cfg, rng)
-		for i = 1, 4 do s4:addPlayer("r" .. i) end
-		run(s4, 20)
-		t.eq(#s4.rounds, 2, "4 players use two rounds")
-		t.eq(s4.rounds[1].CutTo, 3, "small round 1 cuts to 3")
+		t.eq(#s.rounds, 2, "6 players use two rounds")
+		for i = 1, 3 do s:hit("p" .. i, "p6", i) end
+		t.eq(s.phase, "Replay", "6-player round 1 cuts at 3, not at the first hit")
+	end
+
+	-- a round never starts with too few players: leavers during Replay skip ahead
+	do
+		local s = fresh(20)
+		run(s, 20)
+		for i = 1, 12 do s:hit("p" .. i, "p20", i) end
+		t.eq(s.phase, "Replay", "cut")
+		for i = 13, 19 do s:removePlayer("p" .. i) end
+		local ev = run(s, 8.5)
+		t.eq(s.phase, "Crowning", "one player left at round start: crowned, no empty round")
+		t.eq(s.winner, "p20", "p20 crowned")
+		t.ok(has(ev, "Winner"), "winner event")
+	end
+	do
+		local s = fresh(20)
+		run(s, 20)
+		for i = 1, 12 do s:hit("p" .. i, "p20", i) end
+		for i = 13, 20 do s:removePlayer("p" .. i) end
+		run(s, 8.5)
+		t.eq(s.phase, "Crowning", "everyone left: show ends instead of a round with nobody")
+		run(s, 15.5)
+		t.eq(s.phase, "Intermission", "and resets")
+	end
+	do
+		local s = fresh(20)
+		run(s, 20)
+		for i = 1, 12 do s:hit("p" .. i, "p20", i) end
+		for i = 13, 17 do s:removePlayer("p" .. i) end -- 3 live at round 2 start, below the cut of 4
+		run(s, 8.5)
+		t.eq(s.phase, "Round", "skips straight to the final")
+		t.eq(s.round, 3, "final")
+	end
+
+	-- a catch does not refresh an active shield
+	do
+		local s = fresh(20)
+		run(s, 20)
+		s:catch("p1", "p2")
+		run(s, 2)
+		local again = s:catch("p1", "p3")
+		t.ok(not has(again, "ShieldGained"), "no second ShieldGained while active")
+		local ev = run(s, 1.5)
+		t.ok(has(ev, "ShieldExpired"), "shield expires 3 s after the first catch")
 	end
 
 	-- double hit on the last two: earlier stamp loses, never zero players

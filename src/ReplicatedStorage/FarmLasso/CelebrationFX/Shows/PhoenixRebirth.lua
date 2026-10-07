@@ -4,6 +4,7 @@
 -- Set 1: the flame-up. Set 2: explode, rebirth, a hover with flapping wings, a small sun. Set 3: the full flight.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local GOLD = Color3.fromRGB(255, 226, 120)
 local SOOT = Color3.fromRGB(28, 16, 12)
@@ -16,12 +17,14 @@ local function char(ctx, c2, dark, t0, t1, ringScale)
 		Speed = {1.5, 3}, SpreadAngle = Vector2.new(35, 35), Rate = 0, LightEmission = 0, Brightness = 1, Acceleration = V3(0, 1.5, 0), RotSpeed = {-30, 30}})
 	ctx:At(t0, function() ash.Rate = 14 * (ctx.Quality or 1) end)
 	ctx:At(t1, function() ash.Rate = 0 end)
+	S.Loop(ctx, t0, t1, "CharCrackle", {K = .7, FadeIn = .2}) -- sound: the crackle for as long as the body chars
 	local ring = K.Stamp(ctx, ctx.Base.Position, {Mesh = "ScorchRing", Color = SOOT, Material = Enum.Material.SmoothPlastic, Scale = ringScale or 1.3, Life = 99, Rise = .6})
 	-- (the stamp lives for the whole show; the show recolours it as the fire comes and goes)
 	return ring
 end
 -- an ember ring pushed down by a wing downstroke
 local function downstroke(ctx, P, c1, c2)
+	S.Now(ctx, "WingFlap", {At = P.Torso, Volume = .6}) -- sound: one flap per downstroke (the flap period throttles it)
 	local pos = P.Torso.Position
 	ctx:Burst(pos - V3(0, 1, 0), K.Count(ctx, 26), {Texture = K.Tex.Flame, Color = {W, c1, c2}, Size = {{0, 1.4}, {.4, 2}, {1, .3}}, Transparency = {{0, .1}, {1, 1}},
 		Lifetime = {.35, .6}, Speed = {12, 20}, SpreadAngle = Vector2.new(70, 70), EmissionDirection = Enum.NormalId.Bottom, Drag = 3, Brightness = 4,
@@ -78,6 +81,9 @@ function M.Set1(ctx, def)
 	ctx:Repeat(.5, 1.8, .3, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 4), rng:NextNumber(1, 5)), rng:NextNumber(2, 3.5), c1, .3) end)
 	ctx:At(1.9, function() K.Release(ring, .6) end)
 	K.Title(ctx, .9, "embers", 7.5)
+	-- sound (Set 1: three cues): CharCrackle from char(), the flame-up, the title
+	S.Cue(ctx, .35, "FireWhoosh")
+	S.Cue(ctx, .9, "CelTitle")
 	return LEN
 end
 
@@ -108,6 +114,7 @@ function M.Set2(ctx, def)
 	featherRain(ctx, c1, c2, 1.6, 4.6, 10)
 	-- landing: kneel, petals, the ring turns gold
 	ctx:At(4.1, function()
+		S.Now(ctx, "CelLand")
 		if Wg then Wg:Dissolve(.5) end
 		K.PetalFan(ctx, K.GroundCF(ctx, ctx.Base.Position, .3), {Colors = {c1, c2, c3}, Radius = 7, Life = .6})
 		K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .2), 2, 20, c2, .5, .45)
@@ -122,6 +129,11 @@ function M.Set2(ctx, def)
 	end)
 	ctx:At(4.5, function() K.Release(ring, .7) end)
 	K.Title(ctx, 4.2, "embers", 7.5)
+	-- sound: the duck, the explosion with its fire whoosh (WingFlap comes from downstroke(), CelLand plays at the kneel), the title
+	S.Duck(ctx, 0, LEN)
+	S.Hit(ctx, .45, "L")
+	S.Cue(ctx, .45, "FireWhoosh")
+	S.Cue(ctx, 4.2, "CelTitle")
 	return LEN
 end
 
@@ -153,6 +165,8 @@ function M.Set3(ctx, def)
 				col.Color = W:Lerp(c2, u)
 			end)
 			ctx:ImpactFrame()
+			S.Now(ctx, "FireWhoosh")
+			S.Now(ctx, "CelImpact", {Volume = .6})
 			ring.Material = Enum.Material.Neon
 			FX.Tween(ring, .3, {Color = c2})
 			ctx:Grade({Brightness = .08, Contrast = .2, Saturation = .15, TintColor = Color3.fromRGB(255, 236, 214)}, .1, 4.4, .8)
@@ -221,11 +235,13 @@ function M.Set3(ctx, def)
 	local landing = CFrame.new(home.Position) * (home - home.Position)
 	K.Shatter(ctx, P, {At = 5.0, Colors = {GOLD, c1, c2}, Chunks = 40, Spread = 1.3, Reform = .55, ReformCF = landing, FanRadius = 11,
 		OnExplode = function(origin)
+			S.Now(ctx, "EmberSparkle", {At = origin})
 			ctx:Burst(origin, K.Count(ctx, 90), {Texture = K.Tex.Star, Color = {W, GOLD, c2}, Size = {{0, .7}, {1, .1}}, Lifetime = {1.4, 2.4}, Speed = {6, 18},
 				SpreadAngle = Vector2.new(180, 180), Acceleration = V3(0, -9, 0), Drag = 1.5, Brightness = 5})
 		end,
 		OnReform = function()
 			-- landing: a kneel, petals open flat, grass tufts fly, the scorch ring turns gold
+			S.Now(ctx, "CelLand")
 			P:RestoreLook()
 			K.PetalFan(ctx, K.GroundCF(ctx, landing.Position, .3), {Colors = {GOLD, c1, c2}, Radius = 9, Life = .6})
 			K.ShockRing(ctx, K.GroundCF(ctx, landing.Position, .2), 2, 28, GOLD, .5, .5)
@@ -242,6 +258,16 @@ function M.Set3(ctx, def)
 	end)
 	ctx:At(6.6, function() K.Release(ring, .8) end)
 	K.Title(ctx, 5.75, "embers", 8)
+	-- sound: the inhale (CharCrackle from char()), the duck, the explosion (FireWhoosh and CelImpact in OnExplode), the
+	-- bed under the flight, the launch, WingFlap per downstroke(), the sun dive, EmberSparkle at the apex shatter,
+	-- CelLand on the kneel (OnReform), the title
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Hit(ctx, 0, "L")
+	S.Bed(ctx, .8, LEN - .8)
+	S.Cue(ctx, 1.05, "CelWhooshL", {At = function() return P.Torso end})
+	S.Cue(ctx, 4.5, "SunDive", {At = function() return P.Torso end})
+	S.Cue(ctx, 5.75, "CelTitle")
 	return LEN
 end
 

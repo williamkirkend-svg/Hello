@@ -5,6 +5,7 @@
 -- ghost-only rewind. Set 3: the full timeline with the world slowed, cobbles lifting and the world rewind.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local Snd = require(script.Parent.Parent.AuraSound) -- (not `S`: the sets bind `S` to the sigil)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local SEPIA = Color3.fromRGB(255, 232, 196)
 local M = {Pre = 1.0}
@@ -17,6 +18,7 @@ local function sigil(ctx, c2, dark, scale, t0, t1)
 	local tick, ticks = 0, 0
 	local S = {Sigil = sig, Hand = hand, Alive = true}
 	local g = K.GroundCF(ctx, ctx.Base.Position, .14)
+	Snd.Loop(ctx, t0, t1, "ClockTick", {K = .5, FadeIn = .1}) -- sound: the tick for as long as the hand jumps
 	ctx:Every(function(t)
 		if not S.Alive then hand:Destroy() return true end
 		if t < t0 then return end
@@ -210,6 +212,9 @@ function M.Set1(ctx, def)
 	end)
 	ctx:At(2.2, S.Stop)
 	K.Title(ctx, 1.0, "glitch", 7.5)
+	-- sound (Set 1: three cues): ClockTick from sigil(), the title, the glass fan
+	Snd.Cue(ctx, 1.0, "CelTitle")
+	Snd.Cue(ctx, 1.95, "GlassBreak", {Volume = .8})
 	return LEN
 end
 
@@ -275,6 +280,16 @@ function M.Set2(ctx, def)
 		P:Toward("Punch", FX.ease((t - 4.3) / .15) * (1 - FX.ease((t - 4.7) / .3)))
 	end)
 	K.Title(ctx, 4.35, "glitch", 7.5)
+	-- sound: the duck, the numerals reversing, the slam into the rift as the detonation (ClockTick from sigil()), one
+	-- whoosh per ghost as it launches, the rewind, the glass, the drop, the title
+	Snd.Duck(ctx, 0, LEN)
+	Snd.Cue(ctx, .6, "ReverseWhoosh")
+	Snd.Hit(ctx, .95, "M")
+	for i = 1, math.min(3, K.Count(ctx, 3)) do Snd.Cue(ctx, 1.15 + (i - 1) * .35, "CelWhooshS", {Volume = .4}) end
+	Snd.Cue(ctx, 3.95, "Rewind")
+	Snd.Cue(ctx, 4.3, "GlassBreak")
+	Snd.Cue(ctx, 4.3, "CelLand")
+	Snd.Cue(ctx, 4.35, "CelTitle")
 	return LEN
 end
 
@@ -300,6 +315,8 @@ function M.Set3(ctx, def)
 	local hands = {K.Mesh(ctx, "ClockHand", {Color = W, Transparency = 1}), K.Mesh(ctx, "ClockHandShort", {Color = c1, Transparency = 1})}
 	local clock = K.Monument(ctx, {Mesh = "ClockRing", Height = 7.5, Behind = 2, Tilt = .45, Scale = 1, Color = c2, In = .9, Out = 6.1, Spin = 0, Light = 3})
 	local rewinding, clockT = false, 0
+	-- sound: the sky clock ticks under the hands, quickening as they do, until the rewind
+	local ticks = Snd.Loop(ctx, .9, 5.25, "ClockTick", {At = function() return clock.Part end, FadeIn = .2})
 	ctx:Every(function(t)
 		R.Open = FX.ease(t / .25)
 		for i, n in nums do
@@ -317,6 +334,7 @@ function M.Set3(ctx, def)
 		-- the clock hands sweep backward, faster and faster, then spin back to twelve in the rewind
 		local k = clock.Part.Transparency < .5 and 1 or 0
 		if not rewinding then clockT = clockT + (1 / 60) * (1 + math.max(0, t - 1) * .9) else clockT = math.max(0, clockT - .25) end
+		ticks:Set(math.clamp((t - 1) / 4.5, 0, 1))
 		local cf = clock.Part.CFrame
 		if hands[1].Parent then
 			K.Place(hands[1], cf * CFrame.Angles(0, -clockT * 1.1, 0) * CFrame.new(0, .12, 0), .95)
@@ -412,6 +430,22 @@ function M.Set3(ctx, def)
 		P:Toward("Punch", FX.ease((t - 6.06) / .15) * (1 - FX.ease((t - 6.5) / .4)))
 	end)
 	K.Title(ctx, 6.15, "glitch", 8)
+	-- sound: the inhale (ClockTick from sigil(), then the sky clock's loop above), the duck, the numerals reversing, the
+	-- tear as the detonation, the bed, the lift, one whoosh for each of the first six ghosts, the rewind, the snap (glass,
+	-- the impact frame, the hit), the drop, the title
+	Snd.ChargeUp(ctx)
+	Snd.Duck(ctx, -pre, LEN)
+	Snd.Cue(ctx, .5, "ReverseWhoosh")
+	Snd.Hit(ctx, .82, "L")
+	Snd.Bed(ctx, 1.0, LEN - .8)
+	Snd.Cue(ctx, 1.3, "CelWhooshL", {Volume = .7, At = function() return P.Torso end})
+	for i = 1, math.min(6, K.Count(ctx, 9)) do Snd.Cue(ctx, 1.4 + (i - 1) * .3, "CelWhooshS", {Volume = .4}) end
+	Snd.Cue(ctx, 5.25, "Rewind")
+	Snd.Cue(ctx, 6.05, "GlassBreak")
+	Snd.Cue(ctx, 6.05, "CelImpact", {Volume = .6})
+	Snd.Hit(ctx, 6.05, "M")
+	Snd.Cue(ctx, 6.1, "CelLand")
+	Snd.Cue(ctx, 6.15, "CelTitle")
 	return LEN
 end
 

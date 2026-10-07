@@ -8,6 +8,7 @@
 -- 0.4 s apart, the ice-spike ring, and the braid lingering as a column the player stands in.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local M = {Pre = 1.0}
 -- feet planted, the right fist up catching the braid, the torso leaning 15 degrees into the strain
@@ -96,9 +97,12 @@ local function cloud(ctx, dark, c2, tIn, tOut)
 		Rate = 0, Speed = 0, Rotation = {0, 360}, Brightness = 5, ZOffset = 1.5})
 	K.Flipbook(flick, "Lightning", Enum.ParticleFlipbookMode.Loop, 24)
 	local light = ctx:Light(inner, c2, 45, 0)
+	-- sound: the storm roll rides the first lobe and swells with the cloud
+	local roll = S.Loop(ctx, tIn, tOut, "StormRoll", {At = function() return lobes[1].Part end, FadeIn = .6})
 	ctx:Every(function(t)
 		if t > tOut then flick.Rate = 0 light.Brightness = 0 return true end
 		local k = K.Soft(t, tIn + .3, tOut, .5, .5)
+		roll:Set(k)
 		flick.Rate = 6 * k * (ctx.Quality or 1)
 		light.Brightness = 7 * k * (rng:NextNumber() < .12 and 1 or .12)
 	end)
@@ -193,6 +197,7 @@ end
 -- overshoot over 0.25 s (scale (1, k, 1), base pinned), hold, then shatter and fade
 local function iceSpikes(ctx, at, c1, c2, R, n)
 	ctx:At(at, function()
+		S.Now(ctx, "IceCrack")
 		local centre = ctx.Base.Position
 		local spikes = {}
 		for i = 1, n do
@@ -240,9 +245,14 @@ local function slam(ctx, P, at, c1, c2, release)
 		P:Toward("Punch", FX.ease((t - at) / .1) * (1 - FX.ease((t - release) / .6)))
 	end)
 	ctx:At(at + .05, function()
+		-- sound: the punch, the impact frame, the ring now and again .12 s on
+		S.Now(ctx, "ThunderPunch")
+		S.Now(ctx, "CelImpact", {Volume = .6})
+		S.Now(ctx, "CelShockwave")
 		K.Hit(ctx, ctx.Base.Position + V3(0, .3, 0), {Colors = {c1, c2}, Impact = true, Ring = 20, Burst = 12, Lines = 30})
 		K.Cracks(ctx, {At = 0, Count = 6, Len = 5, Color = c2, Life = 2.5, Radius = 1, Stagger = .03})
 	end)
+	S.Cue(ctx, at + .17, "CelShockwave", {Volume = .7})
 end
 
 ---------------------------------------------------------------- Set 1: one bolt to the fist, a small ring, floor arcs (2.6 s)
@@ -266,6 +276,10 @@ function M.Set1(ctx, def)
 	ctx:Repeat(.6, 1.8, .3, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 4), rng:NextNumber(1, 5)), rng:NextNumber(1.5, 3), c1, .3) end)
 	ctx:At(2.3, function() A:Destroy() end)
 	K.Title(ctx, 1.0, "glitch", 7.5)
+	-- sound (Set 1: three cues): the bolt to the fist, its ring, the title
+	S.Cue(ctx, .55, "ThunderPunch", {Volume = .5})
+	S.Cue(ctx, .6, "CelShockwave", {Volume = .7})
+	S.Cue(ctx, 1.0, "CelTitle")
 	return LEN
 end
 
@@ -296,6 +310,13 @@ function M.Set2(ctx, def)
 	ctx:Repeat(.6, 2.2, .3, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 4), rng:NextNumber(2, 8)), rng:NextNumber(1.5, 3), c1, .3) end)
 	ctx:At(4.8, function() A:Destroy() end)
 	K.Title(ctx, 2.6, "glitch", 7.5)
+	-- sound: the duck, the bolt to the crown as the detonation, the lift, the landing before the slam (slam() plays
+	-- ThunderPunch and the two shockwaves), the title; StormRoll comes from cloud()
+	S.Duck(ctx, 0, LEN)
+	S.Hit(ctx, .8, "M")
+	S.Cue(ctx, .9, "CelWhooshL", {Volume = .7})
+	S.Cue(ctx, 2.3, "CelLand")
+	S.Cue(ctx, 2.6, "CelTitle")
 	return LEN
 end
 
@@ -357,6 +378,16 @@ function M.Set3(ctx, def)
 	K.Sweeps(ctx, {Colors = {c1, c2}, T0 = 4.8, T1 = 6.0, Period = .35, Radius = 4.5, Height = 3, Climb = 6})
 	ctx:At(7.4, function() A:Destroy() end)
 	K.Title(ctx, 3.9, "glitch", 8)
+	-- sound: the inhale, the duck, the detonation, the bed, the lift, the crown split, the landing before the slam
+	-- (slam() plays ThunderPunch and the two shockwaves; iceSpikes() plays IceCrack; cloud() runs StormRoll), the title
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Hit(ctx, 0, "L")
+	S.Bed(ctx, .4, LEN - .8)
+	S.Cue(ctx, .7, "CelWhooshL", {Volume = .7})
+	S.Cue(ctx, 2.2, "CelShockwave", {Volume = .6})
+	S.Cue(ctx, 3.2, "CelLand")
+	S.Cue(ctx, 3.9, "CelTitle")
 	return LEN
 end
 

@@ -8,6 +8,7 @@
 -- the herd strung into the map, seekers, a shooting star.
 local FX = require(script.Parent.Parent.Parent)
 local K = require(script.Parent.Parent.AuraKit)
+local S = require(script.Parent.Parent.AuraSound)
 local V3, W, TAU, rng = Vector3.new, FX.W, K.TAU, FX.rng
 local M = {Pre = 1.0}
 -- the star map: a rough quadruped outline (head, withers, rump, tail, hind legs, belly, fore legs) and its lines
@@ -85,9 +86,15 @@ local function stair(ctx, o)
 		steps[i] = {M = K.Mesh(ctx, "LightStep", {Color = o.Colors[1], Transparency = 1}), CF = CFrame.lookAt(p, p + V3(q.X - p.X, 0, q.Z - p.Z)), At = u - .5 / n, T = nil}
 	end
 	local St = {Path = path, Top = path(1), U = 0}
+	local chimed = 0 -- sound: one StepChime per step as it lights, a semitone-ish higher each step (capped at eight)
 	ctx:Every(function(t)
 		for _, s in steps do
 			if not s.T and St.U >= s.At then s.T = t ctx:Flare(s.CF.Position + V3(0, .3, 0), 2.5, o.Colors[2], .35) end
+			if s.T and not s.Chimed then
+				s.Chimed = true
+				chimed = math.min(8, chimed + 1)
+				S.Now(ctx, "StepChime", {At = s.M, Pitch = 1 + .12 * chimed, Volume = .6})
+			end
 			if s.T then
 				local k = FX.back((t - s.T) / .25)
 				K.Place(s.M, s.CF, V3(math.max(.02, k), 1, math.max(.02, k)))
@@ -220,6 +227,10 @@ function M.Set1(ctx, def)
 	ctx:At(.6, function() wingFlash(ctx, c3) end)
 	ctx:Repeat(.5, 1.9, .3, function() ctx:Flare(ctx.Base.Position + K.Polar(rng:NextNumber(0, TAU), rng:NextNumber(2, 4), rng:NextNumber(1, 5)), 2.5, c1, .3) end)
 	K.Title(ctx, 1.0, "embers", 8)
+	-- sound (Set 1: three cues): the halo's sparkle, the wing flash, the title
+	S.Cue(ctx, .3, "CelShimmer", {Volume = .7})
+	S.Cue(ctx, .6, "CelWhooshS", {Volume = .7})
+	S.Cue(ctx, 1.0, "CelTitle")
 	return LEN
 end
 
@@ -244,6 +255,14 @@ function M.Set2(ctx, def)
 	starMap(ctx, {Colors = {c1, c2}, Points = 7, Height = 12, Back = 5, T0 = 2.5, Gap = .14})
 	K.Herd(ctx, {At = 2.6, Radius = 16, Color = c2, Flavour = "lookup", Max = 5})
 	K.Title(ctx, 3.4, "embers", 8.5)
+	-- sound: the duck, the detonation, the wings unfolding (StepChime per step from stair()), the map, the title, the
+	-- feather landing
+	S.Duck(ctx, 0, LEN)
+	S.Hit(ctx, .2, "M")
+	S.Cue(ctx, .3, "CelWhooshS", {At = function() return P.Torso end})
+	S.Cue(ctx, 2.5, "StarMapResolve")
+	S.Cue(ctx, 3.4, "CelTitle")
+	S.Cue(ctx, 4.9, "FeatherLand")
 	return LEN
 end
 
@@ -309,6 +328,20 @@ function M.Set3(ctx, def)
 	end)
 	ctx:At(7.2, function() K.ShockRing(ctx, K.GroundCF(ctx, ctx.Base.Position, .2), 1.5, 12, c2, .4, .35) end)
 	K.Title(ctx, 5.0, "embers", 9)
+	-- sound: the inhale, the duck, the detonation with its impact frame, the bed, the wings unfolding (StepChime per
+	-- step from stair()), the map drawn at the top, the title, the shimmer as the herd is tied in, the shooting star,
+	-- the feather landing
+	S.ChargeUp(ctx)
+	S.Duck(ctx, -pre, LEN)
+	S.Hit(ctx, 0, "L")
+	S.Cue(ctx, 0, "CelImpact", {Volume = .6})
+	S.Bed(ctx, .4, LEN - .8)
+	S.Cue(ctx, .3, "CelWhooshS", {At = function() return P.Torso end})
+	S.Cue(ctx, 3.6, "StarMapResolve")
+	S.Cue(ctx, 5.0, "CelTitle")
+	S.Cue(ctx, 4.95, "CelShimmer")
+	S.Cue(ctx, 5.2, "CelWhooshS", {Volume = .5})
+	S.Cue(ctx, 7.2, "FeatherLand")
 	return LEN
 end
 

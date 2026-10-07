@@ -12,7 +12,7 @@ Copy `ReplicatedStorage.FarmLasso.CelebrationFX` (with children) into `ServerSto
 
 ## 2. Upload the pack
 
-The files are in `audio/pack/*.ogg` (166 files, all under 35 s). Upload them as Audio assets: Creator Dashboard >
+The files are in `audio/pack/*.ogg` (187 files, 3.3 MB, all 32 s or shorter). Upload them as Audio assets: Creator Dashboard >
 Development Items > Audio > Upload (multi-select works; keep the file names), or Studio's Asset Manager > Audio.
 Audio you upload to your own account or group is usable in your own experiences without extra permissions.
 
@@ -22,7 +22,7 @@ with its cue and length if you want to upload a subset first (the lasso loop, UI
 difference; the celebrations can follow).
 
 Tip: in the Creator Dashboard, the Audio list can be exported to CSV; a short script that joins file names to ids is
-quicker than pasting 166 lines by hand. Keep the ids pasted in: `audio/build_sfx_pack.py --lua` regenerates the file
+quicker than pasting 187 lines by hand. Keep the ids pasted in: `audio/build_sfx_pack.py --lua` regenerates the file
 and preserves every id already there.
 
 ## 3. Scripts (Script Sync folder `FarmLasso\`)

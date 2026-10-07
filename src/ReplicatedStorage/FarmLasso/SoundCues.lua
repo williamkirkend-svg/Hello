@@ -85,7 +85,7 @@ local M = {
 	StepWood = oneShot("step_wood", .25, {.9, 1.1}, STEP),
 
 	---------------------------------------------------------------- celebrations, shared (3D at the player)
-	CelChargeUp = oneShot("cel_chargeup", .8, 1, CEL),
+	CelChargeUp = oneShot("cel_charge_up", .8, 1, CEL),
 	CelDetonate = oneShot("cel_detonate", 1, {.97, 1.03}, CEL),
 	CelShockwave = oneShot("cel_shockwave", .8, {.95, 1.05}, CEL),
 	CelWhooshS = oneShot("cel_whoosh_s", .6, {.9, 1.1}, CEL),

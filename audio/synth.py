@@ -623,6 +623,6 @@ def spectrogram(x, width=240, height=64, fmax=12000.0):
     # resample bins onto a log frequency axis
     fl = np.geomspace(60, fmax, height)
     rows = np.array([S[np.argmin(np.abs(f - fi))] for fi in fl])
-    db = 20 * np.log10(rows + 1e-6)
-    db = np.clip((db + 70) / 70, 0, 1)
+    db = 20 * np.log10(rows + 1e-9)
+    db = np.clip((db - db.max() + 60) / 60, 0, 1)  # relative to the file's loudest bin
     return (db[::-1] * 255).astype(np.uint8)

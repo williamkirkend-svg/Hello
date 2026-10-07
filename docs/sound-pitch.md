@@ -157,7 +157,7 @@ Rock / Pebble / Marble / Basalt > stone; Wood / WoodPlanks > wood; anything else
 
 | Cue | File | Len | L | Notes |
 |---|---|---|---|---|
-| CelChargeUp | cel_chargeup | 1.0 s | | the inhale: reversed suck riser into silence at t = 0 |
+| CelChargeUp | cel_charge_up | 1.0 s | | the inhale: reversed suck riser into silence at t = 0 |
 | CelDetonate | cel_detonate | 1.2 s | | sub thump, crack, shimmer tail |
 | CelShockwave | cel_shockwave | .7 s | | ring pass |
 | CelWhooshS / CelWhooshL | cel_whoosh_s, cel_whoosh_l | .4 / 1.0 s | | |

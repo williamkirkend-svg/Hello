@@ -1,0 +1,1424 @@
+{
+ "AmbBirds": {
+  "files": [
+   "amb_birds"
+  ],
+  "loop": true,
+  "seconds": [
+   24.0
+  ],
+  "stereo": true
+ },
+ "AmbFountain": {
+  "files": [
+   "amb_fountain"
+  ],
+  "loop": true,
+  "seconds": [
+   12.0
+  ],
+  "stereo": false
+ },
+ "AmbWind": {
+  "files": [
+   "amb_wind"
+  ],
+  "loop": true,
+  "seconds": [
+   16.0
+  ],
+  "stereo": true
+ },
+ "AnimalBarnCat": {
+  "files": [
+   "animal_barn_cat_1",
+   "animal_barn_cat_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.699,
+   0.699
+  ],
+  "stereo": false
+ },
+ "AnimalBarnOwl": {
+  "files": [
+   "animal_barn_owl_1",
+   "animal_barn_owl_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.694,
+   0.718
+  ],
+  "stereo": false
+ },
+ "AnimalBillyGoat": {
+  "files": [
+   "animal_billy_goat_1",
+   "animal_billy_goat_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.6,
+   0.598
+  ],
+  "stereo": false
+ },
+ "AnimalBison": {
+  "files": [
+   "animal_bison_1",
+   "animal_bison_2"
+  ],
+  "loop": false,
+  "seconds": [
+   1.24,
+   1.247
+  ],
+  "stereo": false
+ },
+ "AnimalBunny": {
+  "files": [
+   "animal_bunny_1",
+   "animal_bunny_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.46,
+   0.46
+  ],
+  "stereo": false
+ },
+ "AnimalChestnutHorse": {
+  "files": [
+   "animal_chestnut_horse_1",
+   "animal_chestnut_horse_2"
+  ],
+  "loop": false,
+  "seconds": [
+   1.082,
+   1.058
+  ],
+  "stereo": false
+ },
+ "AnimalChick": {
+  "files": [
+   "animal_chick_1",
+   "animal_chick_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.309,
+   0.318
+  ],
+  "stereo": false
+ },
+ "AnimalDairyCow": {
+  "files": [
+   "animal_dairy_cow_1",
+   "animal_dairy_cow_2"
+  ],
+  "loop": false,
+  "seconds": [
+   1.198,
+   1.199
+  ],
+  "stereo": false
+ },
+ "AnimalDonkey": {
+  "files": [
+   "animal_donkey_1",
+   "animal_donkey_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.931,
+   0.925
+  ],
+  "stereo": false
+ },
+ "AnimalGeneric": {
+  "files": [
+   "animal_generic_1",
+   "animal_generic_2",
+   "animal_generic_3"
+  ],
+  "loop": false,
+  "seconds": [
+   0.32,
+   0.32,
+   0.32
+  ],
+  "stereo": false
+ },
+ "AnimalGoldenRooster": {
+  "files": [
+   "animal_golden_rooster_1",
+   "animal_golden_rooster_2"
+  ],
+  "loop": false,
+  "seconds": [
+   1.35,
+   1.35
+  ],
+  "stereo": false
+ },
+ "AnimalGoose": {
+  "files": [
+   "animal_goose_1",
+   "animal_goose_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.624,
+   0.617
+  ],
+  "stereo": false
+ },
+ "AnimalHen": {
+  "files": [
+   "animal_hen_1",
+   "animal_hen_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.55,
+   0.55
+  ],
+  "stereo": false
+ },
+ "AnimalHighlandBull": {
+  "files": [
+   "animal_highland_bull_1",
+   "animal_highland_bull_2"
+  ],
+  "loop": false,
+  "seconds": [
+   1.098,
+   1.098
+  ],
+  "stereo": false
+ },
+ "AnimalLlama": {
+  "files": [
+   "animal_llama_1",
+   "animal_llama_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.8,
+   0.8
+  ],
+  "stereo": false
+ },
+ "AnimalOstrich": {
+  "files": [
+   "animal_ostrich_1",
+   "animal_ostrich_2"
+  ],
+  "loop": false,
+  "seconds": [
+   1.1,
+   1.1
+  ],
+  "stereo": false
+ },
+ "AnimalPeacock": {
+  "files": [
+   "animal_peacock_1",
+   "animal_peacock_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.902,
+   0.892
+  ],
+  "stereo": false
+ },
+ "AnimalPig": {
+  "files": [
+   "animal_pig_1",
+   "animal_pig_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.579,
+   0.594
+  ],
+  "stereo": false
+ },
+ "AnimalPuddleDuck": {
+  "files": [
+   "animal_puddle_duck_1",
+   "animal_puddle_duck_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.51,
+   0.497
+  ],
+  "stereo": false
+ },
+ "AnimalRedFox": {
+  "files": [
+   "animal_red_fox_1",
+   "animal_red_fox_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.325,
+   0.332
+  ],
+  "stereo": false
+ },
+ "AnimalReindeer": {
+  "files": [
+   "animal_reindeer_1",
+   "animal_reindeer_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.949,
+   0.95
+  ],
+  "stereo": false
+ },
+ "AnimalSheepdog": {
+  "files": [
+   "animal_sheepdog_1",
+   "animal_sheepdog_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.338,
+   0.336
+  ],
+  "stereo": false
+ },
+ "AnimalTurkey": {
+  "files": [
+   "animal_turkey_1",
+   "animal_turkey_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.748,
+   0.748
+  ],
+  "stereo": false
+ },
+ "AnimalUnicornPony": {
+  "files": [
+   "animal_unicorn_pony_1",
+   "animal_unicorn_pony_2"
+  ],
+  "loop": false,
+  "seconds": [
+   1.05,
+   1.05
+  ],
+  "stereo": false
+ },
+ "AnimalWoollySheep": {
+  "files": [
+   "animal_woolly_sheep_1",
+   "animal_woolly_sheep_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.799,
+   0.799
+  ],
+  "stereo": false
+ },
+ "ArcCrackle": {
+  "files": [
+   "arc_crackle"
+  ],
+  "loop": true,
+  "seconds": [
+   2.0
+  ],
+  "stereo": false
+ },
+ "BagFull": {
+  "files": [
+   "bag_full"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5
+  ],
+  "stereo": false
+ },
+ "BullCharge": {
+  "files": [
+   "bull_charge"
+  ],
+  "loop": false,
+  "seconds": [
+   1.2
+  ],
+  "stereo": false
+ },
+ "Buy": {
+  "files": [
+   "purchase_chime"
+  ],
+  "loop": false,
+  "seconds": [
+   0.6
+  ],
+  "stereo": false
+ },
+ "CatchChime": {
+  "files": [
+   "catch_chime"
+  ],
+  "loop": false,
+  "seconds": [
+   0.9
+  ],
+  "stereo": false
+ },
+ "CatchPop": {
+  "files": [
+   "catch_pop"
+  ],
+  "loop": false,
+  "seconds": [
+   0.25
+  ],
+  "stereo": false
+ },
+ "CelBed": {
+  "files": [
+   "cel_bed"
+  ],
+  "loop": true,
+  "seconds": [
+   8.0
+  ],
+  "stereo": false
+ },
+ "CelChargeUp": {
+  "files": [
+   "cel_charge_up"
+  ],
+  "loop": false,
+  "seconds": [
+   1.0
+  ],
+  "stereo": false
+ },
+ "CelDetonate": {
+  "files": [
+   "cel_detonate"
+  ],
+  "loop": false,
+  "seconds": [
+   1.2
+  ],
+  "stereo": false
+ },
+ "CelImpact": {
+  "files": [
+   "cel_impact"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5
+  ],
+  "stereo": false
+ },
+ "CelLand": {
+  "files": [
+   "cel_land"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5
+  ],
+  "stereo": false
+ },
+ "CelRiser": {
+  "files": [
+   "cel_riser"
+  ],
+  "loop": false,
+  "seconds": [
+   2.0
+  ],
+  "stereo": false
+ },
+ "CelShimmer": {
+  "files": [
+   "cel_shimmer"
+  ],
+  "loop": false,
+  "seconds": [
+   1.5
+  ],
+  "stereo": false
+ },
+ "CelShockwave": {
+  "files": [
+   "cel_shockwave"
+  ],
+  "loop": false,
+  "seconds": [
+   0.7
+  ],
+  "stereo": false
+ },
+ "CelTitle": {
+  "files": [
+   "cel_title"
+  ],
+  "loop": false,
+  "seconds": [
+   0.6
+  ],
+  "stereo": false
+ },
+ "CelWhooshL": {
+  "files": [
+   "cel_whoosh_l"
+  ],
+  "loop": false,
+  "seconds": [
+   0.938
+  ],
+  "stereo": false
+ },
+ "CelWhooshS": {
+  "files": [
+   "cel_whoosh_s"
+  ],
+  "loop": false,
+  "seconds": [
+   0.398
+  ],
+  "stereo": false
+ },
+ "CharCrackle": {
+  "files": [
+   "char_crackle"
+  ],
+  "loop": true,
+  "seconds": [
+   2.0
+  ],
+  "stereo": false
+ },
+ "ClockTick": {
+  "files": [
+   "clock_tick"
+  ],
+  "loop": true,
+  "seconds": [
+   1.0
+  ],
+  "stereo": false
+ },
+ "CoinRain": {
+  "files": [
+   "coin_rain"
+  ],
+  "loop": true,
+  "seconds": [
+   2.0
+  ],
+  "stereo": false
+ },
+ "CoinSpiral": {
+  "files": [
+   "coin_spiral"
+  ],
+  "loop": false,
+  "seconds": [
+   1.6
+  ],
+  "stereo": false
+ },
+ "ConstellationPull": {
+  "files": [
+   "constellation_pull"
+  ],
+  "loop": false,
+  "seconds": [
+   1.2
+  ],
+  "stereo": false
+ },
+ "CosmicHum": {
+  "files": [
+   "cosmic_hum"
+  ],
+  "loop": true,
+  "seconds": [
+   4.0
+  ],
+  "stereo": false
+ },
+ "EmberSparkle": {
+  "files": [
+   "ember_sparkle"
+  ],
+  "loop": false,
+  "seconds": [
+   1.4
+  ],
+  "stereo": false
+ },
+ "Equip": {
+  "files": [
+   "equip_click"
+  ],
+  "loop": false,
+  "seconds": [
+   0.25
+  ],
+  "stereo": false
+ },
+ "Escape": {
+  "files": [
+   "rope_slip"
+  ],
+  "loop": false,
+  "seconds": [
+   0.6
+  ],
+  "stereo": false
+ },
+ "Fanfare1": {
+  "files": [
+   "fanfare_1"
+  ],
+  "loop": false,
+  "seconds": [
+   0.8
+  ],
+  "stereo": false
+ },
+ "Fanfare2": {
+  "files": [
+   "fanfare_2"
+  ],
+  "loop": false,
+  "seconds": [
+   1.3
+  ],
+  "stereo": false
+ },
+ "Fanfare3": {
+  "files": [
+   "fanfare_3"
+  ],
+  "loop": false,
+  "seconds": [
+   1.9
+  ],
+  "stereo": false
+ },
+ "Fanfare4": {
+  "files": [
+   "fanfare_4"
+  ],
+  "loop": false,
+  "seconds": [
+   3.0
+  ],
+  "stereo": false
+ },
+ "FeatherLand": {
+  "files": [
+   "feather_land"
+  ],
+  "loop": false,
+  "seconds": [
+   0.7
+  ],
+  "stereo": false
+ },
+ "FireWhoosh": {
+  "files": [
+   "fire_whoosh"
+  ],
+  "loop": false,
+  "seconds": [
+   0.8
+  ],
+  "stereo": false
+ },
+ "GemCrown": {
+  "files": [
+   "gem_crown"
+  ],
+  "loop": false,
+  "seconds": [
+   1.6
+  ],
+  "stereo": false
+ },
+ "GhostHooves": {
+  "files": [
+   "ghost_hooves"
+  ],
+  "loop": true,
+  "seconds": [
+   1.6
+  ],
+  "stereo": false
+ },
+ "GlassBreak": {
+  "files": [
+   "glass_break"
+  ],
+  "loop": false,
+  "seconds": [
+   1.0
+  ],
+  "stereo": false
+ },
+ "GlassShatter": {
+  "files": [
+   "glass_shatter"
+  ],
+  "loop": false,
+  "seconds": [
+   1.0
+  ],
+  "stereo": false
+ },
+ "HaloLand": {
+  "files": [
+   "halo_land"
+  ],
+  "loop": false,
+  "seconds": [
+   0.8
+  ],
+  "stereo": false
+ },
+ "HerdJoin": {
+  "files": [
+   "herd_join"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5
+  ],
+  "stereo": false
+ },
+ "Hooked": {
+  "files": [
+   "hooked"
+  ],
+  "loop": false,
+  "seconds": [
+   0.45
+  ],
+  "stereo": false
+ },
+ "IceCrack": {
+  "files": [
+   "ice_crack"
+  ],
+  "loop": false,
+  "seconds": [
+   0.8
+  ],
+  "stereo": false
+ },
+ "LassoCharge": {
+  "files": [
+   "lasso_charge_loop"
+  ],
+  "loop": true,
+  "seconds": [
+   2.0
+  ],
+  "stereo": false
+ },
+ "LighthouseSweep": {
+  "files": [
+   "lighthouse_sweep_1",
+   "lighthouse_sweep_2",
+   "lighthouse_sweep_3"
+  ],
+  "loop": false,
+  "seconds": [
+   0.79,
+   0.797,
+   0.791
+  ],
+  "stereo": false
+ },
+ "LotusBloom": {
+  "files": [
+   "lotus_bloom"
+  ],
+  "loop": false,
+  "seconds": [
+   1.184
+  ],
+  "stereo": false
+ },
+ "LuckImpact1": {
+  "files": [
+   "luck_impact_1"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5
+  ],
+  "stereo": false
+ },
+ "LuckImpact2": {
+  "files": [
+   "luck_impact_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.7
+  ],
+  "stereo": false
+ },
+ "LuckImpact3": {
+  "files": [
+   "luck_impact_3"
+  ],
+  "loop": false,
+  "seconds": [
+   0.9
+  ],
+  "stereo": false
+ },
+ "LuckImpact4": {
+  "files": [
+   "luck_impact_4"
+  ],
+  "loop": false,
+  "seconds": [
+   1.2
+  ],
+  "stereo": false
+ },
+ "LuckTick": {
+  "files": [
+   "luck_tick"
+  ],
+  "loop": false,
+  "seconds": [
+   0.12
+  ],
+  "stereo": false
+ },
+ "MeterGood": {
+  "files": [
+   "meter_good"
+  ],
+  "loop": false,
+  "seconds": [
+   0.15
+  ],
+  "stereo": false
+ },
+ "MeterMega": {
+  "files": [
+   "meter_mega"
+  ],
+  "loop": false,
+  "seconds": [
+   0.15
+  ],
+  "stereo": false
+ },
+ "MeterPerfect": {
+  "files": [
+   "meter_perfect"
+  ],
+  "loop": false,
+  "seconds": [
+   0.15
+  ],
+  "stereo": false
+ },
+ "MusicCountry": {
+  "files": [
+   "music_countryside"
+  ],
+  "loop": true,
+  "seconds": [
+   32.0
+  ],
+  "stereo": true
+ },
+ "NoCoins": {
+  "files": [
+   "error_buzz"
+  ],
+  "loop": false,
+  "seconds": [
+   0.33
+  ],
+  "stereo": false
+ },
+ "PanelClose": {
+  "files": [
+   "panel_close"
+  ],
+  "loop": false,
+  "seconds": [
+   0.3
+  ],
+  "stereo": false
+ },
+ "PanelOpen": {
+  "files": [
+   "panel_open"
+  ],
+  "loop": false,
+  "seconds": [
+   0.299
+  ],
+  "stereo": false
+ },
+ "PetalShimmer": {
+  "files": [
+   "petal_shimmer"
+  ],
+  "loop": true,
+  "seconds": [
+   2.0
+  ],
+  "stereo": false
+ },
+ "PortalOpen": {
+  "files": [
+   "portal_open"
+  ],
+  "loop": false,
+  "seconds": [
+   1.188
+  ],
+  "stereo": false
+ },
+ "QuestAccept": {
+  "files": [
+   "quest_accept"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5
+  ],
+  "stereo": false
+ },
+ "QuestComplete": {
+  "files": [
+   "quest_complete"
+  ],
+  "loop": false,
+  "seconds": [
+   1.6
+  ],
+  "stereo": false
+ },
+ "QuestTick": {
+  "files": [
+   "quest_tick"
+  ],
+  "loop": false,
+  "seconds": [
+   0.12
+  ],
+  "stereo": false
+ },
+ "RareReveal1": {
+  "files": [
+   "rare_reveal_1"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5
+  ],
+  "stereo": false
+ },
+ "RareReveal2": {
+  "files": [
+   "rare_reveal_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.7
+  ],
+  "stereo": false
+ },
+ "RareReveal3": {
+  "files": [
+   "rare_reveal_3"
+  ],
+  "loop": false,
+  "seconds": [
+   0.95
+  ],
+  "stereo": false
+ },
+ "RareReveal4": {
+  "files": [
+   "rare_reveal_4"
+  ],
+  "loop": false,
+  "seconds": [
+   1.25
+  ],
+  "stereo": false
+ },
+ "RareReveal5": {
+  "files": [
+   "rare_reveal_5"
+  ],
+  "loop": false,
+  "seconds": [
+   1.6
+  ],
+  "stereo": false
+ },
+ "RareReveal6": {
+  "files": [
+   "rare_reveal_6"
+  ],
+  "loop": false,
+  "seconds": [
+   2.1
+  ],
+  "stereo": false
+ },
+ "RareReveal7": {
+  "files": [
+   "rare_reveal_7"
+  ],
+  "loop": false,
+  "seconds": [
+   2.6
+  ],
+  "stereo": false
+ },
+ "ReverseWhoosh": {
+  "files": [
+   "reverse_whoosh"
+  ],
+  "loop": false,
+  "seconds": [
+   0.8
+  ],
+  "stereo": false
+ },
+ "Rewind": {
+  "files": [
+   "rewind"
+  ],
+  "loop": false,
+  "seconds": [
+   1.4
+  ],
+  "stereo": false
+ },
+ "RopeLand": {
+  "files": [
+   "rope_land"
+  ],
+  "loop": false,
+  "seconds": [
+   0.3
+  ],
+  "stereo": false
+ },
+ "RopeWhirl": {
+  "files": [
+   "rope_whirl"
+  ],
+  "loop": true,
+  "seconds": [
+   1.2
+  ],
+  "stereo": false
+ },
+ "SellDing": {
+  "files": [
+   "register_ding"
+  ],
+  "loop": false,
+  "seconds": [
+   0.7
+  ],
+  "stereo": false
+ },
+ "SellShower": {
+  "files": [
+   "coin_shower"
+  ],
+  "loop": false,
+  "seconds": [
+   1.294
+  ],
+  "stereo": false
+ },
+ "SpiritBellow": {
+  "files": [
+   "spirit_bellow"
+  ],
+  "loop": false,
+  "seconds": [
+   1.393
+  ],
+  "stereo": false
+ },
+ "StarChime": {
+  "files": [
+   "star_chime"
+  ],
+  "loop": false,
+  "seconds": [
+   1.5
+  ],
+  "stereo": false
+ },
+ "StarMapResolve": {
+  "files": [
+   "star_map_resolve"
+  ],
+  "loop": false,
+  "seconds": [
+   1.798
+  ],
+  "stereo": false
+ },
+ "StarTwinkle": {
+  "files": [
+   "star_twinkle_1",
+   "star_twinkle_2",
+   "star_twinkle_3"
+  ],
+  "loop": false,
+  "seconds": [
+   0.4,
+   0.4,
+   0.4
+  ],
+  "stereo": false
+ },
+ "StepChime": {
+  "files": [
+   "step_chime_1",
+   "step_chime_2",
+   "step_chime_3",
+   "step_chime_4",
+   "step_chime_5",
+   "step_chime_6",
+   "step_chime_7",
+   "step_chime_8"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5,
+   0.5
+  ],
+  "stereo": false
+ },
+ "StepDirt": {
+  "files": [
+   "step_dirt_1",
+   "step_dirt_2",
+   "step_dirt_3",
+   "step_dirt_4"
+  ],
+  "loop": false,
+  "seconds": [
+   0.15,
+   0.15,
+   0.15,
+   0.15
+  ],
+  "stereo": false
+ },
+ "StepGrass": {
+  "files": [
+   "step_grass_1",
+   "step_grass_2",
+   "step_grass_3",
+   "step_grass_4"
+  ],
+  "loop": false,
+  "seconds": [
+   0.15,
+   0.15,
+   0.15,
+   0.15
+  ],
+  "stereo": false
+ },
+ "StepStone": {
+  "files": [
+   "step_stone_1",
+   "step_stone_2",
+   "step_stone_3",
+   "step_stone_4"
+  ],
+  "loop": false,
+  "seconds": [
+   0.15,
+   0.15,
+   0.15,
+   0.15
+  ],
+  "stereo": false
+ },
+ "StepWood": {
+  "files": [
+   "step_wood_1",
+   "step_wood_2",
+   "step_wood_3",
+   "step_wood_4"
+  ],
+  "loop": false,
+  "seconds": [
+   0.15,
+   0.15,
+   0.15,
+   0.15
+  ],
+  "stereo": false
+ },
+ "StingGood": {
+  "files": [
+   "sting_good"
+  ],
+  "loop": false,
+  "seconds": [
+   0.6
+  ],
+  "stereo": false
+ },
+ "StingMega": {
+  "files": [
+   "sting_mega"
+  ],
+  "loop": false,
+  "seconds": [
+   1.1
+  ],
+  "stereo": false
+ },
+ "StingPerfect": {
+  "files": [
+   "sting_perfect"
+  ],
+  "loop": false,
+  "seconds": [
+   0.8
+  ],
+  "stereo": false
+ },
+ "StormRoll": {
+  "files": [
+   "storm_roll"
+  ],
+  "loop": true,
+  "seconds": [
+   4.0
+  ],
+  "stereo": false
+ },
+ "SuckDrone": {
+  "files": [
+   "suck_drone"
+  ],
+  "loop": true,
+  "seconds": [
+   4.0
+  ],
+  "stereo": false
+ },
+ "SunDive": {
+  "files": [
+   "sun_dive"
+  ],
+  "loop": false,
+  "seconds": [
+   1.6
+  ],
+  "stereo": false
+ },
+ "Supernova": {
+  "files": [
+   "supernova"
+  ],
+  "loop": false,
+  "seconds": [
+   2.2
+  ],
+  "stereo": false
+ },
+ "TabSwitch": {
+  "files": [
+   "tab_switch"
+  ],
+  "loop": false,
+  "seconds": [
+   0.12
+  ],
+  "stereo": false
+ },
+ "Throw": {
+  "files": [
+   "throw_whoosh_1",
+   "throw_whoosh_2",
+   "throw_whoosh_3"
+  ],
+  "loop": false,
+  "seconds": [
+   0.5,
+   0.5,
+   0.5
+  ],
+  "stereo": false
+ },
+ "ThrowBig": {
+  "files": [
+   "throw_big"
+  ],
+  "loop": false,
+  "seconds": [
+   0.9
+  ],
+  "stereo": false
+ },
+ "ThunderCrack": {
+  "files": [
+   "thunder_crack"
+  ],
+  "loop": false,
+  "seconds": [
+   1.4
+  ],
+  "stereo": false
+ },
+ "ThunderPunch": {
+  "files": [
+   "thunder_punch"
+  ],
+  "loop": false,
+  "seconds": [
+   1.2
+  ],
+  "stereo": false
+ },
+ "TornadoSlam": {
+  "files": [
+   "tornado_slam"
+  ],
+  "loop": false,
+  "seconds": [
+   0.9
+  ],
+  "stereo": false
+ },
+ "TreeGrow": {
+  "files": [
+   "tree_grow"
+  ],
+  "loop": false,
+  "seconds": [
+   1.8
+  ],
+  "stereo": false
+ },
+ "TugDanger": {
+  "files": [
+   "tug_danger"
+  ],
+  "loop": false,
+  "seconds": [
+   0.4
+  ],
+  "stereo": false
+ },
+ "TugLoop": {
+  "files": [
+   "tug_loop"
+  ],
+  "loop": true,
+  "seconds": [
+   2.0
+  ],
+  "stereo": false
+ },
+ "TugTick": {
+  "files": [
+   "tug_tick_1",
+   "tug_tick_2",
+   "tug_tick_3"
+  ],
+  "loop": false,
+  "seconds": [
+   0.1,
+   0.1,
+   0.1
+  ],
+  "stereo": false
+ },
+ "UIClick": {
+  "files": [
+   "ui_click_1",
+   "ui_click_2"
+  ],
+  "loop": false,
+  "seconds": [
+   0.1,
+   0.1
+  ],
+  "stereo": false
+ },
+ "UIHover": {
+  "files": [
+   "ui_hover"
+  ],
+  "loop": false,
+  "seconds": [
+   0.06
+  ],
+  "stereo": false
+ },
+ "WindFunnel": {
+  "files": [
+   "wind_funnel"
+  ],
+  "loop": true,
+  "seconds": [
+   3.0
+  ],
+  "stereo": false
+ },
+ "WingFlap": {
+  "files": [
+   "wing_flap_1",
+   "wing_flap_2",
+   "wing_flap_3"
+  ],
+  "loop": false,
+  "seconds": [
+   0.473,
+   0.487,
+   0.53
+  ],
+  "stereo": false
+ }
+}

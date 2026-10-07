@@ -23,7 +23,9 @@ Generated 7 Oct 2026 with Higgsfield (z_image, 16:9). The files live in your Hig
 | 18 | Same on white | Superseded composition | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_203943_e12d4335-52b2-416f-bba1-5968f88e3c1a.png |
 | 19 | Logo, block DODGEBALL with small tilted rocky CURSED, starry | Failed on the generator twice; superseded by 21 and 22 | (none) |
 | 20 | Same on white | Superseded by 21 and 22 | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_204028_844841ae-7a78-4e89-bed4-00291661bbc6.png |
-| 21 | Logo on black: plain white outlined DODGEBALL, CURSED as boxy stone frames filled with purple fire, overlapping | The current logo direction | (link recorded after render) |
+| 21 | Logo on black, first attempt | Failed on the generator | (none) |
 | 22 | Same, second variant | The current logo direction | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_204531_c9036280-fe18-4464-93b5-0b1e3e960565.png |
+| 23 | Logo v3 (Figma, Gemini): rounder white DODGEBALL, CURSED on top, tilted clockwise, stone letters with purple fire | Closest so far; stone reads as solid fill rather than a hollow frame | https://www.figma.com/api/mcp/asset/b3de5707-993c-4506-96ea-e690a3c2e8c0.png (expires in 7 days, download it) |
+| 24 | Logo v3 variant (Figma, Gemini): same, hollow stone frames with flames inside, Desert Rock style border | Current best. Download before it expires | https://www.figma.com/api/mcp/asset/8670d289-e801-4510-a6f1-389e1718d25b.png (expires in 7 days) |
 
 A sunken-pit arena image (the look decided later in the session) was attempted twice and failed on the generator side; the pit is described in DESIGN.md section 7. Retry it when the generator is healthy.

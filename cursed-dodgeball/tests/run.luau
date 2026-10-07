@@ -4,6 +4,7 @@ local TESTS = {
 	"./Balls.test",
 	"./ShowState.test",
 	"./BallFlight.test",
+	"./Targeting.test",
 }
 
 local passed, failed = 0, 0

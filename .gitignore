@@ -1,2 +1,5 @@
 # Local build artifacts
 *.zip
+
+# Python
+__pycache__/

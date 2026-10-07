@@ -1,8 +1,8 @@
-# Cursed Dodgeball: design document (v0.2, 7 Oct 2026)
+# Cursed Dodgeball: design document (v0.3, 7 Oct 2026)
 
 Name confirmed by the owner.
 
-This is a design-only document. No code exists yet. It pulls from three research passes in `research/` and the concept images listed in `concept-images.md`. Decisions already made with the owner: balls carry the twist and players have no abilities beyond a shared movement kit; cosmetics-only monetization; chunky cartoon backyard and schoolyard art; everyone plays at once in a pure free-for-all with no teams, and rounds cut the field down to a single winner; the court is sunk below the stands so you feel down in a pit with the crowd above you; 20 players at launch.
+This is a design-only document. No code exists yet. It pulls from three research passes in `research/` and the concept images listed in `concept-images.md`. Decisions already made with the owner: balls carry the eliminations and every player shares one movement kit, plus one chosen ability that can be used once per round and never eliminates anyone; cosmetics-only monetization; chunky cartoon backyard and schoolyard art; everyone plays at once in a pure free-for-all with no teams, and rounds cut the field down to a single winner; the court is sunk below the stands so you feel down in a pit with the crowd above you; 20 players at launch.
 
 ## 1. The pitch in one breath
 
@@ -13,11 +13,11 @@ Rules you already know: get hit, you are out. Catch it, the thrower is out. Last
 ## 2. Design pillars
 
 1. **Zero tutorial.** The loading screen says one sentence and that is the whole rulebook. Everything else is learned by getting hit by it.
-2. **The catch is sacred.** Every cursed ball changes how a ball flies or what a hit does. None of them change what a catch means. The catch is the comeback and the skill ceiling.
+2. **The catch is sacred, and only a ball gets you out.** Every cursed ball changes how a ball flies or what a hit does. None of them change what a catch means. Abilities move you, move balls, or hide you. No ability ever eliminates a player.
 3. **Nobody waits in silence.** Eliminated players become Ghosts with a throwing ring and a vote, then spectators with a camera and a hype meter. The stands are part of the show.
 4. **Five-minute shows.** A full show from first rush to crowned winner is about five minutes. A player who goes out in the first 30 seconds is back on the court in under five.
 5. **Clip first.** Every cursed ball has a moment that makes sense in a two-second vertical clip with no sound. Ragdolls, launches, swaps, explosions.
-6. **Skill wins.** Sprint, dodge in any direction including mid-air, and a 3-second shield for a catch. The only help is a target picker that never tracks. No ability purchases, no ball purchases, ever.
+6. **Skill wins.** Sprint, dodge in any direction including mid-air, wall run, mantle, and a 3-second shield for a catch. The only help is a target picker that never tracks. No ability purchases, no ball purchases, ever.
 7. **Everyone is there for their own reason.** No teams, no squads on the court. Alliances are whatever two kids decide for ten seconds.
 
 ## 3. The show (match format)
@@ -65,7 +65,32 @@ Total: about 4 to 5 minutes. The server never has a lobby wait longer than 20 se
 - **Dodge.** Tap Dodge to dash 8 studs in whatever direction the joystick points, including backward and sideways, over 0.2 seconds. Costs a quarter of the stamina bar. Cooldown 0.8 s. The dodge has no invulnerability frames: if a ball reaches your body mid-dash you are out. The dodge is about where you end up, not about being untouchable, so a good thrower who reads it still wins.
 - **Air dodge.** Dodge works once per jump while airborne, in any direction, with the same cost. Landing resets it. Chaining jump, air dodge and a charged throw on landing is the high-skill play the game is built around.
 - **Jump.** Standard height. Jumping over a low ball is a legitimate dodge.
+- **Wall run.** While airborne, moving into a wall at least 6 studs tall and holding Jump runs you along it at sprint speed for up to 1.5 seconds with gravity at a quarter. Costs stamina like sprinting. Press Jump again to kick off, away from the wall and upward, which resets the air dodge. The pit walls, pillars and tall obstacles are all runnable. Wall runs are how you cross the court without touching the floor and how you reach the rails.
+- **Mantle.** Running into a ledge up to 3.5 studs high climbs it automatically. Low walls are cover you vault over, not fences.
 - **Stamina readability.** The bar is on the player's back as a small glowing strip, so throwers can see when someone is empty and spectators can see it from the stands.
+
+### Abilities (one per player, chosen between games, used once per round)
+
+The twist used to live only in the balls. It now lives in the balls plus one ability per player, under one hard rule: an ability can never put anyone out. Abilities get you a ball, get you out of the way, or make the thrower wrong. The ball still does the eliminating, so the catch stays sacred and spectators always know why someone went out.
+
+- **Pick.** During the intermission (between games) every player picks one ability from the roster on the ability board in the stands. The pick is locked for the whole game: round 1, round 2, the final. Your pick shows as an icon above your head during the intermission so opponents can read the field.
+- **Use.** One use per round. It refreshes at the start of every round, so a player who survives all three rounds uses it three times. One button (E, ButtonL1, or a touch button). A loud colour flash and a jumbotron ticker line ("Alex used BLINK") make every use readable from the stands.
+- **Ghosts** on the ring cannot use abilities.
+- **Launch roster, eight abilities.**
+
+| Ability | What it does | Counter | Why it is in |
+|---|---|---|---|
+| Blink | Teleport 12 studs in your movement direction, stopped by walls. Keeps your ball. | Throw where they will be, not where they were. | The simplest escape; teaches dodging to new players. |
+| Grapple | Fire a hook at any pillar, rail or wall within 30 studs and zip to it. | They arrive predictable; the zip is a straight line. | Rewards the parkour arena; the clip ability. |
+| Snatch | The nearest loose ball within 20 studs flies into your hand. | Hold your ball; Snatch only takes loose balls. | Fixes the "no balls near me" problem without a Black Hole. |
+| Bubble | A 1.5-second bubble that catches the first ball that would hit you. Counts as a real catch: thrower out, shield gained. | Do not throw into a bubble; wait it out or throw a Giant (uncatchable). | The defensive read; punishes impatience. |
+| Phase | 1 second of translucency; balls pass through you. Not a catch, no shield. | Throw after it ends; it is loud and short. | The emergency button for a cornered player. |
+| Decoy | A clone of you sprints straight ahead for 3 seconds. A ball that hits it pops it and dies. | Decoys never dodge; the real one does. | Wastes an enemy throw, sells a fake. |
+| Slam | Jump then slam down: a shockwave pushes players within 8 studs back 6 studs and scatters loose balls. Nobody is put out by the push; the Flood or the kerb can finish it. | Do not stand on the edge near a Slam player. | The only ability that touches other players, kept to a shove. |
+| Smoke | A 10-stud smoke cloud for 4 seconds. Target brackets cannot lock onto anyone inside it. | Throw blind at where you last saw them. | Breaks the target picker, which is the only aim help in the game. |
+
+- **Roadmap abilities:** Quickdraw (next throw is fully charged instantly), Shrink (half size for 3 s), Magnet (loose balls within 15 studs roll to you over 2 s), Swap Places (trade spots with your target), Spring (a bounce pad under your feet for 6 s), Rewind (return to where you stood 3 s ago).
+- **Balance rule of thumb:** every ability is 1 to 3 seconds long, visible from the stands, and answerable by the simplest counter: wait.
 
 ## 5. The cursed balls
 
@@ -80,9 +105,11 @@ Full catalog with behaviours, counters, catch rules, art and sound notes is in `
 | Chaos | Timers and lies | Fuse, Decoy (three balls, one real), Moon (holder jumps high, hit launches the target) |
 | Field | Changes the court itself | Black Hole, Paint |
 
-**Ball mix per round.** Round 1: 8 balls on the centre circle, 4 plain and 4 cursed (3 drawn by the server, 1 Wildcard voted by spectators). Round 2: 6 balls, 1 plain and 5 cursed. Round 3: 4 balls, all cursed, drawn from a "finals pool" that excludes Paint.
+**Ball mix.** One draw per show, at show start: 8 balls on the centre circle, 4 plain and 4 cursed (3 drawn by the server, 1 Wildcard voted by spectators). The same eight carry through every round. The court shrinks around them; the ball count does not.
 
-**Persistence.** A cursed ball keeps its curse for the whole round, so it is a resource worth fighting over, except consumables (Fuse, Black Hole, Paint, Decoy) which turn into a plain ball after they trigger. The ball machine at the centre fires a replacement cursed ball every 20 seconds in rounds 1 and 2.
+**Persistence.** Balls never despawn during a show. The roster is drawn once at show start (randomised, 8 balls: 4 plain and 4 cursed, one of them the spectator Wildcard) and the same balls are reused by the players through all three rounds. Between rounds the ball machine gathers every ball back to the centre circle. A ball that leaves the court rolls back in. There is no replacement machine fire: what is on the court is what there is, so every ball is a resource worth tracking.
+
+**Re-arm.** A cursed ball that triggers its curse (a Fuse that blew, a Black Hole that opened, a Paint that splatted, a Decoy that split, a Shadow that was caught) does not become plain for good. It goes dormant: a countdown number floats above the ball and counts down from 6 seconds, during which the ball behaves as a plain ball and reads dull. At zero a burst ripples across the whole face of the ball, like a charge replenishing, and the ball lights back up in its own colour with its idle animation restored. The countdown is a BillboardGui readable from the stands, so a spectator can see the Fuse is about to be live again before the players notice.
 
 **Reveal.** Every cursed ball has a unique silhouette, colour, idle animation, and sound so it reads from the stands and from a phone. Nothing is a recolour.
 
@@ -108,6 +135,14 @@ Eliminated players never leave the venue.
 One stadium shape, three skins at launch. The defining feature is that the court is a pit: the floor sits 8 studs below the Ghost ring and the first row of seats, so a player on the court looks up at a wall of faces and a spectator looks down into an arena. Dimensions below are the round 1 court; the kerb moves inward for rounds 2 and 3.
 
 **Court.** A rounded rectangle, 70 by 50 studs in round 1, 48 by 36 in round 2, 30 by 24 in round 3. A centre circle of 10 studs where balls spawn from a hatch (the ball machine). No centre line in free-for-all. The floor is one bright flat colour with the boundary band in the team-neutral accent, lit brighter than everything around it.
+
+**Obstacles (the parkour layer).** The court is no longer flat. Everything is mirror-symmetric across both axes so no spawn is favoured, and nothing is taller than 9 studs so the stands, which start at 8 studs above the floor, always see over it. Players should find it a little confusing from inside; spectators should always be able to tell what is going on from above.
+- Four **pillars**, 4 by 4 by 9 studs, at the quarter points. Wall-runnable on every face. Grapple anchors.
+- Four **half-walls**, 8 studs long and 3 studs high, staggered between the pillars. Cover from one side, mantle over in one motion. Balls fly over them; crouching behind one is a real defence.
+- One **stage** in the centre, 12 by 12 studs, 4 studs high, with a ramp on each short side. The centre circle and ball hatch sit on top. The high ground is also the most exposed ground.
+- Two **rails**, 1 stud wide, 7 studs up, running from pillar to pillar along each long side. Reached by wall run or Grapple. A player on a rail is hard to hit from below and easy to knock off with a Slam.
+- The **pit walls** are wall-runnable all the way round for escapes along the edge.
+- When the court shrinks between rounds, obstacles outside the new kerb sink into the floor during the replay. Round 2 keeps the stage, two pillars and two half-walls. The final keeps only the stage.
 
 **Pit wall, kerb and ring.** A 1-stud painted kerb marks out of bounds at the floor. Behind it the pit wall rises 8 studs, sheer, with team-neutral stripes and the players-remaining count painted big on each face so the crowd reads it. At the top of the wall is the 6-stud Ghost ring with a glass rail on the court side so Ghosts throw over it and cannot fall in. Behind the ring the stands begin. Out players are flung up and over the wall onto the ring, which is the physical version of being sent off. Entry for the next show is down the two tunnels, which ramp from the stands to the floor at the short ends and close with a gate when the round starts.
 
@@ -156,13 +191,14 @@ Summarised from `research/arena-and-spectators.md`. No code yet.
 
 ## 11. Build order (phases, not tasks)
 
-1. Grey-box court and stands, plain ball throw and catch, out and Ghost ring, one round to last player. Playtest the feel of throw, catch and the 8-second hold.
-2. The three-round show loop with the Flood, replays and crowning.
-3. First six cursed balls (Eye, Boomerang, Giant, Glue, Fuse, Bouncy). Ball machine and reveal.
-4. Stands: cameras, cheer wheel, hype meter, Wildcard vote.
-5. Remaining six balls. Blacktop art pass.
-6. Cosmetics, XP, challenges, leaderboards.
-7. Backyard and Gym venues.
+1. Done: grey-box court and stands, plain ball throw and catch, out and Ghost ring, the three-round show loop with the Flood, replays and crowning.
+2. Movement and arena: wall run, mantle, obstacles that sink between rounds. Persistent balls with re-arm countdown.
+3. Abilities: the pick board, the once-per-round use, the eight launch abilities.
+4. First six cursed balls (Eye, Boomerang, Giant, Glue, Fuse, Bouncy) with re-arm.
+5. Stands: cameras, cheer wheel, hype meter, Wildcard vote, ability ticker.
+6. Remaining six balls. Blacktop art pass.
+7. Cosmetics, XP, challenges, leaderboards.
+8. Backyard and Gym venues.
 
 ## 12. Decisions log
 
@@ -175,6 +211,9 @@ Resolved 7 Oct 2026 with the owner:
 6. Catch gives a one-hit shield that lasts 3 seconds. Skill-based movement added: sprint, omnidirectional dodge, air dodge. Auto-aim is a target picker that throws at where the target is at release and never tracks; only the Eye Ball tracks.
 7. The court is sunk below the stands so it feels like an arena pit with the crowd above.
 
+8. More PvP (v0.3): wall run and mantle added to the shared movement kit; one chosen ability per player, picked between games, one use per round, never eliminates; balls are drawn once per show, never despawn, re-arm after a 6-second countdown with a burst across the ball; the court gains pillars, half-walls, a centre stage and rails, all under 9 studs so the stands see over them.
+
 Open:
-- Stamina numbers (4 s sprint, quarter-bar dodge) are first guesses for the grey-box playtest.
+- The owner's description of the re-arm effect was cut off after "and then make it look like its". Assumed: the ball lights back up in its own colour. Confirm.
+- Stamina numbers (4 s sprint, quarter-bar dodge, wall run 1.5 s) are first guesses for the grey-box playtest.
 - Whether the Ghost's one plain throw should be a quick throw only or allow a charge. Current draft: quick only, to keep it catchable.

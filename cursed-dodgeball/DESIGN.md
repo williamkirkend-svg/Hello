@@ -1,8 +1,8 @@
-# Cursed Dodgeball: design document (v0.1, 7 Oct 2026)
+# Cursed Dodgeball: design document (v0.2, 7 Oct 2026)
 
-Working title. Rename before launch; see section 12.
+Name confirmed by the owner.
 
-This is a design-only document. No code exists yet. It pulls from three research passes in `research/` and the concept images listed in `concept-images.md`. Decisions already made with the owner: balls carry the twist and players have no abilities; cosmetics-only monetization; chunky cartoon backyard and schoolyard art; everyone plays at once and rounds cut the field down to a single winner.
+This is a design-only document. No code exists yet. It pulls from three research passes in `research/` and the concept images listed in `concept-images.md`. Decisions already made with the owner: balls carry the twist and players have no abilities beyond a shared movement kit; cosmetics-only monetization; chunky cartoon backyard and schoolyard art; everyone plays at once in a pure free-for-all with no teams, and rounds cut the field down to a single winner; the court is sunk below the stands so you feel down in a pit with the crowd above you; 20 players at launch.
 
 ## 1. The pitch in one breath
 
@@ -17,7 +17,8 @@ Rules you already know: get hit, you are out. Catch it, the thrower is out. Last
 3. **Nobody waits in silence.** Eliminated players become Ghosts with a throwing ring and a vote, then spectators with a camera and a hype meter. The stands are part of the show.
 4. **Five-minute shows.** A full show from first rush to crowned winner is about five minutes. A player who goes out in the first 30 seconds is back on the court in under five.
 5. **Clip first.** Every cursed ball has a moment that makes sense in a two-second vertical clip with no sound. Ragdolls, launches, swaps, explosions.
-6. **Fair on a phone.** One joystick, two buttons, aim assist. No ability purchases, no ball purchases, ever.
+6. **Skill wins.** Sprint, dodge in any direction including mid-air, and a 3-second shield for a catch. The only help is a target picker that never tracks. No ability purchases, no ball purchases, ever.
+7. **Everyone is there for their own reason.** No teams, no squads on the court. Alliances are whatever two kids decide for ten seconds.
 
 ## 3. The show (match format)
 
@@ -26,7 +27,7 @@ A server runs an endless loop of Shows. A Show is three rounds on one court with
 | Phase | Length | What happens |
 |---|---|---|
 | Intermission | 20 s | Everyone in the stands. The ball machine reveals this show's cursed balls one by one on the jumbotron. Spectators vote one Wildcard ball into round 1. Players walk down onto the court through the tunnels. |
-| Round 1: The Rush | up to 90 s | All players on court, free-for-all. Balls on the centre circle. Round ends when the field is down to 8, or at the buzzer. |
+| Round 1: The Rush | up to 90 s | All 20 players on court, free-for-all. Balls on the centre circle. Round ends when the field is down to 8, or at the buzzer. |
 | Replay | 8 s | Cinematic replay of the last elimination. Court shrinks for round 2 during the replay. |
 | Round 2: The Cut | up to 60 s | 8 survivors, smaller court, more cursed balls. Ends at 4 left or the buzzer. |
 | Replay | 8 s | Same. Court shrinks again. |
@@ -35,7 +36,7 @@ A server runs an endless loop of Shows. A Show is three rounds on one court with
 
 Total: about 4 to 5 minutes. The server never has a lobby wait longer than 20 seconds.
 
-**Server size.** Launch at 16 players, raise to 20 or 24 once the court and performance budget prove out. Minimum to start a show is 6; below 6 the show collapses to two rounds (cut to 3, then final). A player joining mid-show lands in the stands with the round timer on screen and plays from the next intermission.
+**Server size.** Launch at 20 players. The owner wants the biggest crowd possible, so 24 is the stretch target once the court and phone performance prove out. Minimum to start a show is 6; below 6 the show collapses to two rounds (cut to 3, then final). A player joining mid-show lands in the stands with the round timer on screen and plays from the next intermission.
 
 **The buzzer.** If a round hits its timer before the cut, the Flood starts: paint pours in from the court edges at 2 studs per second and anyone standing in it is out. It stops the moment the cut is reached. This keeps rounds from stalling and gives the crowd something to scream at.
 
@@ -43,19 +44,28 @@ Total: about 4 to 5 minutes. The server never has a lobby wait longer than 20 se
 
 **Why three rounds and not one.** A single 16-player free-for-all ends with a long, cagey 1v1 while 14 people wait. Cutting the court between rounds forces the end game, gives three distinct ball mixes per show, and gives three replay beats for the crowd.
 
-**Hybrid option (owner's call, see section 12).** Round 1 can be played as two teams of 8 with classic sides, centre line and the catch-revive rule, and then rounds 2 and 3 go free-for-all. It feels more like real dodgeball at the start and gives teams something to cheer for in the stands. The cost is two rule sets to teach. Recommendation: launch pure free-for-all, test the hybrid as a weekend mode.
+**No teams, ever, in the main show.** The owner's call: everyone is on the court for their own reason. A team-start hybrid is parked as a possible weekend mode and nothing in the core design depends on it.
 
 ## 4. Core rules (the dodgeball base)
 
 - **Hit.** A live ball that touches you before it touches the floor, a wall, or another ball puts you out. No head-shot special case. A ball you are holding does not protect you (no blocking in v1).
-- **Catch.** Tap Catch while a live ball is within reach. Window is 0.25 s on a quick throw, 0.15 s on a charged throw. A catch puts the thrower out and gives the catcher a Shield: one extra hit, shown as a glowing ring around the feet, does not stack.
-- **Out.** The player ragdolls and is flung toward their nearest sideline with an OUT stamp, then stands up as a Ghost in the Ghost ring (section 6).
-- **Holding.** You can hold one ball. Holding slows you 15 percent. A held ball pops out of your hands after 8 seconds (visible ring timer) so nobody turtles.
-- **Throw.** Tap Throw for a quick throw (60 studs per second, wide catch window). Hold up to 0.8 s for a charged throw (110 studs per second, narrow window, slight glow and sound tell). Aim is where your camera looks, with a soft lock on the nearest player within 10 degrees on mobile.
+- **Catch.** Tap Catch while a live ball is within reach. Window is 0.25 s on a quick throw, 0.15 s on a charged throw. A catch puts the thrower out and gives the catcher a Shield: one extra hit, shown as a glowing ring around the feet, lasting 3 seconds and then gone. It does not stack and does not refresh while active. The catch is the reward; the shield is a short window to press the advantage, not a buffer to hide behind.
+- **Out.** The player ragdolls and is flung toward the nearest edge of the pit with an OUT stamp, then stands up as a Ghost on the ring (section 6).
+- **Holding.** You can hold one ball. A held ball pops out of your hands after 8 seconds (visible ring timer) so nobody turtles.
+- **Throw.** Tap Throw for a quick throw (60 studs per second, wide catch window). Hold up to 0.8 s for a charged throw (110 studs per second, narrow window, glow and whine tell). Sprinting while charging is not allowed; the charge roots you to a walk.
+- **Aiming.** There is no free aim on any platform. The player always has one target: a bracket indicator above the head of the player they have picked. On release the ball flies in a straight line at the spot where that player's chest is at that instant. It does not steer, it does not lead the target, and the ball keeps going to that spot if the target dodges. Only the Eye Ball steers. Target picking: the default target is the live player nearest the centre of the camera; swipe on the right half of the screen (or tap the indicator) to cycle to the next nearest on mobile; mouse movement or Tab on PC. The indicator turns red when the target is inside throw range and grey when out of range. This makes aim a question of timing and reading dodges, not twitch accuracy, which keeps phones and PCs equal.
 - **Live and dead balls.** A thrown ball is live until it touches the floor, a wall, a dead ball, or is caught. A dead ball can be picked up by anyone. Balls that leave the court roll back in from the nearest edge after 2 seconds.
 - **Boundary.** The court edge is a painted band with a raised kerb. Step over it and you are out. The edge shrinks between rounds and during the Flood.
 - **Pickup.** Walk over a dead ball to pick it up. Only one ball at a time.
-- **Movement.** Run, jump. No dash, no abilities. All the spice is in the balls.
+
+### Movement kit (shared by everyone, Huss Valley style)
+
+- **Run.** Base speed 16 studs per second.
+- **Sprint.** Hold Sprint for 1.5x speed. Drains a stamina bar that lasts 4 seconds of sprinting and refills fully in 3 seconds of not sprinting. You can sprint while holding a ball. You cannot charge a throw while sprinting.
+- **Dodge.** Tap Dodge to dash 8 studs in whatever direction the joystick points, including backward and sideways, over 0.2 seconds. Costs a quarter of the stamina bar. Cooldown 0.8 s. The dodge has no invulnerability frames: if a ball reaches your body mid-dash you are out. The dodge is about where you end up, not about being untouchable, so a good thrower who reads it still wins.
+- **Air dodge.** Dodge works once per jump while airborne, in any direction, with the same cost. Landing resets it. Chaining jump, air dodge and a charged throw on landing is the high-skill play the game is built around.
+- **Jump.** Standard height. Jumping over a low ball is a legitimate dodge.
+- **Stamina readability.** The bar is on the player's back as a small glowing strip, so throwers can see when someone is empty and spectators can see it from the stands.
 
 ## 5. The cursed balls
 
@@ -67,20 +77,22 @@ Full catalog with behaviours, counters, catch rules, art and sound notes is in `
 |---|---|---|
 | Flight | How the ball moves in the air | Eye Ball (homing), Boomerang, Shadow Ball (invisible, shadow only), Bouncy |
 | Impact | What happens when it hits | Giant, Glue, Swap |
-| Chaos | Timers and lies | Fuse, Traitor (outs the thrower), Decoy (three balls, one real) |
+| Chaos | Timers and lies | Fuse, Decoy (three balls, one real), Moon (holder jumps high, hit launches the target) |
 | Field | Changes the court itself | Black Hole, Paint |
 
-**Ball mix per round.** Round 1: 8 balls on the centre circle, 4 plain and 4 cursed (3 drawn by the server, 1 Wildcard voted by spectators). Round 2: 6 balls, 1 plain and 5 cursed. Round 3: 4 balls, all cursed, drawn from a "finals pool" that excludes Traitor and Paint.
+**Ball mix per round.** Round 1: 8 balls on the centre circle, 4 plain and 4 cursed (3 drawn by the server, 1 Wildcard voted by spectators). Round 2: 6 balls, 1 plain and 5 cursed. Round 3: 4 balls, all cursed, drawn from a "finals pool" that excludes Paint.
 
 **Persistence.** A cursed ball keeps its curse for the whole round, so it is a resource worth fighting over, except consumables (Fuse, Black Hole, Paint, Decoy) which turn into a plain ball after they trigger. The ball machine at the centre fires a replacement cursed ball every 20 seconds in rounds 1 and 2.
 
-**Reveal.** Every cursed ball has a unique silhouette, colour, idle animation, and sound so it reads from the stands and from a phone. Nothing is a recolour. The only exception is Traitor, which is disguised on purpose.
+**Reveal.** Every cursed ball has a unique silhouette, colour, idle animation, and sound so it reads from the stands and from a phone. Nothing is a recolour.
+
+**Why this twelve.** The owner asked for the most engaging set. Each ball was kept only if it creates a decision for the target, not just for the thrower, and if it produces a clip. Traitor was cut from launch: it is funny for the crowd but it punishes the thrower for something they could not see, which is the opposite of the skill pillar. It moves to a chaos weekend mode. Moon takes its slot because it rewards the new air-dodge kit and gives the stands the biggest launch in the game.
 
 ## 6. Ghosts, spectators and the stands
 
 Eliminated players never leave the venue.
 
-**Ghost ring (rounds 1 and 2).** A raised walkway between the court kerb and the first row of seats, behind a waist-high glass rail. Ghosts stand here. Dead balls that roll off the court come to them. A Ghost can throw at live players. A Ghost who hits a live player swaps places with them (the Prisonball rule): the Ghost drops back onto the court, the hit player goes to the ring. This keeps everyone playing and lets a kid who got out in the first 10 seconds get back in on their own skill. Ghost hits do not count toward the cut, so a Ghost cannot end a round. Ghost throws are always quick throws, so they are catchable, and a catch of a Ghost throw sends that Ghost to the stands for good.
+**Ghost ring (rounds 1 and 2).** The walkway at the top of the pit wall, between the kerb drop and the first row of seats, behind a waist-high glass rail. Ghosts stand here looking down at the court. Each Ghost gets exactly one throw per round, and it is always a plain ball handed to them by the ring's ball boy slot the moment they arrive. If that throw hits a live player, the Ghost and the victim swap places: the Ghost drops back down into the pit, the victim is flung up to the ring. If it misses or is caught, that Ghost is done for the round and walks up into the stands. One throw, a plain ball, from above, at a moving target who can dodge in any direction: getting back in is possible and it is hard, which is the owner's intent. Ghost hits do not count toward the cut, so a Ghost cannot end a round. A Ghost's victim gets their own single throw as a new Ghost, so a chain of swaps can happen but every link costs someone their only shot.
 
 **Stands (round 3, and anyone who gives up the ring).** Rows of bleachers around the whole court. From the stands you can:
 - Cycle four cameras with one tap: seat view, broadcast (fixed, elevated mid-court), follow-ball (tracks the most recently thrown ball), and player cam.
@@ -93,13 +105,13 @@ Eliminated players never leave the venue.
 
 ## 7. The venue
 
-One stadium shape, three skins at launch. Dimensions below are the round 1 court; the kerb moves inward for rounds 2 and 3.
+One stadium shape, three skins at launch. The defining feature is that the court is a pit: the floor sits 8 studs below the Ghost ring and the first row of seats, so a player on the court looks up at a wall of faces and a spectator looks down into an arena. Dimensions below are the round 1 court; the kerb moves inward for rounds 2 and 3.
 
 **Court.** A rounded rectangle, 70 by 50 studs in round 1, 48 by 36 in round 2, 30 by 24 in round 3. A centre circle of 10 studs where balls spawn from a hatch (the ball machine). No centre line in free-for-all. The floor is one bright flat colour with the boundary band in the team-neutral accent, lit brighter than everything around it.
 
-**Kerb and ring.** A 1-stud raised kerb marks out of bounds. Behind it a 6-stud Ghost ring, then a glass rail, then stands.
+**Pit wall, kerb and ring.** A 1-stud painted kerb marks out of bounds at the floor. Behind it the pit wall rises 8 studs, sheer, with team-neutral stripes and the players-remaining count painted big on each face so the crowd reads it. At the top of the wall is the 6-stud Ghost ring with a glass rail on the court side so Ghosts throw over it and cannot fall in. Behind the ring the stands begin. Out players are flung up and over the wall onto the ring, which is the physical version of being sent off. Entry for the next show is down the two tunnels, which ramp from the stands to the floor at the short ends and close with a gate when the round starts.
 
-**Stands.** Five rows on all four sides, each row 1.5 studs higher than the last so every seat sees the far edge. Two tunnels on the short ends where players walk down from the stands onto the court during intermission. One jumbotron on a pole at a short end, visible from the court and the stands, showing the ball reveal, replays, timer, and the players-remaining count.
+**Stands.** Five rows on all four sides starting at ring height, each row 1.5 studs higher than the last so every seat sees the far edge of the floor 8 studs below. Two tunnels on the short ends where players walk down from the stands onto the court during intermission. One jumbotron on a pole at a short end, visible from the court and the stands, showing the ball reveal, replays, timer, and the players-remaining count.
 
 **Three skins at launch.**
 
@@ -152,11 +164,17 @@ Summarised from `research/arena-and-spectators.md`. No code yet.
 6. Cosmetics, XP, challenges, leaderboards.
 7. Backyard and Gym venues.
 
-## 12. Decisions needed from the owner
+## 12. Decisions log
 
-1. **Name.** Working title is Cursed Dodgeball. Candidates: Cursed Dodgeball, Dodgeball Chaos, Ballistic, Last Ball Standing, Dodge or Die. Needs to be shoutable and verb-able.
-2. **Pure free-for-all or the hybrid** (teams in round 1, free-for-all after)? Recommendation: pure free-for-all at launch.
-3. **Ghost re-entry rule.** Keep Ghost hits as a swap (recommended), or make Ghosts pure spectators from the first out? The swap is more fun but adds one rule to teach.
-4. **Traitor ball.** It is disguised and punishes the thrower. Funny, but it is the one ball that can feel unfair. Ship it, or hold it for a chaos weekend mode?
-5. **Server size at launch.** 16 (safe) or 20 (bigger crowd, more risk on phones)?
-6. **Catch reward.** Shield for one extra hit (recommended), or the catcher also pulls the longest-out Ghost back onto the court?
+Resolved 7 Oct 2026 with the owner:
+1. Name: Cursed Dodgeball.
+2. Pure free-for-all. No teams, everyone is there for their own reason.
+3. Ghost swap-back stays, limited to one throw per round with a plain ball. Hard but possible.
+4. Ball roster: the designer picks the most engaging twelve. Traitor moved out of launch, Moon in.
+5. Launch at 20 players, more if performance allows.
+6. Catch gives a one-hit shield that lasts 3 seconds. Skill-based movement added: sprint, omnidirectional dodge, air dodge. Auto-aim is a target picker that throws at where the target is at release and never tracks; only the Eye Ball tracks.
+7. The court is sunk below the stands so it feels like an arena pit with the crowd above.
+
+Open:
+- Stamina numbers (4 s sprint, quarter-bar dodge) are first guesses for the grey-box playtest.
+- Whether the Ghost's one plain throw should be a quick throw only or allow a charge. Current draft: quick only, to keep it catchable.

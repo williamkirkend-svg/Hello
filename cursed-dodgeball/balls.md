@@ -1,8 +1,9 @@
 # The cursed balls (ball bible, v0.1)
 
-Rules that apply to every ball unless its entry says otherwise:
+Rules that apply to every ball unless its entry says otherwise (see DESIGN.md section 4 for the movement kit, the 3-second shield and the target picker):
 - A ball is live from the throw until it touches the floor, a wall, a dead ball, or is caught.
-- A hit puts the target out. A catch puts the thrower out and gives the catcher a Shield.
+- A hit puts the target out. A catch puts the thrower out and gives the catcher a 3-second one-hit Shield.
+- Every throw goes straight at where the picked target is at the moment of release. Nothing steers except the Eye Ball.
 - A cursed ball keeps its curse all round. Consumables revert to plain after they trigger.
 - Every ball has a unique shape, colour, idle motion, trail and sound. The jumbotron names it on spawn.
 - Complexity is a build-cost guess: S is a parameter change on the plain ball, M is one new behaviour, L is new systems.
@@ -79,13 +80,13 @@ Rules that apply to every ball unless its entry says otherwise:
 - Clip: four players running from a bomb that one of them is still holding.
 - Complexity: M. Consumable.
 
-**9. Traitor**
-- Look: a plain-looking ball with a faint purple sheen that only shows when it is close to the camera. The jumbotron announces "a Traitor is on the court" at spawn but does not say which ball.
-- Behaviour: the throw puts out the thrower, not the target, the moment it leaves their hand. The ball flashes purple and cackles.
-- Catch: no catch needed; the thrower is already out. If caught, the catcher still gets a Shield.
-- Counter: look closely before picking up a plain ball. Balls that have sat still the longest are the suspicious ones. Kick it (walk into it) to roll it toward someone else instead of picking it up.
-- Clip: the confident thrower who outs themselves.
-- Complexity: S. Candidate for a chaos-only mode; see DESIGN.md section 12.
+**9. Moon**
+- Look: a pale grey cratered ball that drifts slightly when idle, with a faint halo. Trail: a soft white arc.
+- Behaviour: whoever holds it has a third of normal gravity: triple jump height, long floaty hang time, and air dodges carry further. The throw itself is slow (70 percent speed) and lobbed. On hit, the target is launched 20 studs straight up with a crowd gasp and is out when they land, so the whole pit watches them come down.
+- Catch: normal. Catching a Moon mid-air with an air dodge is the best-looking play in the game.
+- Counter: the holder floats and is an easy target while up there. The lob is slow; catch it.
+- Clip: someone catching it at the top of a triple jump, or someone else being launched over the pit wall.
+- Complexity: M.
 
 **10. Decoy**
 - Look: a white ball with a question mark that wobbles. When thrown it splits into three identical balls fanned 15 degrees apart.
@@ -119,7 +120,7 @@ Each is one line; detail them when their season is planned. Sources for the borr
 
 | Ball | Behaviour | Family |
 |---|---|---|
-| Moon | Holder jumps triple height; the hit launches the target 20 studs up and they are out when they land | Impact |
+| Traitor | A disguised plain ball that puts out the thrower, not the target; chaos weekend mode only | Chaos |
 | Multi | Picking it up gives you three quick throws | Chaos |
 | Cage | The hit traps the target in a rolling hamster ball for 4 s; anyone can push them toward the edge; mash to escape | Impact |
 | Poison | Leaves a gas cloud on impact; standing in it 2 s puts you out | Field |
@@ -152,4 +153,4 @@ Each is one line; detail them when their season is planned. Sources for the borr
 
 - Round 1 pool: all 12. Server draws 3, spectators add 1 Wildcard.
 - Round 2 pool: all 12, 5 drawn, no repeats of round 1 unless the pool runs out.
-- Final pool: Eye, Boomerang, Shadow, Bouncy, Giant, Glue, Swap, Fuse, Decoy, Black Hole. No Traitor (unfair at 4 players), no Paint (the court is already tiny).
+- Final pool: Eye, Boomerang, Shadow, Bouncy, Giant, Glue, Swap, Fuse, Moon, Decoy, Black Hole. No Paint (the court is already tiny).

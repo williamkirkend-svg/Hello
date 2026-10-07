@@ -14,5 +14,6 @@ Generated 7 Oct 2026 with Higgsfield (z_image, 16:9). The files live in your Hig
 | 9 | Pit with pillars, half-walls, stage and rails, seen from the stands | The v0.3 parkour arena at spectator height | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_202002_db743e6e-ff76-472b-954f-f6b13135411c.png |
 | 10 | Dormant cursed ball with countdown, and the re-arm burst | The replenish effect across the ball face | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_202002_20b9f50c-33b4-4cbc-9a1a-c5126d95a7aa.png |
 | 11 | Wall run up a pillar toward a rail while two players throw from below | The high route the movement kit is built for | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_202221_095ca0c0-0886-4484-a3a3-479648712be6.png |
+| 12 | Ability pick board on the concourse, players choosing, icons over heads | The between-games pick moment | https://d8j0ntlcm91z4.cloudfront.net/user_3KAgI1PWNqdcLnaZgYXU9lLzvH4/hf_20261007_202239_3a5effe0-c78b-46ee-adca-f21f4df44308.png |
 
 A sunken-pit arena image (the look decided later in the session) was attempted twice and failed on the generator side; the pit is described in DESIGN.md section 7. Retry it when the generator is healthy.

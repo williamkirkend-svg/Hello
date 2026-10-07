@@ -1205,6 +1205,8 @@ function K.TimeScale(ctx, o)
 	if not ctx.Local then return end
 	local emitters, tracks = {}, {}
 	ctx:At(o.T0 or 0, function()
+		-- published for AuraSound: every live show sound follows it (pitch and speed)
+		ctx.TimeRate = o.Scale or .1
 		local centre = ctx.Base.Position
 		local r = o.Radius or 30
 		for _, d in workspace:GetDescendants() do
@@ -1226,6 +1228,7 @@ function K.TimeScale(ctx, o)
 		end
 	end)
 	local function restore()
+		ctx.TimeRate = 1
 		for e, v in emitters do if e.Parent then e.TimeScale = v end end
 		for tr, v in tracks do pcall(function() tr:AdjustSpeed(v) end) end
 		emitters, tracks = {}, {}

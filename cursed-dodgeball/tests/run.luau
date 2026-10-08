@@ -6,6 +6,7 @@ local TESTS = {
 	"./BallFlight.test",
 	"./Targeting.test",
 	"./MoveMath.test",
+	"./Poses.test",
 }
 
 local passed, failed = 0, 0

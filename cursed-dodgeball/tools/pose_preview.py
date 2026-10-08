@@ -210,8 +210,10 @@ def render(records, out_dir, scene):
         right = np.array([math.cos(yaw), 0, -math.sin(yaw)])
         ground_c = np.array([p[0], 0, p[2]])
         # side view: from the character's left, slightly ahead, tracking
-        side_eye = ground_c - right * 13 + fwd * 2 + np.array([0, 3.2, 0])
-        side = Cam(side_eye, ground_c + np.array([0, 2.6, 0]), fov=55)
+        # rises with the character on big jumps so a full double jump stays in frame
+        lift = max(0.0, p[1] - 3.2) * 0.85
+        side_eye = ground_c - right * 13 + fwd * 2 + np.array([0, 3.2 + lift, 0])
+        side = Cam(side_eye, ground_c + np.array([0, 2.6 + lift, 0]), fov=55)
         # game camera: over the right shoulder, behind, 10 studs back
         game_eye = p + np.array([0, 1.6 + 0.6, 0]) + right * 1.75 - fwd * 10 + np.array([0, 1.6, 0])
         game = Cam(game_eye, p + np.array([0, 1.6, 0]) + right * 1.75 + fwd * 8, fov=72)

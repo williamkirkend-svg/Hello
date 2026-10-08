@@ -11,7 +11,8 @@
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "CursedDodgeball": { "$path": "src/StarterPlayer/StarterPlayerScripts/CursedDodgeball" }
-      }
+      },
+      "StarterCharacterScripts": { "$path": "src/StarterPlayer/StarterCharacterScripts" }
     }
   }
 }

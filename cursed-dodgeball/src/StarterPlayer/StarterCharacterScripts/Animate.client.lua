@@ -1,0 +1,3 @@
+-- Cursed Dodgeball: replaces Roblox's default "Animate" script so no keyframe animations play.
+-- All character animation is procedural (ReplicatedStorage.CursedDodgeball.Movement.Animator).
+-- Intentionally empty.

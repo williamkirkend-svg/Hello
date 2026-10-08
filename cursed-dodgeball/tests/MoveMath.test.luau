@@ -5,17 +5,17 @@ return function(t)
 
 	-- config sanity: arena values from movement-design.md
 	t.eq(C.JogSpeed, 16, "jog")
-	t.eq(C.SprintSpeed, 23, "sprint")
-	t.eq(C.HardCap, 28, "cap")
+	t.eq(C.SprintSpeed, 26, "sprint")
+	t.eq(C.HardCap, 36, "cap")
 	t.ok(C.HardCap < 60, "top speed well under a quick throw")
-	t.eq(C.WallRunMaxTime, 1.0, "wall run length")
+	t.eq(C.WallRunMaxTime, 1.6, "wall run length")
 
 	-- momentum: sprint ramps up over about 0.6 s and stops at the sprint target
 	do
 		local m = C.JogSpeed
 		local o = { sprinting = true, stamina = 1, grounded = true }
 		for _ = 1, 30 do m = M.stepMomentum(m, o, 1 / 60, C) end -- 0.5 s
-		t.ok(m > 21 and m < 23, "sprint ramp after 0.5 s is close to but under target: " .. m)
+		t.ok(m > 22 and m < 26, "sprint ramp after 0.5 s is past jog but under target: " .. m)
 		for _ = 1, 60 do m = M.stepMomentum(m, o, 1 / 60, C) end
 		t.eq(m, C.SprintSpeed, "settles at sprint target")
 		-- release sprint: falls back toward jog
@@ -29,15 +29,15 @@ return function(t)
 
 	-- boosts stack to the cap and decay at the right rate per surface
 	do
-		t.eq(M.boost(27, 5, C), C.HardCap, "boost capped")
+		t.eq(M.boost(34, 5, C), C.HardCap, "boost capped")
 		local o = { sprinting = true, stamina = 1, grounded = true }
-		local g = M.stepMomentum(27, o, 0.1, C)
-		t.ok(near(g, 27 - C.OverspeedDecayGround * 0.1), "ground overspeed decay")
+		local g = M.stepMomentum(32, o, 0.1, C)
+		t.ok(near(g, 32 - C.OverspeedDecayGround * 0.1), "ground overspeed decay")
 		o.grounded = false
-		local a = M.stepMomentum(27, o, 0.1, C)
-		t.ok(near(a, 27 - C.OverspeedDecayAir * 0.1), "air overspeed decay")
+		local a = M.stepMomentum(32, o, 0.1, C)
+		t.ok(near(a, 32 - C.OverspeedDecayAir * 0.1), "air overspeed decay")
 		o.wallRunning = true
-		t.eq(M.stepMomentum(27, o, 0.1, C), 27, "wall run keeps overspeed")
+		t.eq(M.stepMomentum(32, o, 0.1, C), 32, "wall run keeps overspeed")
 	end
 
 	-- planar acceleration on the ground: snappy but not instant
@@ -111,8 +111,8 @@ return function(t)
 	-- landing kinds
 	t.eq(M.landingKind(20, 0, C), "Light", "light")
 	t.eq(M.landingKind(45, 0, C), "Medium", "medium")
-	t.eq(M.landingKind(70, 20, C), "Roll", "fast heavy landing rolls")
-	t.eq(M.landingKind(70, 5, C), "Heavy", "slow heavy landing")
+	t.eq(M.landingKind(80, 20, C), "Roll", "fast heavy landing rolls")
+	t.eq(M.landingKind(80, 5, C), "Heavy", "slow heavy landing")
 
 	-- stamina
 	do
@@ -145,7 +145,7 @@ return function(t)
 	-- camera and fov
 	t.eq(M.fovTarget(C.JogSpeed, C), C.FovBase, "fov at jog")
 	t.eq(M.fovTarget(C.HardCap, C), C.FovMax, "fov at cap")
-	t.ok(M.fovTarget(40, C) == C.FovMax, "fov clamped")
+	t.ok(M.fovTarget(50, C) == C.FovMax, "fov clamped")
 	t.eq(M.shoulderX(0, C), C.ShoulderX, "right shoulder by default")
 	t.eq(M.shoulderX(1, C), -C.ShoulderX, "wall on the right swaps to the left shoulder")
 	t.eq(M.shoulderX(-1, C), C.ShoulderX, "wall on the left keeps the right shoulder")

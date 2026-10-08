@@ -4,7 +4,9 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Remotes = {}
-Remotes.Names = { "ShowEvent", "ThrowRequest", "CatchRequest", "BallSpawn", "BallState", "TargetSync", "Dodge" }
+Remotes.Names = { "ShowEvent", "ThrowRequest", "CatchRequest", "BallSpawn", "BallState", "TargetSync", "Dodge", "MoveFX" }
+-- High-rate, loss-tolerant traffic (movement state) uses UnreliableRemoteEvents.
+Remotes.UnreliableNames = { "MoveState" }
 
 local function root()
 	return ReplicatedStorage:WaitForChild("CursedDodgeball")
@@ -25,12 +27,12 @@ local function folder()
 	return f
 end
 
-function Remotes.get(name)
+function Remotes.get(name, className)
 	local f = folder()
 	local ev = f:FindFirstChild(name)
 	if not ev then
 		if RunService:IsServer() then
-			ev = Instance.new("RemoteEvent")
+			ev = Instance.new(className or "RemoteEvent")
 			ev.Name = name
 			ev.Parent = f
 		else
@@ -38,6 +40,10 @@ function Remotes.get(name)
 		end
 	end
 	return ev
+end
+
+function Remotes.getUnreliable(name)
+	return Remotes.get(name, "UnreliableRemoteEvent")
 end
 
 -- A Folder whose attributes mirror the show (Phase, Round, Timer, Live, Flood, FloodInset) to every client.

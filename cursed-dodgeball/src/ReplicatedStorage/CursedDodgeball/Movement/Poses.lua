@@ -281,23 +281,29 @@ function Poses.wallKick(side)
 	return p
 end
 
--- Slide, from reference 2: lead leg out, back leg folded under, torso back, trailing hand low.
+-- Slide, copied from reference 2 (a baseball slide), long and low: torso laid back about 65 degrees and
+-- twisted toward the bent leg, head up looking ahead; lead (left) leg dead straight out in front with the
+-- toes up; right leg bent with the knee up and out to the side, foot flat; left hand down on the floor
+-- beside the hip; right arm raised up and back beside the head.
 function Poses.slide()
+	-- Reference 2: laid back, right leg straight out in front, left leg splayed out to the side with a
+	-- soft knee, right hand down on the floor beside the hip, left arm thrown up and out.
 	local p = Poses.new()
-	set(p, "Root", 0.85, 0.1, 0)
-	set(p, "Waist", -0.18, -0.1, 0)
-	set(p, "RHip", 0.68, 0, 0.06)
-	set(p, "RKnee", -0.12)
-	set(p, "RAnkle", 0.25)
-	set(p, "LHip", -0.42, 0, -0.32)
-	set(p, "LKnee", -2.2)
-	set(p, "LAnkle", -0.3)
-	set(p, "LShoulder", -1.15, 0, -0.4)
-	set(p, "LElbow", 0.2)
-	set(p, "RShoulder", 0.65, 0, 0.5)
-	set(p, "RElbow", 0.6)
-	p.RootPos.y = -0.9
-	p.Neck.x = -0.55
+	set(p, "Root", 1.15, 0, 0)
+	set(p, "Waist", 0.1, 0.15, -0.05)
+	set(p, "RHip", 0.42, 0, 0.05)
+	set(p, "RKnee", -0.05)
+	set(p, "RAnkle", 0.3)
+	set(p, "LHip", 0.5, 0, -0.45)
+	set(p, "LKnee", -0.4)
+	set(p, "LAnkle", 0.25)
+	set(p, "RShoulder", -1.05, 0, 0.45)
+	set(p, "RElbow", 0.15)
+	set(p, "LShoulder", 1.9, 0, -0.95)
+	set(p, "LElbow", 0.4)
+	p.RootPos.y = -0.65
+	p.Neck.x = -0.95
+	p.Neck.y = -0.1
 	return p
 end
 

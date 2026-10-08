@@ -55,6 +55,7 @@ function AnimState.new(C, rig)
 	self.kickT = math.huge
 	self.kickSide = 1
 	self.rollT = math.huge
+	self.flipT = math.huge
 	self.mantleT = 0
 	self.out = Poses.idle(0)
 	return self
@@ -66,6 +67,7 @@ function AnimState:event(name)
 		self.lead = math.sin(self.phase * TAU) > 0
 	elseif name == "DoubleJump" then
 		self.tuckT = 0
+		if C.DoubleJumpFlip then self.flipT = 0 end
 	elseif name == "WallJump" then
 		self.kickT = 0
 		self.kickSide = self.side
@@ -77,7 +79,12 @@ function AnimState:event(name)
 		elseif kind then
 			local dur = (kind == "Heavy" and C.LandHeavyTime) or (kind == "Medium" and C.LandMediumTime) or C.LandLightTime
 			self.land = { kind = kind, t = 0, dur = dur + 0.12 }
-			self.tuckT, self.kickT = math.huge, math.huge
+			-- a landing does not cut the tuck or kick (the air layer fades them out); a flip still in
+			-- progress is finished to the nearest upright in 0.12 s instead of popping
+			if self.flipT < C.DoubleJumpFlipTime then
+				self.flipSettle = { from = self.lastSpin or 0, t = 0 }
+				self.flipT = math.huge
+			end
 		end
 	end
 end
@@ -132,7 +139,8 @@ function AnimState:update(dt, input)
 	end
 	if w.Air > 0.001 then
 		local air = Poses.air(self.vy / 40, self.lead)
-		local tuck = envelope(self.tuckT, 0.07, 0.16, 0.32)
+		local tuckDur = C.DoubleJumpFlip and C.DoubleJumpFlipTime + 0.08 or 0.32
+		local tuck = envelope(self.tuckT, 0.07, tuckDur * 0.55, tuckDur)
 		if tuck > 0 then air = Poses.lerp(air, Poses.tuck(), tuck) end
 		local kick = envelope(self.kickT, 0.04, 0.1, 0.3)
 		if kick > 0 then air = Poses.lerp(air, Poses.wallKick(self.kickSide), kick) end
@@ -179,6 +187,17 @@ function AnimState:update(dt, input)
 		end
 	end
 	local spin = 0
+	if self.flipSettle then
+		local fs = self.flipSettle
+		local target = math.floor(fs.from / TAU + 0.5) * TAU
+		local u = math.min(1, fs.t / 0.12)
+		spin = fs.from + (target - fs.from) * smoothstep(u)
+		fs.t += dt
+		if u >= 1 then self.flipSettle = nil spin = 0 end
+	elseif self.flipT < C.DoubleJumpFlipTime then
+		spin = -TAU * smoothstep(self.flipT / C.DoubleJumpFlipTime)
+		self.flipT += dt
+	end
 	if self.rollT < C.LandRollTime then
 		local u = self.rollT / C.LandRollTime
 		local rp = Poses.roll(u)
@@ -200,6 +219,7 @@ function AnimState:update(dt, input)
 	out.RootPos.x += (pose.RootPos.x - out.RootPos.x) * a
 	out.RootPos.y += (pose.RootPos.y - out.RootPos.y) * a
 	out.RootPos.z += (pose.RootPos.z - out.RootPos.z) * a
+	self.lastSpin = spin
 	out.RootSpin.x, out.RootSpin.y, out.RootSpin.z = spin, 0, 0
 	return out
 end

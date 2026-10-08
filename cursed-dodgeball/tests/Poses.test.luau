@@ -82,13 +82,15 @@ return function(t)
 		t.ok(r.LShoulder.x < 0, "outer arm back for balance")
 	end
 
-	-- slide matches the reference: lead leg out, back leg folded, torso back, body low
+	-- slide matches reference 2: lead leg straight out, other leg splayed, torso laid back, body low
 	do
 		local s = P.slide()
-		t.ok(s.Root.x > 0.6, "torso leaned back")
+		t.ok(s.Root.x + s.Waist.x > 1.0, "torso laid well back")
 		t.ok(s.Root.x + s.RHip.x > 1.3, "lead leg near horizontal in world")
-		t.ok(s.LKnee.x < -1.8, "back leg folded")
-		t.ok(s.RootPos.y < -0.6, "body low")
+		t.ok(s.RKnee.x > -0.3, "lead leg straight")
+		t.ok(s.LKnee.x < -0.2 and s.LKnee.x > -0.8 and s.LHip.z < -0.3, "left leg splayed out with a soft knee")
+		t.ok(s.LShoulder.x > 1.8 and s.RShoulder.x < -0.8 and s.RShoulder.z > 0.3, "left arm up, right hand down on the floor")
+		t.ok(s.RootPos.y < -0.5, "body low")
 	end
 
 	-- landings deepen with severity
@@ -117,15 +119,19 @@ return function(t)
 	do
 		local s = A.new(C)
 		local maxStep = 0
+		local worst = ""
+		local nframe = 0
 		local prev
 		local function frame(input)
 			local p = s:update(1 / 60, input)
 			local ok, bad = finite(p)
 			if not ok then t.ok(false, "AnimState produced a bad pose at " .. tostring(bad)) end
+			nframe += 1
 			if prev then
 				for _, j in P.JOINTS do
 					for _, c in { "x", "y", "z" } do
-						maxStep = math.max(maxStep, math.abs(p[j][c] - prev[j][c]))
+						local d = math.abs(p[j][c] - prev[j][c])
+						if d > maxStep then maxStep = d worst = j .. "." .. c .. " frame " .. nframe .. " " .. (input.state or "") end
 					end
 				end
 			end
@@ -158,6 +164,6 @@ return function(t)
 		local after
 		for _ = 1, 40 do after = frame({ state = "Ground", speed = 24, vy = 0 }) end
 		t.ok(near(after.RootSpin.x, 0), "roll finishes upright")
-		t.ok(maxStep < 0.45, "no joint snaps more than 0.45 rad in one frame: " .. maxStep)
+		t.ok(maxStep < 0.45, "no joint snaps more than 0.45 rad in one frame: " .. maxStep .. " at " .. worst)
 	end
 end

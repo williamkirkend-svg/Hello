@@ -44,6 +44,8 @@ local function run(scene, steps)
 			if first and step.events then events = step.events end
 			first = false
 			if step.update then step.update(sim, t, DT) end
+			-- airborne steps marked untilGround end on touchdown, so the landing step starts on contact
+			if step.untilGround and sim.state == "Air" and sim.y <= GROUND_Y and sim.vy <= 0 then break end
 			-- kinematics
 			local fx, fz = -math.sin(sim.yaw), -math.cos(sim.yaw)
 			local mx, mz = fx, fz
@@ -98,13 +100,13 @@ run("run", {
 run("jump", {
 	{ dur = 0.8, label = "sprint", update = function(s) s.speed = C.SprintSpeed s.state = "Ground" end },
 	{ dur = 0.35, label = "jump", events = { "Jump" }, update = function(s, t) if t == 0 then s.state = "Air" s.vy = JUMP_V end end },
-	{ dur = 0.6, label = "double jump", events = { "DoubleJump" }, update = function(s, t) if t == 0 then s.vy = JUMP_V * C.DoubleJumpScale end end },
-	{ dur = 0.5, label = "falling", update = function(s) if s.y <= GROUND_Y + 0.01 and s.vy <= 0 then s.y = GROUND_Y end end },
+	{ dur = 0.7, untilGround = true, label = "double jump (flip)", events = { "DoubleJump" }, update = function(s, t) if t == 0 then s.vy = JUMP_V * C.DoubleJumpScale end end },
+	{ dur = 0.5, untilGround = true, label = "falling", update = function() end },
 	{ dur = 0.6, label = "medium landing", events = { "Land:Medium" }, update = function(s) s.state = "Ground" s.vy = 0 end },
 	{ dur = 0.6, label = "run on", update = function(s) s.speed = C.SprintSpeed end },
 	{ dur = 0.5, label = "stop", update = function(s, t) s.speed = math.max(0, C.SprintSpeed - C.GroundDecel * t) end },
 	{ dur = 0.3, label = "drop from a rail", update = function(s, t) if t == 0 then s.state = "Air" s.y = 12 s.vy = 0 s.speed = 0 end end },
-	{ dur = 0.25, label = "falling", update = function() end },
+	{ dur = 0.6, untilGround = true, label = "falling", update = function() end },
 	{ dur = 0.8, label = "heavy landing", events = { "Land:Heavy" }, update = function(s) s.state = "Ground" s.vy = 0 end },
 	{ dur = 0.6, label = "idle", update = function(s) s.speed = 0 end },
 })
@@ -113,9 +115,9 @@ run("jump", {
 run("wallrun", {
 	{ dur = 0.7, label = "sprint", update = function(s) s.speed = C.SprintSpeed s.state = "Ground" s.wall = 2.6 end },
 	{ dur = 0.2, label = "jump", events = { "Jump" }, update = function(s, t) if t == 0 then s.state = "Air" s.vy = JUMP_V * 0.7 end end },
-	{ dur = 1.0, label = "wall run", update = function(s, t) if s.state ~= "WallRun" then s.state = "WallRun" s.vy = math.max(s.vy, C.WallRunLift) end s.wallSide = 1 s.speed = C.SprintSpeed + C.BoostWallRun end },
+	{ dur = C.WallRunMaxTime, label = "wall run", update = function(s, t) if s.state ~= "WallRun" then s.state = "WallRun" s.vy = math.max(s.vy, C.WallRunLift) end s.wallSide = 1 s.speed = C.SprintSpeed + C.BoostWallRun end },
 	{ dur = 0.25, label = "wall jump", events = { "WallJump" }, update = function(s, t) if t == 0 then s.state = "Air" s.vy = C.WallJumpUp s.yaw += 0.6 s.speed = C.SprintSpeed * C.WallJumpKeep + 4 end end },
-	{ dur = 0.6, label = "air", update = function() end },
+	{ dur = 0.8, untilGround = true, label = "air", update = function() end },
 	{ dur = 0.5, label = "roll landing", events = { "Land:Roll" }, update = function(s) s.state = "Ground" s.vy = 0 s.wallSide = 0 end },
 	{ dur = 0.7, label = "run on", update = function(s) s.speed = C.SprintSpeed end },
 })
@@ -123,8 +125,8 @@ run("wallrun", {
 -- Scene 4: slide, slide jump, light landing, dash right, dash forward.
 run("slide", {
 	{ dur = 0.8, label = "sprint", update = function(s) s.speed = C.SprintSpeed s.state = "Ground" end },
-	{ dur = 0.9, label = "slide", update = function(s, t) s.state = "Slide" s.hipDrop = C.SlideHipDrop s.speed = math.max(C.SlideEndSpeed, C.SprintSpeed + C.BoostSlide - C.SlideFriction * t) end },
-	{ dur = 0.55, label = "slide jump", events = { "Jump" }, update = function(s, t) if t == 0 then s.hipDrop = 0 s.state = "Air" s.vy = JUMP_V end end },
+	{ dur = C.SlideMaxTime, label = "slide", update = function(s, t) s.state = "Slide" s.hipDrop = C.SlideHipDrop s.speed = math.max(C.SlideEndSpeed, C.SprintSpeed + C.BoostSlide - C.SlideFriction * t) end },
+	{ dur = 0.8, untilGround = true, label = "slide jump", events = { "Jump" }, update = function(s, t) if t == 0 then s.hipDrop = 0 s.state = "Air" s.vy = JUMP_V end end },
 	{ dur = 0.4, label = "light landing", events = { "Land:Light" }, update = function(s) s.state = "Ground" s.vy = 0 end },
 	{ dur = 0.5, label = "run", update = function(s) s.speed = C.SprintSpeed end },
 	{ dur = 0.22, label = "dash right", update = function(s) s.state = "Dash" s.dashX, s.dashZ = 1, 0 s.moveDir = { math.cos(s.yaw), -math.sin(s.yaw) } s.speed = C.DashDistance / C.DashSeconds end },
